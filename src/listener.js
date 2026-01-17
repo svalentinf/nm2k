@@ -1,9 +1,10 @@
 import dgram from "dgram";
-import {FromPgn} from "@canboat/canboatjs";
+import {FromPgn, VenusMQTT} from "@canboat/canboatjs";
 import {WebSocketServer} from "ws";
 import express from "express";
 import cors from "cors";
 import http from "http";
+import net from "net";
 
 const parserPgn = new FromPgn();
 const udpSocket = dgram.createSocket("udp4");
@@ -20,6 +21,7 @@ const wss = new WebSocketServer({server});
 // Minimal state for rate limiting only
 const lastPrint = new Map();
 const wsClients = new Set();
+const Pgns = new Map(); // Map<src, Map<pgnId, pgnData>>
 
 function getKey(pgnObj)
 {
@@ -31,24 +33,28 @@ function hasChanged(oldObj, newObj)
     return JSON.stringify(oldObj.fields) !== JSON.stringify(newObj.fields);
 }
 
+let id = 0;
+
 // Broadcast PGN to all WebSocket clients
 function broadcastPgn(pgn, line)
 {
+    id = id + 1;
+    //@todo send it as it is!
     const pgnData = {
-        id:          `${pgn.src}_${pgn.pgn}_${Date.now()}`,
-        timestamp:   new Date().toISOString(),
-        pgn:         pgn.pgn,
-        description: pgn.description || `PGN ${pgn.pgn}`,
-        direction:   pgn.direction,
-        src:         pgn.src,
-        fields:      {...pgn.fields},
-        raw:         line
+        ...pgn,
+        id:  `${pgn.src}_${pgn.pgn}_${Date.now()}_${id}`,
+        raw: line
     };
+
+    // if (pgn.src == 0) {
+    // console.log(pgnData);
+    // }
 
     const message = JSON.stringify({
         type: 'pgn_update',
         data: pgnData
     });
+    // console.log('broadcastt', message)
 
     wsClients.forEach(client => {
         if (client.readyState === 1) {
@@ -57,47 +63,64 @@ function broadcastPgn(pgn, line)
     });
 }
 
-// UDP message handler
-udpSocket.on("message", msg => {
+function parseMsg(msg)
+{
     const line = msg.toString().trim();
+    // parseYDRAW.parse(line, (err, pgn)=>{
+    //     console.log(line, pgn, err)
+    // });
     parserPgn.parse(line, (err, pgn) => {
+        const now = Date.now();
         if (!err && pgn) {
-
             const key = getKey(pgn);
-            const now = Date.now();
+            // if (!lastPrint.has(key)) {
+            //     //we print the pgn on the first appearance
+            //     console.log(pgn)
+            // }
 
-            // Apply rate limiting based on your existing logic
-            const last = lastPrint.get(key) || 0;
-            let factor = 1;
+            let changed = false;
+            const oldPgn = Pgns.get(key);
 
-            if (pgn.pgn === 127237 || pgn.pgn === 129283 || pgn.pgn === 129284) {
-                factor = 1;
+
+            if (pgn.src == 253) {
+                pgn.src = 1;
+                //it's actually reserved and it's virtual for actisense should be 1!
+                // console.log(line, pgn)
+
             }
-
+            if (oldPgn && hasChanged(oldPgn, pgn)) {
+                console.log('change!!! or no old', oldPgn)
+                Pgns.set(key, pgn);
+                changed = true;
+            }
+            const last = lastPrint.get(key) || 0;
             // Always send first occurrence, then apply rate limiting
-            if (!lastPrint.has(key) || (now - last >= LIMIT_MS * factor)) {
+            if (!lastPrint.has(key) || changed || (now - last >= LIMIT_MS)) {
                 lastPrint.set(key, now);
-
-                // console.log(pgn)
                 broadcastPgn(pgn, line);//one time a second max!
             }
         } else {
             try {
+                //I need to send it as it is!
                 let notDecodedPgn = JSON.parse(err.replaceAll('Could not parse', ''));
-                notDecodedPgn.error = 'bad';
-                notDecodedPgn.description = err;
-
-                const key = getKey(notDecodedPgn);
-
-                // console.log(pgn, key, typeof err, err.replaceAll('Could not parse', ''));
-
-                broadcastPgn(notDecodedPgn, line);//one time a second max!
+                notDecodedPgn.error = 'Could not parse'
+                if (notDecodedPgn.pgn && typeof notDecodedPgn.src != "undefined") {
+                    const key = getKey(notDecodedPgn);
+                    lastPrint.set(key, now);
+                    broadcastPgn(notDecodedPgn, line);//one time a second max!
+                } else {
+                    console.log("Fail to decode:", notDecodedPgn);
+                }
             } catch (error) {
-                console.error(error);
-
+                console.log(error);
             }
         }
     });
+}
+
+// UDP message handler
+udpSocket.on("message", msg => {
+    parseMsg(msg);
 });
 
 // WebSocket connection handler
@@ -120,7 +143,8 @@ app.get('/health', (req, res) => {
     res.json({
         status:  'ok',
         clients: wsClients.size,
-        udpPort: PORT
+        udpPort:
+                 PORT
     });
 });
 
