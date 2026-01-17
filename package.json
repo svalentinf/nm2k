@@ -1,0 +1,22 @@
+{
+  "private": true,
+  "scripts": {
+
+
+    "start": "node server/listener.js"
+  },
+  "dependencies": {
+    "@canboat/canboatjs": "*",
+    "cors": "^2.8.5",
+    "ws": "^8.18.3",
+    "net": "^1.0.2",
+    "vue": "^3.0.0"
+  },
+  "devDependencies": {
+    "express": "*",
+    "typescript": "*",
+    "@vitejs/plugin-vue": "*",
+    "vite": "*",
+    "vite-plugin-singlefile": "*"
+  }
+}
