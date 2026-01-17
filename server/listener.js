@@ -8,7 +8,69 @@ import net from "net";
 
 const parserPgn = new FromPgn();
 const udpSocket = dgram.createSocket("udp4");
-const PORT = 1456;
+
+//we change the ip
+// const PORT = 1456;
+const PORT = 60002;
+
+
+// Create a connection to the server
+const client = net.createConnection({port: 60002, host: '192.168.1.111'}, () => {
+    console.log('Connected to server!!!!!!');
+    client.write('Hello from TCP Client!');
+    // You might need to send a specific command to start the NMEA 2000 stream
+    // client.write('START_NMEA2000'); // or whatever command your server expects
+});
+
+// Handle incoming data (NMEA 2000 messages)
+// client.on('data', (data) => {
+//     // NMEA 2000 messages are binary, so we need to handle them as buffers
+//     console.log('Received data length:', data.length, 'bytes', data);
+//
+//     // Parse NMEA 2000 messages
+//     parseMsg(data);
+// });
+
+let messageBuffer = Buffer.alloc(0);
+client.on('data', (data) => {
+    // Accumulate data
+    messageBuffer = Buffer.concat([messageBuffer, data]);
+
+    // Process complete messages (adjust max message size as needed)
+    const MAX_MESSAGE_SIZE = 223; // Max NMEA 2000 fast packet size
+
+    while (messageBuffer.length > 0) {
+        // Check if we have at least minimum message size (example: 8 bytes)
+        if (messageBuffer.length < 8) {
+            break; // Wait for more data
+        }
+
+        // Extract message (example: first byte is length)
+        const messageLength = messageBuffer[0];
+
+        if (messageBuffer.length >= messageLength) {
+
+            const message = messageBuffer.slice(0, messageLength);
+            messageBuffer = messageBuffer.slice(messageLength);
+            console.log(message);
+            // Process the complete message
+            // parseMsg(message);
+        } else {
+            break; // Wait for more data
+        }
+    }
+});
+
+// Handle connection errors
+client.on('error', (err) => {
+    console.error('Connection error:', err);
+});
+
+// Handle connection close
+client.on('close', () => {
+    console.log('Connection closed');
+});
+
 
 //limit
 const LIMIT_MS = 5000;
