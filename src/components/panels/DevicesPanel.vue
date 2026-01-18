@@ -15,6 +15,7 @@
                         :device="device"
                         :selected="selectedDevice === device.src"
                         :pgn-filter="pgnFilter"
+                        :server-filter="serverFilter"
                         @select-device="$emit('select-device', device.src)"
                         @filter-pgn="$emit('filter-pgn', $event)"
                 />
@@ -33,6 +34,7 @@ import DeviceCard from '../cards/DeviceCard.vue'
 defineProps({
     devicesList:    Array,
     selectedDevice: [String, Number],
+    serverFilter:   [String, Number],
     pgnFilter:      String
 })
 

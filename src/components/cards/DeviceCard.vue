@@ -31,16 +31,17 @@
             <span
                     v-for="pgn in device.pgns"
                     :key="pgn"
-                    :class="{'pgn':true, 'active' : pgn==pgnFilter}"
+                    :class="{'item':true, 'active' : pgn==pgnFilter}"
                     @click.stop="$emit('filter-pgn', pgn)"
             >
                 {{ pgn }}
             </span>
         </div>
-        <div class="servers-list">
+        <div class="server-list">
             Servers:
             <span
                     v-for="server in device.servers"
+                    :class="{'item':true, 'active' : server==serverFilter}"
                     :key="server"
             >
                 {{ server }}
@@ -51,9 +52,10 @@
 
 <script setup>
 defineProps({
-    device:    Object,
-    selected:  Boolean,
-    pgnFilter: [String, Number]
+    device:       Object,
+    selected:     Boolean,
+    pgnFilter:    [String, Number],
+    serverFilter: [String, Number]
 })
 
 defineEmits(['select-device', 'filter-pgn'])

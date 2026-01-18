@@ -36,6 +36,7 @@
                     @update:autoUpdate="autoUpdate = $event"
                     @update:searchQuery="searchQuery = $event"
                     @update:pgnFilter="pgnFilter = $event"
+                    @update:serverFilter="serverFilter = $event"
                     @clear-history="clearHistory"
                     @clear-data="clearAllData"
             />
@@ -193,7 +194,7 @@ const filteredHistory = computed(() => {
 
     if (serverFilter.value) {
         filtered = filtered.filter(item =>
-            item.src.toString() === serverFilter.value.toString()
+            item.serverAddress.toString() === serverFilter.value.toString()
         )
     }
 
