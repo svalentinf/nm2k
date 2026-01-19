@@ -118,7 +118,7 @@ const themeClass = computed(() => {
 // Computed properties
 const devicesList = computed(() => {
     return Array.from(devices.value.values())
-                .sort((a, b) => a.src - b.src)
+                .sort((a, b) => a.src < b.src)
                 .map(device => ({
                     ...device,
                     firstSeen: new Date(device.firstSeen),
@@ -156,13 +156,13 @@ const filteredPgns = computed(() => {
     if (selectedDevice.value !== null) {
         filtered = filtered.filter(pgn => pgn.src.toString() === selectedDevice.value.toString())
     }
-    if (serverFilter.value !== '') {
+    if (serverFilter.value !== '' && serverFilter.value !== null) {
         filtered = filtered.filter(pgn =>
             pgn.serverAddress.toString() === serverFilter.value.toString()
         )
     }
 
-    if (pgnFilter.value !== '') {
+    if (pgnFilter.value !== '' && pgnFilter.value !== null) {
         filtered = filtered.filter(pgn =>
             pgn.pgn.toString() === pgnFilter.value.toString()
         )
@@ -209,7 +209,13 @@ const filteredHistory = computed(() => {
         filtered = filtered.filter(item =>
             (typeof item.description === 'string' && item.description.toLowerCase().includes(query)) ||
             (typeof item.serverAddress === 'string' && item.serverAddress.toLowerCase().includes(query)) ||
-            item.pgn.toString().includes(query)
+            item.pgn.toString().includes(query) ||
+            Object.keys(item.fields || {}).some(field =>
+                field.toLowerCase().includes(query)
+            ) ||
+            Object.values(item.fields || {}).some(value =>
+                String(value).toLowerCase().includes(query)
+            )
         )
     }
 
@@ -250,7 +256,7 @@ function filterPgn(value, event)
     if (event) {
         event.stopPropagation()
     }
-    pgnFilter.value = pgnFilter.value !== value ? value.toString() : ''
+    pgnFilter.value = pgnFilter.value != value ? value.toString() : ''
 }
 
 function selectServer(value, event)

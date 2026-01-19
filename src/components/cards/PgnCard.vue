@@ -33,16 +33,56 @@
         <div class="pgn-raw">
             {{ pgn.raw }}
         </div>
+
+        <div class="pgn-history">
+            <table>
+                <tbody>
+                <tr>
+                    <th>Timestamp</th>
+                    <th v-for="(field, fieldName) in pgn.fields">
+                        {{ fieldName }}
+                    </th>
+                </tr>
+                <tr v-for="pgnHistory in filteredHistory">
+                    <template v-if="pgnHistory && pgnHistory.src === pgn.src && pgnHistory.pgn === pgn.pgn">
+                        <td class="small">
+                            {{ formatTime(pgnHistory.timestamp) }}
+                            <br>
+                            {{ pgnHistory.serverAddress }}
+                        </td>
+                        <td v-for="(field, fieldName) in pgn.fields">
+                            <div v-if="typeof pgnHistory['fields'][fieldName] === 'number'">
+                                {{ pgn.fields[fieldName] - pgnHistory.fields[fieldName] }}
+                            </div>
+                            <div class="small">
+                                {{ pgnHistory['fields'][fieldName] ?? '-' }}
+                            </div>
+                        </td>
+                    </template>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
     </div>
 </template>
 
 <script setup>
+import {computed} from "vue";
+
 defineProps({
-    pgn:       Object,
-    pgnFilter: [String, Number]
+    pgn:             Object,
+    pgnFilter:       [String, Number],
+    filteredHistory: Array,
 })
 
-defineEmits(['select-device', 'filter-pgn'])
+defineEmits(['select-device', 'filter-pgn']);
+
+
+// const pgnHistory = computed(() => {
+//
+//     return filteredHistory.filter(item => item.src === pgn.src)
+// })
 
 function formatTime(timestamp)
 {

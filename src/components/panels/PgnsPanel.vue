@@ -14,6 +14,7 @@
                         :key="pgn.id"
                         :pgn="pgn"
                         :pgn-filter="pgnFilter"
+                        :filteredHistory="filteredHistory"
                         @select-device="$emit('select-device', $event)"
                         @filter-pgn="$emit('filter-pgn', $event)"
                 />
@@ -30,9 +31,10 @@
 import PgnCard from '../cards/PgnCard.vue'
 
 defineProps({
-    filteredPgns: Array,
-    panelTitle:   String,
-    pgnFilter:    String
+    filteredPgns:    Array,
+    panelTitle:      String,
+    pgnFilter:       String,
+    filteredHistory: Array,
 })
 
 defineEmits(['select-device', 'filter-pgn'])

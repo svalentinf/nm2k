@@ -8288,10 +8288,10 @@ Expected function or array of functions, received type ${typeof value}.`
   const _hoisted_8$3 = { class: "device-stat" };
   const _hoisted_9$3 = { class: "device-stat-value" };
   const _hoisted_10$2 = { class: "device-stat" };
-  const _hoisted_11$1 = { class: "device-stat-value" };
-  const _hoisted_12$1 = { class: "pgn-list" };
-  const _hoisted_13$1 = ["onClick"];
-  const _hoisted_14$1 = { class: "server-list" };
+  const _hoisted_11$2 = { class: "device-stat-value" };
+  const _hoisted_12$2 = { class: "pgn-list" };
+  const _hoisted_13$2 = ["onClick"];
+  const _hoisted_14$2 = { class: "server-list" };
   const _sfc_main$8 = {
     __name: "DeviceCard",
     props: {
@@ -8344,20 +8344,20 @@ Expected function or array of functions, received type ${typeof value}.`
             ]),
             createBaseVNode("div", _hoisted_10$2, [
               _cache[4] || (_cache[4] = createBaseVNode("div", { class: "device-stat-label" }, "Last Seen", -1)),
-              createBaseVNode("div", _hoisted_11$1, toDisplayString(formatTime(__props.device.lastSeen, true)), 1)
+              createBaseVNode("div", _hoisted_11$2, toDisplayString(formatTime(__props.device.lastSeen, true)), 1)
             ])
           ]),
-          createBaseVNode("div", _hoisted_12$1, [
+          createBaseVNode("div", _hoisted_12$2, [
             _cache[5] || (_cache[5] = createTextVNode(" PGN's: ", -1)),
             (openBlock(true), createElementBlock(Fragment, null, renderList(__props.device.pgns, (pgn) => {
               return openBlock(), createElementBlock("span", {
                 key: pgn,
                 class: normalizeClass({ "item": true, "active": pgn == __props.pgnFilter }),
                 onClick: withModifiers(($event) => _ctx.$emit("filter-pgn", pgn), ["stop"])
-              }, toDisplayString(pgn), 11, _hoisted_13$1);
+              }, toDisplayString(pgn), 11, _hoisted_13$2);
             }), 128))
           ]),
-          createBaseVNode("div", _hoisted_14$1, [
+          createBaseVNode("div", _hoisted_14$2, [
             _cache[6] || (_cache[6] = createTextVNode(" Servers: ", -1)),
             (openBlock(true), createElementBlock(Fragment, null, renderList(__props.device.servers, (server) => {
               return openBlock(), createElementBlock("span", {
@@ -8434,11 +8434,16 @@ Expected function or array of functions, received type ${typeof value}.`
   const _hoisted_8$2 = { class: "pgn-footer" };
   const _hoisted_9$2 = { style: { "color": "var(--text-light)" } };
   const _hoisted_10$1 = { class: "pgn-raw" };
+  const _hoisted_11$1 = { class: "pgn-history" };
+  const _hoisted_12$1 = { class: "small" };
+  const _hoisted_13$1 = { key: 0 };
+  const _hoisted_14$1 = { class: "small" };
   const _sfc_main$6 = {
     __name: "PgnCard",
     props: {
       pgn: Object,
-      pgnFilter: [String, Number]
+      pgnFilter: [String, Number],
+      filteredHistory: Array
     },
     emits: ["select-device", "filter-pgn"],
     setup(__props) {
@@ -8495,7 +8500,36 @@ Expected function or array of functions, received type ${typeof value}.`
             createBaseVNode("span", null, toDisplayString(formatTime(__props.pgn.timestamp)), 1),
             createBaseVNode("span", _hoisted_9$2, toDisplayString(__props.pgn.direction || "Unknown"), 1)
           ]),
-          createBaseVNode("div", _hoisted_10$1, toDisplayString(__props.pgn.raw), 1)
+          createBaseVNode("div", _hoisted_10$1, toDisplayString(__props.pgn.raw), 1),
+          createBaseVNode("div", _hoisted_11$1, [
+            createBaseVNode("table", null, [
+              createBaseVNode("tbody", null, [
+                createBaseVNode("tr", null, [
+                  _cache[3] || (_cache[3] = createBaseVNode("th", null, "Timestamp", -1)),
+                  (openBlock(true), createElementBlock(Fragment, null, renderList(__props.pgn.fields, (field, fieldName) => {
+                    return openBlock(), createElementBlock("th", null, toDisplayString(fieldName), 1);
+                  }), 256))
+                ]),
+                (openBlock(true), createElementBlock(Fragment, null, renderList(__props.filteredHistory, (pgnHistory) => {
+                  return openBlock(), createElementBlock("tr", null, [
+                    pgnHistory && pgnHistory.src === __props.pgn.src && pgnHistory.pgn === __props.pgn.pgn ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
+                      createBaseVNode("td", _hoisted_12$1, [
+                        createTextVNode(toDisplayString(formatTime(pgnHistory.timestamp)) + " ", 1),
+                        _cache[4] || (_cache[4] = createBaseVNode("br", null, null, -1)),
+                        createTextVNode(" " + toDisplayString(pgnHistory.serverAddress), 1)
+                      ]),
+                      (openBlock(true), createElementBlock(Fragment, null, renderList(__props.pgn.fields, (field, fieldName) => {
+                        return openBlock(), createElementBlock("td", null, [
+                          typeof pgnHistory["fields"][fieldName] === "number" ? (openBlock(), createElementBlock("div", _hoisted_13$1, toDisplayString(__props.pgn.fields[fieldName] - pgnHistory.fields[fieldName]), 1)) : createCommentVNode("", true),
+                          createBaseVNode("div", _hoisted_14$1, toDisplayString(pgnHistory["fields"][fieldName] ?? "-"), 1)
+                        ]);
+                      }), 256))
+                    ], 64)) : createCommentVNode("", true)
+                  ]);
+                }), 256))
+              ])
+            ])
+          ])
         ], 2);
       };
     }
@@ -8518,7 +8552,8 @@ Expected function or array of functions, received type ${typeof value}.`
     props: {
       filteredPgns: Array,
       panelTitle: String,
-      pgnFilter: String
+      pgnFilter: String,
+      filteredHistory: Array
     },
     emits: ["select-device", "filter-pgn"],
     setup(__props) {
@@ -8538,9 +8573,10 @@ Expected function or array of functions, received type ${typeof value}.`
                   key: pgn.id,
                   pgn,
                   "pgn-filter": __props.pgnFilter,
+                  filteredHistory: __props.filteredHistory,
                   onSelectDevice: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("select-device", $event)),
                   onFilterPgn: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("filter-pgn", $event))
-                }, null, 8, ["pgn", "pgn-filter"]);
+                }, null, 8, ["pgn", "pgn-filter", "filteredHistory"]);
               }), 128)),
               __props.filteredPgns.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_7$2, [..._cache[3] || (_cache[3] = [
                 createBaseVNode("i", { class: "fas fa-search" }, null, -1),
@@ -8696,9 +8732,10 @@ Expected function or array of functions, received type ${typeof value}.`
             filteredPgns: __props.filteredPgns,
             panelTitle: __props.panelTitle,
             pgnFilter: __props.pgnFilter,
+            filteredHistory: __props.filteredHistory,
             onSelectDevice: selectDevice,
             onFilterPgn: filterPgn
-          }, null, 8, ["filteredPgns", "panelTitle", "pgnFilter"]),
+          }, null, 8, ["filteredPgns", "panelTitle", "pgnFilter", "filteredHistory"]),
           createVNode(_sfc_main$3, {
             filteredHistory: __props.filteredHistory,
             onClearHistory: clearHistory
@@ -9383,7 +9420,7 @@ Expected function or array of functions, received type ${typeof value}.`
         return `theme-${config.value.theme}`;
       });
       const devicesList = computed(() => {
-        return Array.from(devices.value.values()).sort((a, b) => a.src - b.src).map((device) => ({
+        return Array.from(devices.value.values()).sort((a, b) => a.src < b.src).map((device) => ({
           ...device,
           firstSeen: new Date(device.firstSeen),
           lastSeen: new Date(device.lastSeen)
@@ -9413,12 +9450,12 @@ Expected function or array of functions, received type ${typeof value}.`
         if (selectedDevice.value !== null) {
           filtered = filtered.filter((pgn) => pgn.src.toString() === selectedDevice.value.toString());
         }
-        if (serverFilter.value !== "") {
+        if (serverFilter.value !== "" && serverFilter.value !== null) {
           filtered = filtered.filter(
             (pgn) => pgn.serverAddress.toString() === serverFilter.value.toString()
           );
         }
-        if (pgnFilter.value !== "") {
+        if (pgnFilter.value !== "" && pgnFilter.value !== null) {
           filtered = filtered.filter(
             (pgn) => pgn.pgn.toString() === pgnFilter.value.toString()
           );
@@ -9452,7 +9489,11 @@ Expected function or array of functions, received type ${typeof value}.`
         if (searchQuery.value) {
           const query = searchQuery.value.toLowerCase();
           filtered = filtered.filter(
-            (item) => typeof item.description === "string" && item.description.toLowerCase().includes(query) || typeof item.serverAddress === "string" && item.serverAddress.toLowerCase().includes(query) || item.pgn.toString().includes(query)
+            (item) => typeof item.description === "string" && item.description.toLowerCase().includes(query) || typeof item.serverAddress === "string" && item.serverAddress.toLowerCase().includes(query) || item.pgn.toString().includes(query) || Object.keys(item.fields || {}).some(
+              (field) => field.toLowerCase().includes(query)
+            ) || Object.values(item.fields || {}).some(
+              (value) => String(value).toLowerCase().includes(query)
+            )
           );
         }
         return filtered.slice(0, 50);
@@ -9483,7 +9524,7 @@ Expected function or array of functions, received type ${typeof value}.`
         if (event) {
           event.stopPropagation();
         }
-        pgnFilter.value = pgnFilter.value !== value ? value.toString() : "";
+        pgnFilter.value = pgnFilter.value != value ? value.toString() : "";
       }
       function clearHistory() {
         if (confirm("Clear all history?")) {

@@ -13,6 +13,7 @@
                 :filteredPgns="filteredPgns"
                 :panelTitle="panelTitle"
                 :pgnFilter="pgnFilter"
+                :filteredHistory="filteredHistory"
                 @select-device="selectDevice"
                 @filter-pgn="filterPgn"
         />

@@ -16,9 +16,21 @@ const servers = new Map();
 //we change the ip
 // const UDP_PORTS = 1456;
 //udp ports
-const UDP_PORTS = [60001, 60002, 10110];
+const UDP_PORTS = [
+    60001,
+    60002,
+    10110,
+    1456,
+];
 const TCP_PORTS = [
-    {'host': '192.168.4.1', 'port': '1457'},
+    // {
+    //     'host': '192.168.4.1',
+    //     'port': '1457'
+    // },
+    // {
+    //     'host': '192.168.1.111',
+    //     'port': '60002'
+    // },
 ];
 
 TCP_PORTS.forEach((tcpInfo) => {
@@ -138,6 +150,15 @@ function broadcastPgn(pgn, line, serverAddress)
     });
 }
 
+function tryParseJson(str)
+{
+    try {
+        return JSON.parse(str);
+    } catch (e) {
+        return str;
+    }
+}
+
 function parseMsg(msg, serverAddress)
 {
     const line = msg.toString().trim();
@@ -174,8 +195,8 @@ function parseMsg(msg, serverAddress)
                 }
 
                 sentanceInfo.values.forEach(data => {
-                    pgn.fields[data.path] = data.value;
-                })
+                    pgn.fields[data.path] = tryParseJson(data.value);
+                });
                 broadcastPgn(pgn, line, serverAddress);//one time a second max!
             });
         } else {
@@ -195,16 +216,21 @@ function parseMsg(msg, serverAddress)
                 broadcastPgn(pgn, line, serverAddress);//one time a second max!
             } else {
                 try {
-                    //I need to send it as it is!
-                    let notDecodedPgn = JSON.parse(err.replaceAll('Could not parse', ''));
-                    notDecodedPgn.error = 'Could not parse'
-                    if (notDecodedPgn.pgn && typeof notDecodedPgn.src != "undefined") {
-                        broadcastPgn(notDecodedPgn, line, serverAddress);//one time a second max!
-                    } else {
+                    if (typeof err === 'string') {
+                        //I need to send it as it is!
+                        let notDecodedPgn = JSON.parse(err.replaceAll('Could not parse', ''));
+                        notDecodedPgn.error = 'Could not parse'
+                        if (notDecodedPgn.pgn && typeof notDecodedPgn.src != "undefined") {
+                            broadcastPgn(notDecodedPgn, line, serverAddress);//one time a second max!
+                        } else {
+                            console.log("Fail to decode:", notDecodedPgn);
+                        }
+                    }else{
                         console.log("Fail to decode:", notDecodedPgn);
                     }
                 } catch (error) {
-                    console.log('xxxxx', error);
+                    console.log('xxxxx', err, error, typeof err);
+                    console.log('YYYYY', typeof err);
                 }
             }
         });

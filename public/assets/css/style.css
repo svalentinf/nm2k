@@ -434,6 +434,32 @@ select.search {
     overflow: auto;
 }
 
+.pgn-history {
+    overflow: scroll;
+    max-height: 200px;
+    border: 1px solid var(--border-color, #e0e0e0);
+}
+
+.small {
+    font-size: 0.7em;
+    color: var(--text-light);
+}
+
+.pgn-history table td, .pgn-history table th {
+    padding: 4px;
+    vertical-align: top;
+}
+
+.pgn-history table {
+    width: 100%;
+}
+
+.pgn-history table td {
+    border: 1px solid var(--border-color, #e0e0e0);
+    text-align: center;
+    vertical-align: top;
+}
+
 /* History Panel */
 .history-list {
     display: flex;
