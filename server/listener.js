@@ -11,8 +11,6 @@ const parser183 = new NMEA0183();
 
 const parserPgn = new FromPgn();
 
-const servers = new Map();
-
 //we change the ip
 // const UDP_PORTS = 1456;
 //udp ports
@@ -161,82 +159,81 @@ function tryParseJson(str)
 
 function parseMsg(msg, serverAddress)
 {
-    const line = msg.toString().trim();
-    // console.log('line', typeof line, line);
+    //some servers sends multiple lines in one!
+    const lines = msg.toString().trim().split("\r\n");
 
-    //@todo keep track of time between messages and server stats!
-    // let server = servers.has(serverAddress);
-    // if (!servers.has(serverAddress)){
-    //     servers.set(serverAddress, {
-    //
-    //     });
-    // }
-    // servers.set(`${tcpInfo.host}:${tcpInfo.port}`, {
-    //     'connected': new Date()
-    // });
+    lines.forEach(line => {
+        if (line.startsWith('$') || line.startsWith('!')) {
+            // const sentences = JSON.parse(JSON.stringify(parser183.parse(line)));
+            try {
+                const sentences = parser183.parse(line);
+                if (sentences) {
+                    // console.log('sentences', typeof sentences, sentences)
+                    sentences.updates.forEach(sentanceInfo => {
+                        let pgn = {
+                            prio:        2,
+                            pgn:         sentanceInfo.source.talker + ":" + sentanceInfo.source.sentence,
+                            dst:         255,
+                            src:         "NM183",
+                            time:        '000000',
+                            fields:      {},
+                            description: sentanceInfo.source.sentence,
+                            id:          sentanceInfo.source.talker + sentanceInfo.source.sentence,
+                            timestamp:   sentanceInfo.timestamp
+                        }
 
-    if (line.startsWith('$') || line.startsWith('!')) {
-        // const sentences = JSON.parse(JSON.stringify(parser183.parse(line)));
-        const sentences = parser183.parse(line);
+                        sentanceInfo.values.forEach(data => {
+                            const tmp = tryParseJson(data.value);
+                            if (typeof tmp === 'object') {
+                                pgn.fields = {...pgn.fields, ...tmp};
+                            } else {
+                                pgn.fields[data.path.slice(data.path.lastIndexOf('.') + 1)] = tmp;
+                            }
+                        });
+                        broadcastPgn(pgn, line, serverAddress);//one time a second max!
+                    });
+                } else {
 
-        if (sentences) {
-            // console.log('sentences', typeof sentences, sentences)
-            sentences.updates.forEach(sentanceInfo => {
-                let pgn = {
-                    prio:        2,
-                    pgn:         sentanceInfo.source.talker + ":" + sentanceInfo.source.sentence,
-                    dst:         255,
-                    src:         "NM183",
-                    time:        '002938.800',
-                    fields:      {},
-                    description: sentanceInfo.source.sentence,
-                    id:          sentanceInfo.source.talker + sentanceInfo.source.sentence,
-                    timestamp:   sentanceInfo.timestamp
                 }
-
-                sentanceInfo.values.forEach(data => {
-                    pgn.fields[data.path] = tryParseJson(data.value);
-                });
-                broadcastPgn(pgn, line, serverAddress);//one time a second max!
-            });
+            } catch (e) {
+                console.error(e);
+            }
+            return;
         } else {
 
-
         }
-        return;
-    } else {
-
-    }
-    // parseYDRAW.parse(line, (err, pgn)=>{
-    //     console.log(line, pgn, err)
-    // });
-    try {
-        parserPgn.parse(line, (err, pgn) => {
-            if (!err && pgn) {
-                broadcastPgn(pgn, line, serverAddress);//one time a second max!
-            } else {
-                try {
-                    if (typeof err === 'string') {
-                        //I need to send it as it is!
-                        let notDecodedPgn = JSON.parse(err.replaceAll('Could not parse', ''));
-                        notDecodedPgn.error = 'Could not parse'
-                        if (notDecodedPgn.pgn && typeof notDecodedPgn.src != "undefined") {
-                            broadcastPgn(notDecodedPgn, line, serverAddress);//one time a second max!
+        // parseYDRAW.parse(line, (err, pgn)=>{
+        //     console.log(line, pgn, err)
+        // });
+        try {
+            parserPgn.parse(line, (err, pgn) => {
+                if (!err && pgn) {
+                    broadcastPgn(pgn, line, serverAddress);//one time a second max!
+                } else {
+                    try {
+                        if (typeof err === 'string') {
+                            //I need to send it as it is!
+                            let notDecodedPgn = JSON.parse(err.replaceAll('Could not parse', ''));
+                            notDecodedPgn.error = 'Could not parse'
+                            if (notDecodedPgn.pgn && typeof notDecodedPgn.src != "undefined") {
+                                broadcastPgn(notDecodedPgn, line, serverAddress);//one time a second max!
+                            } else {
+                                console.log("Fail to decode:", notDecodedPgn);
+                            }
                         } else {
                             console.log("Fail to decode:", notDecodedPgn);
                         }
-                    }else{
-                        console.log("Fail to decode:", notDecodedPgn);
+                    } catch (error) {
+                        console.log('xxxxx', err, error, typeof err);
+                        console.log('YYYYY', typeof err);
                     }
-                } catch (error) {
-                    console.log('xxxxx', err, error, typeof err);
-                    console.log('YYYYY', typeof err);
                 }
-            }
-        });
-    } catch (e) {
-        console.log(e);
-    }
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    })
+
 }
 
 // WebSocket connection handler
@@ -245,7 +242,7 @@ wss.on('connection', (ws) => {
     wsClients.add(ws);
 
     ws.on('close', () => {
-        console.log('Client disconnected');
+        console.log('WebSocket client disconnected');
         wsClients.delete(ws);
     });
 
