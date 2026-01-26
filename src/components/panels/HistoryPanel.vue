@@ -1,7 +1,7 @@
 <template>
     <div class="panel">
         <div class="panel-header">
-            <h3 class="panel-title">
+            <h3 class="panelTitle">
                 <i class="fas fa-history"></i>
                 Recent History
             </h3>

@@ -2,7 +2,7 @@
     <div
             class="device-card"
             :class="{ active: selected }"
-            @click="$emit('select-device', device.src)"
+            @click="$emit('selectDevice', device.src)"
     >
         <div class="device-name">
             <span>{{ device.name }}</span>
@@ -32,7 +32,7 @@
                     v-for="pgn in device.pgns"
                     :key="pgn"
                     :class="{'item':true, 'active' : pgn==pgnFilter}"
-                    @click.stop="$emit('filter-pgn', pgn)"
+                    @click.stop="$emit('filterPgn', pgn)"
             >
                 {{ pgn }}
             </span>
@@ -58,7 +58,7 @@ defineProps({
     serverFilter: [String, Number]
 })
 
-defineEmits(['select-device', 'filter-pgn'])
+defineEmits(['selectDevice', 'filterPgn'])
 
 function formatTime(timestamp, short = false)
 {

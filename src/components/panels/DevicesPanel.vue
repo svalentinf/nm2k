@@ -1,23 +1,23 @@
 <template>
     <div class="panel">
         <div class="panel-header">
-            <h3 class="panel-title">
+            <h3 class="panelTitle">
                 <i class="fas fa-microchip"></i>
                 Connected Devices
             </h3>
             <span class="stat-number" style="font-size: 1.5rem;">{{ devicesList.length }}</span>
         </div>
         <div class="panel-content">
-            <div class="devices-list">
+            <div class="devicesList">
                 <DeviceCard
                         v-for="device in devicesList"
                         :key="device.src"
                         :device="device"
                         :selected="selectedDevice === device.src"
-                        :pgn-filter="pgnFilter"
-                        :server-filter="serverFilter"
-                        @select-device="$emit('select-device', device.src)"
-                        @filter-pgn="$emit('filter-pgn', $event)"
+                        :pgnFilter="pgnFilter"
+                        :serverFilter="serverFilter"
+                        @selectDevice="$emit('selectDevice', device.src)"
+                        @filterPgn="$emit('filterPgn', $event)"
                 />
                 <div v-if="devicesList.length === 0" class="empty-state">
                     <i class="fas fa-plug"></i>
@@ -38,5 +38,5 @@ defineProps({
     pgnFilter:      String
 })
 
-defineEmits(['select-device', 'filter-pgn'])
+defineEmits(['selectDevice', 'filterPgn'])
 </script>

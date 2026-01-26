@@ -28,9 +28,9 @@
             <Controls
                     :auto-update="autoUpdate"
                     :search-query="searchQuery"
-                    :server-filter="serverFilter"
-                    :pgn-filter="pgnFilter"
-                    :devices-list="devicesList"
+                    :serverFilter="serverFilter"
+                    :pgnFilter="pgnFilter"
+                    :devicesList="devicesList"
                     :servers-list="serversList"
                     :unique-pgns="uniquePgns"
                     @update:autoUpdate="autoUpdate = $event"
@@ -40,19 +40,37 @@
                     @clear-history="clearHistory"
                     @clear-data="clearAllData"
             />
-
             <Dashboard
-                    :devices-list="devicesList"
-                    :filtered-pgns="filteredPgns"
-                    :filtered-history="filteredHistory"
-                    :selected-device="selectedDevice"
-                    :server-filter="serverFilter"
-                    :pgn-filter="pgnFilter"
-                    :panel-title="panelTitle"
-                    @select-device="selectDevice"
-                    @filter-pgn="filterPgn"
+                    :devicesList="devicesList"
+                    :filteredPGNs="filteredPGNs"
+                    :filteredHistory="filteredHistory"
+                    :selectedDevice="selectedDevice"
+                    :serverFilter="serverFilter"
+                    :pgnFilter="pgnFilter"
+                    :blockedPGNs="blockedPGNs"
+                    :panelTitle="panelTitle"
+                    @selectDevice="selectDevice"
+                    @filterPgn="filterPgn"
+                    @blockPgn="blockPgn"
                     @clear-history="clearHistory"
             />
+
+            <GpsTracker
+                    ref="tracker"
+                    :pgn="lastPgn"
+                    :autoStart="true"
+                    :width="2000"
+                    :height="1200"
+                    :line-color="'#3F51B5'"
+                    :point-color="'#FF9800'"
+                    @point-added=""
+            />
+
+            <PGNFilter
+                    :selectedDevice="selectedDevice"
+                    :filteredPGNs="filteredPGNs"
+                    :blockedPGNs="blockedPGNs"
+            ></PGNFilter>
 
             <!-- Config Button (Floating) -->
             <button class="config-button" @click="isConfigModalVisible = true">
@@ -79,6 +97,8 @@ import Dashboard from './components/Dashboard.vue'
 import ConfigModal from './components/ConfigModal.vue'
 import {useConfigStore} from './composables/useConfigStore'
 import {useNmeaWebSocket} from './composables/useNmeaWebSocket'
+import PGNFilter from "@/components/PGNFilter.vue";
+import GpsTracker from "@/components/GPSTracker.vue";
 
 // Config store
 const {config} = useConfigStore()
@@ -90,6 +110,7 @@ const serverFilter = ref('')
 const pgnFilter = ref('')
 const autoUpdate = ref(true)
 const isConfigModalVisible = ref(false)
+const blockedPGNs = ref(new Set)
 
 // Use WebSocket composable with config
 const {
@@ -99,6 +120,7 @@ const {
           devices,
           servers,
           pgns,
+          lastPgn,
           history,
           connectionStatus,
           connectWebSocket,
@@ -149,7 +171,8 @@ const allPgns = computed(() => {
     return all
 })
 
-const filteredPgns = computed(() => {
+
+const filteredPGNs = computed(() => {
     let filtered = allPgns.value
 
     // Apply filters
@@ -257,6 +280,31 @@ function filterPgn(value, event)
         event.stopPropagation()
     }
     pgnFilter.value = pgnFilter.value != value ? value.toString() : ''
+}
+
+function blockPgn(pgn, event)
+{
+    if (event) {
+        event.stopPropagation()
+    }
+
+    if (typeof pgn === 'string') {
+        if (pgn.startsWith('0x') || pgn.startsWith('0X')) {
+            pgn = parseInt(pgn, 16);
+        } else {
+            pgn = parseInt(pgn, 10);
+        }
+    }
+
+    pgn = `0x${pgn.toString(16).padStart(7, '0').toUpperCase()}`;
+
+    //we convert it to src!
+
+    if (blockedPGNs.value.has(pgn)) {
+        blockedPGNs.value.delete(pgn);
+    } else {
+        blockedPGNs.value.add(pgn)
+    }
 }
 
 function selectServer(value, event)

@@ -5,22 +5,24 @@
                 :selectedDevice="selectedDevice"
                 :pgnFilter="pgnFilter"
                 :serverFilter="serverFilter"
-                @select-device="selectDevice"
-                @filter-pgn="filterPgn"
+                @selectDevice="$emit('selectDevice', $event)"
+                @filterPgn="$emit('filterPgn', $event)"
         />
 
         <PgnsPanel
-                :filteredPgns="filteredPgns"
+                :filteredPGNs="filteredPGNs"
                 :panelTitle="panelTitle"
                 :pgnFilter="pgnFilter"
+                :blockedPGNs="blockedPGNs"
                 :filteredHistory="filteredHistory"
-                @select-device="selectDevice"
-                @filter-pgn="filterPgn"
+                @selectDevice="$emit('selectDevice', $event)"
+                @filterPgn="$emit('filterPgn', $event)"
+                @blockPgn="$emit('blockPgn', $event)"
         />
 
         <HistoryPanel
                 :filteredHistory="filteredHistory"
-                @clear-history="clearHistory"
+                @clearHistory="clearHistory"
         />
     </div>
 </template>
@@ -32,7 +34,8 @@ import HistoryPanel from './panels/HistoryPanel.vue'
 
 defineProps({
     devicesList:     Array,
-    filteredPgns:    Array,
+    filteredPGNs:    Array,
+    blockedPGNs:     Set,
     filteredHistory: Array,
     selectedDevice:  [String, Number],
     serverFilter:    String,
@@ -40,20 +43,10 @@ defineProps({
     panelTitle:      String
 })
 
-const emit = defineEmits(['select-device', 'filter-pgn', 'clear-history'])
-
-function selectDevice(src)
-{
-    emit('select-device', src)
-}
-
-function filterPgn(pgn, event)
-{
-    emit('filter-pgn', pgn, event)
-}
+const emit = defineEmits(['selectDevice', 'filterPgn', 'blockPgn', 'clearHistory'])
 
 function clearHistory()
 {
-    emit('clear-history')
+    emit('clearHistory')
 }
 </script>

@@ -12,6 +12,7 @@ export function useNmeaWebSocket(autoUpdate, config)
     const pgns = ref(new Map())
     const history = ref([])
     const servers = ref(new Set())
+    let lastPgn = ref({})
 
     const connectionStatus = computed(() => {
         if (connectionError.value) return 'Error'
@@ -251,6 +252,8 @@ export function useNmeaWebSocket(autoUpdate, config)
         }
         if (!device.servers.has(pgnData.serverAddress)) {
             device.servers.add(pgnData.serverAddress)
+        } else {
+            //@todo we need to track the servers pgn's
         }
     }
 
@@ -264,6 +267,9 @@ export function useNmeaWebSocket(autoUpdate, config)
 
         const devicePgns = pgns.value.get(src)
         const existingPgn = devicePgns.get(pgnId)
+
+        // console.log(src, pgns);
+        // console.log(devicePgns);
 
         // Find changed fields
         const updatedFields = []
@@ -311,12 +317,13 @@ export function useNmeaWebSocket(autoUpdate, config)
     {
         if (!servers.value.has(pgnData.serverAddress)) {
             servers.value.add(pgnData.serverAddress, pgnData.serverAddress);
-            console.log('serversservers', servers, pgnData, pgnData.serverAddress);
         }
     }
 
     function processPgnUpdate(pgnData)
     {
+
+        lastPgn.value = pgnData;
 
         // 1. Update device
         updateDeviceData(pgnData)
@@ -329,6 +336,8 @@ export function useNmeaWebSocket(autoUpdate, config)
 
         //4. update servers source
         updateServers(pgnData)
+
+
     }
 
     function clearAllData()
@@ -346,6 +355,7 @@ export function useNmeaWebSocket(autoUpdate, config)
         devices,
         servers,
         pgns,
+        lastPgn,
         history,
         processPgnUpdate,
         connectionStatus,
