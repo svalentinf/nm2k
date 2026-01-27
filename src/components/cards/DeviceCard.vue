@@ -29,7 +29,7 @@
         <div class="pgn-list">
             PGN's:
             <span
-                    v-for="pgn in device.pgns"
+                    v-for="[pgn, pgnInfo] in device.pgns"
                     :key="pgn"
                     :class="{'item':true, 'active' : pgn==pgnFilter}"
                     @click.stop="$emit('filterPgn', pgn)"

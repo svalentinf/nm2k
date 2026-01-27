@@ -8,11 +8,10 @@ export function useNmeaWebSocket(autoUpdate, config)
     const isConnecting = ref(false)
 
     // Data stores
-    const devices = ref(new Map())
-    const pgns = ref(new Map())
-    const history = ref([])
+    const devicesPGNs = ref(new Map())
     const servers = ref(new Set())
     let lastPgn = ref({})
+    const maxHistory = 100;
 
     const connectionStatus = computed(() => {
         if (connectionError.value) return 'Error'
@@ -129,63 +128,12 @@ export function useNmeaWebSocket(autoUpdate, config)
             }
     })
 
-    // Rest of the functions remain the same...
-    function getSensorType(pgn)
-    {
-        const sensorMap = {
-            127237: 'Heading/Track Control',
-            127250: 'Vessel Heading',
-            127251: 'Rate of Turn',
-            127257: 'Attitude',
-            127488: 'Engine Parameters Rapid',
-            127489: 'Engine Parameters Dynamic',
-            127493: 'Transmission Parameters',
-            127497: 'Trip Fuel Consumption',
-            127498: 'Engine Parameters Static',
-            127501: 'Binary Status',
-            127505: 'Fluid Level',
-            127506: 'DC Detailed Status',
-            127507: 'Charger Status',
-            127508: 'Battery Status',
-            127509: 'Inverter Status',
-            128275: 'Distance Log',
-            128259: 'Speed',
-            128267: 'Water Depth',
-            129025: 'Position Rapid Update',
-            129026: 'COG & SOG Rapid Update',
-            129027: 'Position Delta High Precision',
-            129028: 'Altitude Delta High Precision',
-            129029: 'GNSS Position Data',
-            129033: 'Time & Date',
-            129038: 'AIS Class A Position Report',
-            129039: 'AIS Class B Position Report',
-            129040: 'AIS Class B Extended Position Report',
-            129041: 'AIS Aids to Navigation (AtoN) Report',
-            129283: 'Cross Track Error',
-            129284: 'Navigation Data'
-        }
-        return sensorMap[pgn] || 'Unknown Sensor'
-    }
-
     function updateDeviceData(pgnData)
     {
         const now = Date.now()
         const src = pgnData.src
 
-
-        if (!devices.value.has(src)) {
-            devices.value.set(src, {
-                src,
-                firstSeen: now,
-                lastSeen:  now,
-                pgnCount:  0,
-                updates:   1,
-                pgns:      new Set(),
-                servers:   new Set()
-            })
-        }
-
-        const device = devices.value.get(src)
+        const device = devicesPGNs.value.get(src)
         device.lastSeen = now
         device.updates++
 
@@ -229,27 +177,12 @@ export function useNmeaWebSocket(autoUpdate, config)
                     device.manufacturerInformation = pgnData.fields.manufacturerInformation
                 }
                 break
-
-            case 127237: // Heading/Track Control
-            case 127250: // Vessel Heading
-            case 127251: // Rate of Turn
-            case 127257: // Attitude
-                if (pgnData.fields) {
-                    device.sensorType = getSensorType(pgnData.pgn)
-                    device.measurements = device.measurements || new Map()
-                    device.measurements.set(pgnData.description, {
-                        pgn:         pgnData.pgn,
-                        description: pgnData.description,
-                        timestamp:   new Date().toISOString()
-                    })
-                }
-                break
         }
 
-        if (!device.pgns.has(pgnData.pgn)) {
-            device.pgnCount++
-            device.pgns.add(pgnData.pgn)
-        }
+        // if (!device.pgns.has(pgnData.pgn)) {
+        //     device.pgnCount++
+        //     device.pgns.add(pgnData.pgn)
+        // }
         if (!device.servers.has(pgnData.serverAddress)) {
             device.servers.add(pgnData.serverAddress)
         } else {
@@ -261,56 +194,61 @@ export function useNmeaWebSocket(autoUpdate, config)
     {
         const src = newData.src;
         const pgnId = newData.pgn;
-        if (!pgns.value.has(src)) {
-            pgns.value.set(src, new Map())
-        }
-
-        const devicePgns = pgns.value.get(src)
-        const existingPgn = devicePgns.get(pgnId)
-
-        // console.log(src, pgns);
-        // console.log(devicePgns);
-
-        // Find changed fields
-        const updatedFields = []
-        if (existingPgn && newData.fields) {
-            Object.keys(newData.fields).forEach(field => {
-                if (existingPgn.fields &&
-                    JSON.stringify(existingPgn.fields[field]) !== JSON.stringify(newData.fields[field])) {
-                    updatedFields.push(field)
-                }
+        if (!devicesPGNs.value.has(src)) {
+            //we add the device!
+            const now = new Date();
+            devicesPGNs.value.set(src, {
+                src,
+                firstSeen: now,
+                lastSeen:  now,
+                pgnCount:  0,
+                updates:   1,
+                pgns:      new Map(),
+                servers:   new Set(),
             })
         }
 
+        const device = devicesPGNs.value.get(src)
+        const existingPgn = device.pgns.get(pgnId)
+
+        // Find changed fields
+        const updatedFields = []
+
+
+        if (existingPgn) {
+            if (newData.fields) {
+                Object.keys(newData.fields).forEach(field => {
+                    if (existingPgn.fields && JSON.stringify(existingPgn.fields[field]) !== JSON.stringify(newData.fields[field])) {
+                        updatedFields.push(field)
+                        existingPgn.fields[field] = newData.fields[field];
+                    }
+                })
+                existingPgn.updatedFields = updatedFields;
+            }
+            //
+            existingPgn.history.unshift({
+                historyId: `hist_${Date.now()}_${Math.random()}`,
+                ...newData,
+            })
+            if (existingPgn.history.length > maxHistory) {
+                existingPgn.history.length = maxHistory
+            }
+        } else {
+            newData.isNew = true;
+            newData.history = [];
+            device.pgns.set(pgnId, newData);
+        }
+
         // Mark as new for animation
-        newData.isNew = true
-        newData.updatedFields = updatedFields
-
         // Update the PGN
-        devicePgns.set(pgnId, newData)
-
         // Clear animation after delay
         setTimeout(() => {
-            const currentPgn = pgns.value.get(src)?.get(pgnId)
+            const currentPgn = devicesPGNs.value.get(src)?.pgns.get(pgnId)
             if (currentPgn) {
                 currentPgn.isNew = false
                 currentPgn.updatedFields = []
             }
         }, 1000)
-    }
-
-    function addToHistory(pgnData)
-    {
-        history.value.unshift({
-            ...pgnData,
-            historyId: `hist_${Date.now()}_${Math.random()}`
-        })
-
-        // Limit history size based on config
-        const maxHistory = config.value.maxHistory || 5000
-        if (history.value.length > maxHistory) {
-            history.value.length = maxHistory
-        }
     }
 
     function updateServers(pgnData)
@@ -325,26 +263,19 @@ export function useNmeaWebSocket(autoUpdate, config)
 
         lastPgn.value = pgnData;
 
-        // 1. Update device
-        updateDeviceData(pgnData)
-
-        // 2. Update PGN data
+        // 1. Update PGN data
         updatePgnData(pgnData)
 
-        // 3. Add to history
-        addToHistory(pgnData)
+        // 2. Update device -> get the name and info...
+        updateDeviceData(pgnData)
 
         //4. update servers source
         updateServers(pgnData)
-
-
     }
 
     function clearAllData()
     {
-        devices.value.clear()
-        pgns.value.clear()
-        history.value = []
+        devicesPGNs.value.clear()
     }
 
     return {
@@ -352,11 +283,9 @@ export function useNmeaWebSocket(autoUpdate, config)
         isConnected,
         isConnecting,
         connectionError,
-        devices,
         servers,
-        pgns,
+        devicesPGNs,
         lastPgn,
-        history,
         processPgnUpdate,
         connectionStatus,
         connectWebSocket,

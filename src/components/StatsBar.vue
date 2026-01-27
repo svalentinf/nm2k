@@ -12,10 +12,6 @@
       <div class="stat-number">{{ totalUpdates }}</div>
       <div class="stat-label">Total Updates</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-number">{{ historyLength }}</div>
-      <div class="stat-label">History Entries</div>
-    </div>
   </div>
 </template>
 

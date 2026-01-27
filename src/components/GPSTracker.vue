@@ -1,46 +1,44 @@
 <template>
-    <div class="gps-tracker ">
+    <div class="gps-tracker">
         <div class="panel">
-
             <!-- Control Panel -->
             <div class="panel-header">
                 <div class="left-controls">
                     <button
                             @click="toggleTracking"
-                            :class="['track-btn', { active: isTracking, paused: isPaused }]"
+                            :class="['track-btn', { active: isTracking, paused: !autoUpdate }]"
                             :title="isTracking ? 'Stop tracking' : 'Start tracking'"
                     >
-                        <span v-if="isTracking && !isPaused">●</span>
-                        <span v-else-if="isPaused">❚❚</span>
+                        <span v-if="isTracking && autoUpdate">●</span>
+                        <span v-else-if="!autoUpdate">❚❚</span>
                         <span v-else>▶</span>
-                        {{ isTracking ? (isPaused ? 'Paused' : 'Tracking') : 'Start Track' }}
+                        {{ isTracking ? (!autoUpdate ? 'Paused' : 'Tracking') : 'Start Track' }}
                     </button>
-
-                    <button
-                            @click="togglePause"
-                            :disabled="!isTracking"
-                            class="pause-btn"
-                    >
-                        {{ isPaused ? 'Resume' : 'Pause' }}
+                    <button class="btn" @click="$emit('update:autoUpdate', !autoUpdate)">
+                        <i :class="autoUpdate ? 'fas fa-pause' : 'fas fa-play'"></i>
+                        {{ autoUpdate ? 'Pause Updates' : 'Resume Updates' }}
                     </button>
-
                     <button
-                            @click="clearTrack"
+                            @click="clearTrack(tracked)"
                             :disabled="!hasTrack"
                             class="clear-btn"
                     >
-                        Clear
+                        Clear This Track
                     </button>
-
-                    {{ tracked }}
 
                     <button
-                            @click="$emit('trackPgn', tracked)"
-                            :class="['track-btn', { active: isTracking, paused: isPaused }]"
-                            :title="isTracking ? 'Stop tracking' : 'Start tracking'"
+                            @click="clearAllTracks"
+                            :disabled="tracks.size === 0"
+                            class="clear-btn"
                     >
-                        Remove
+                        Clear All Tracks
                     </button>
+                    <select v-model="activeTrackId" class="track-select">
+                        <option value="">Select Track</option>
+                        <option v-for="[trackId, trackData] in tracks" :key="trackId" :value="trackId">
+                            {{ trackId }} ({{ trackData.points.length }} points)
+                        </option>
+                    </select>
                 </div>
 
                 <div class="center-controls">
@@ -59,6 +57,11 @@
                         <input type="checkbox" v-model="showGrid">
                         <span>Grid</span>
                     </label>
+
+                    <label class="toggle">
+                        <input type="checkbox" v-model="showAllTracks">
+                        <span>Show All Tracks</span>
+                    </label>
                 </div>
 
                 <div class="right-controls">
@@ -67,9 +70,10 @@
                     </div>
 
                     <div class="track-info">
-                        <span>Points: {{ track.length }}</span>
-                        <span v-if="totalDistance > 0">{{ totalDistance.toFixed(2) }} km</span>
-                        <span v-if="track.length > 0">{{ duration }}</span>
+                        <span v-if="activeTrack">Points: {{ activeTrack.points.length }}</span>
+                        <span v-if="activeTrack && totalDistance > 0">{{ totalDistance.toFixed(2) }} km</span>
+                        <span v-if="activeTrack && activeTrack.points.length > 0">{{ duration }}</span>
+                        <span>Tracks: {{ tracks.size }}</span>
                     </div>
                 </div>
             </div>
@@ -90,21 +94,21 @@
                 ></canvas>
 
                 <!-- No Data Overlay -->
-                <div v-if="!hasTrack" class="no-data-overlay">
+                <div v-if="!hasTrack && tracks.size === 0" class="no-data-overlay">
                     <div class="no-data-content">
                         <div class="icon">📍</div>
                         <h3>No Track Data</h3>
                         <p v-if="!isTracking">Click "Start Track" to begin recording</p>
                         <p v-else>Waiting for GPS data...</p>
-                        <button @click="simulateTrack" class="demo-btn">
-                            Try Demo Track
+                        <button @click="simulateMultipleTracks" class="demo-btn">
+                            Try Demo Tracks
                         </button>
                     </div>
                 </div>
 
                 <!-- Current Position Marker -->
                 <div
-                        v-if="currentPosition && isTracking && !isPaused"
+                        v-if="currentPosition && isTracking && !autoUpdate"
                         class="current-marker"
                         :style="currentMarkerStyle"
                 >
@@ -127,27 +131,33 @@
             <!-- Track Info Panel -->
             <div class="info-panel">
                 <div class="info-section">
-                    <h4>Current Position</h4>
-                    <div v-if="currentPosition" class="position-info">
+                    <h4>Current Track</h4>
+                    <div v-if="activeTrack" class="position-info">
                         <div class="coord">
-                            <span class="label">Lat:</span>
-                            <span class="value">{{ currentPosition.latitude.toFixed(7) }}</span>
+                            <span class="label">Track ID:</span>
+                            <span class="value">{{ activeTrackId }}</span>
+                        </div>
+
+                        <div class="coord">
+                            <span class="label">Color:</span>
+                            <input
+                                    type="color"
+                                    v-model="activeTrack.color"
+                                    @change="updateTrackColor"
+                                    class="color-picker"
+                            />
                         </div>
                         <div class="coord">
-                            <span class="label">Lon:</span>
-                            <span class="value">{{ currentPosition.longitude.toFixed(7) }}</span>
+                            <span class="label">Points:</span>
+                            <span class="value">{{ activeTrack.points.length }}</span>
                         </div>
-                        <div class="coord" v-if="currentPosition.timestamp">
-                            <span class="label">Time:</span>
+                        <div class="coord" v-if="currentPosition">
+                            <span class="label">Last Position:</span>
                             <span class="value">{{ formatTime(currentPosition.timestamp) }}</span>
-                        </div>
-                        <div class="coord" v-if="currentSpeed > 0">
-                            <span class="label">Speed:</span>
-                            <span class="value">{{ currentSpeed.toFixed(1) }} km/h</span>
                         </div>
                     </div>
                     <div v-else class="no-position">
-                        No position data
+                        No track selected
                     </div>
                 </div>
 
@@ -155,7 +165,7 @@
                     <h4>Track Statistics</h4>
                     <div class="stats-grid">
                         <div class="stat">
-                            <div class="stat-value">{{ track.length }}</div>
+                            <div class="stat-value">{{ activeTrack ? activeTrack.points.length : 0 }}</div>
                             <div class="stat-label">Points</div>
                         </div>
                         <div class="stat">
@@ -176,10 +186,43 @@
                 <div class="info-section">
                     <h4>Export</h4>
                     <div class="export-buttons">
-                        <button @click="exportGeoJSON" title="Export as GeoJSON">GeoJSON</button>
-                        <button @click="exportGPX" title="Export as GPX">GPX</button>
-                        <button @click="exportCSV" title="Export as CSV">CSV</button>
-                        <button @click="copyTrack" title="Copy to clipboard">📋</button>
+                        <button @click="exportActiveTrack" title="Export active track">Export Active</button>
+                        <button @click="exportAllTracks" title="Export all tracks">Export All</button>
+                        <button @click="copyActiveTrack" title="Copy to clipboard">📋</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tracks List Panel -->
+            <div class="tracks-list-panel" v-if="tracks.size > 0">
+                <h4>All Tracks ({{ tracks.size }})</h4>
+                <div class="tracks-container">
+                    <div
+                            v-for="[trackId, trackData] in tracks"
+                            :key="trackId"
+                            :class="['track-item', { 'active': trackId === activeTrackId }]"
+                            @click="setActiveTrack(trackId)"
+                    >
+                        <div class="track-color" :style="{ backgroundColor: trackData.color }"></div>
+                        <div class="track-info">
+                            <div class="track-name">{{ trackId }}</div>
+                            <div class="track-details">
+                                <span>{{ trackData.points.length }} points</span>
+                                <span>{{ calculateTrackDistance(trackData).toFixed(2) }} km</span>
+                                <span v-if="trackData.points.length > 0">
+                                    {{ formatTime(trackData.points[trackData.points.length - 1].timestamp) }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="track-actions">
+                            <button
+                                    @click.stop="removeTrack(trackId)"
+                                    class="remove-btn"
+                                    title="Remove track"
+                            >
+                                ×
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -192,7 +235,8 @@ export default {
     name: 'GpsTracker',
 
     props: {
-        tracked: String,
+        autoUpdate:   Boolean,
+        trackingPGNs: Set,
         // Single point to add (reactive)
         pgn: {
             type:    Object, // {fields :{ latitude, longitude, timestamp?, speed? }}
@@ -219,26 +263,6 @@ export default {
         height: {
             type:    Number,
             default: 600
-        },
-
-        // Track style
-        trackColor: {
-            type:    String,
-            default: '#2196F3'
-        },
-        trackWidth: {
-            type:    Number,
-            default: 3
-        },
-
-        // Point style
-        pointColor:        {
-            type:    String,
-            default: '#FF5722'
-        },
-        currentPointColor: {
-            type:    String,
-            default: '#F44336'
         }
     },
 
@@ -246,9 +270,9 @@ export default {
     {
         return {
             // Track data
-            track:            [],
+            tracks:           new Map(), // Map<trackId, { name, color, points[], isActive }>
+            activeTrackId:    null,
             isTracking:       false,
-            isPaused:         false,
             startTime:        null,
             currentPosition:  null,
             previousPosition: null,
@@ -267,8 +291,9 @@ export default {
             lastPanY:     0,
 
             // Settings
-            autoCenter: true,
-            showGrid:   true,
+            autoCenter:    true,
+            showGrid:      true,
+            showAllTracks: true,
 
             // Mouse position
             mousePosition: null,
@@ -283,27 +308,49 @@ export default {
 
             // Animation
             animationFrame: null,
-            needsRedraw:    true
+            needsRedraw:    true,
+
+            // Color palette for tracks
+            colorPalette: [
+                '#2196F3', // Blue
+                '#4CAF50', // Green
+                '#FF9800', // Orange
+                '#9C27B0', // Purple
+                '#F44336', // Red
+                '#00BCD4', // Cyan
+                '#FFEB3B', // Yellow
+                '#795548', // Brown
+                '#607D8B', // Blue Grey
+                '#E91E63'  // Pink
+            ]
         };
     },
 
     computed: {
+        activeTrack()
+        {
+            if (!this.activeTrackId || !this.tracks.has(this.activeTrackId)) {
+                return null;
+            }
+            return this.tracks.get(this.activeTrackId);
+        },
+
         hasTrack()
         {
-            return this.track.length > 0;
+            return this.activeTrack && this.activeTrack.points.length > 0;
         },
 
         statusClass()
         {
             if (!this.isTracking) return 'status-stopped';
-            if (this.isPaused) return 'status-paused';
+            if (!this.autoUpdate) return 'status-paused';
             return 'status-tracking';
         },
 
         statusText()
         {
             if (!this.isTracking) return 'Stopped';
-            if (this.isPaused) return 'Paused';
+            if (!this.autoUpdate) return 'Paused';
             return 'Tracking';
         },
 
@@ -316,9 +363,9 @@ export default {
         {
             const scaleMeters = 100 / this.zoom; // Scale for 100 pixels
             if (scaleMeters >= 1000) {
-                return `${(scaleMeters / 1000).toFixed(1)} km`;
+                return `${(scaleMeters / 1000).toFixed(2)} km`;
             }
-            return `${Math.round(scaleMeters)} m`;
+            return `${scaleMeters.toFixed(2)} m`;
         },
 
         currentMarkerStyle()
@@ -336,10 +383,12 @@ export default {
 
         duration()
         {
-            if (!this.startTime || this.track.length < 2) return '00:00';
+            if (!this.activeTrack || this.activeTrack.points.length < 2) return '00:00';
 
-            const start = this.track[0].timestamp || this.startTime;
-            const end = this.track[this.track.length - 1].timestamp || Date.now();
+            const firstPoint = this.activeTrack.points[0];
+            const lastPoint = this.activeTrack.points[this.activeTrack.points.length - 1];
+            const start = firstPoint.timestamp || this.startTime;
+            const end = lastPoint.timestamp || Date.now();
             const diff = end - start;
 
             const hours = Math.floor(diff / 3600000);
@@ -356,25 +405,46 @@ export default {
         pgn(newPgn)
         {
             try {
-                if (`${newPgn.src}:${newPgn.pgn}` != this.tracked) {
+                if (!newPgn || !newPgn.fields
+                    || typeof newPgn.fields.latitude === 'undefined' || typeof newPgn.fields.longitude === 'undefined'
+                    || !newPgn.fields.latitude || !newPgn.fields.longitude) {
+
                     return;
                 }
-                console.log(this.tracked, `${newPgn.src}:${newPgn.pgn}`)
 
-                if (newPgn && this.isTracking && !this.isPaused) {
-                    //@todo only if is different then previous one ??
-                    if (typeof newPgn.fields !== 'undefined' && newPgn.fields.latitude !== 'undefined' && newPgn.fields.longitude !== 'undefined' && newPgn.fields.latitude && newPgn.fields.longitude) {
-                        this.addPoint({
+                if (!this.isTracking || !this.autoUpdate) {
+                    return;
+                }
+
+                // trackingPGNs
+                this.trackingPGNs.forEach((tracked) => {
+                    if (`${newPgn.src}:${newPgn.pgn}` !== tracked) {
+                        return;
+                    }
+                    const trackId = tracked || 'default';
+
+                    // Create track if it doesn't exist
+                    if (!this.tracks.has(trackId)) {
+                        this.createTrack(trackId);
+                    }
+
+                    // Set as active if not already
+                    if (!this.activeTrackId) {
+                        this.activeTrackId = trackId;
+                    }
+                    if (this.isTracking) {
+                        this.addPointToTrack(trackId, {
                             latitude:  newPgn.fields.latitude,
                             longitude: newPgn.fields.longitude,
+                            timestamp: Date.now()
                         });
                     }
-                }
-            } catch (e) {
-                console.log(e);
-                alert('1312312')
-            }
 
+                });
+
+            } catch (e) {
+                console.error('Error processing PGN:', e);
+            }
         },
 
         isTracking(newVal)
@@ -384,17 +454,22 @@ export default {
                 this.$emit('tracking-started');
             } else {
                 this.$emit('tracking-stopped', {
-                    points:   this.track.length,
-                    distance: this.totalDistance,
-                    duration: this.duration
+                    tracks:        this.tracks.size,
+                    totalPoints:   this.getAllPoints().length,
+                    totalDistance: this.getTotalDistance()
                 });
             }
         },
 
-        track()
+        activeTrackId(newTrackId)
+        {
+            this.updateMetrics();
+            this.needsRedraw = true;
+        },
+
+        showAllTracks()
         {
             this.needsRedraw = true;
-            this.updateMetrics();
         },
 
         zoom()
@@ -416,7 +491,8 @@ export default {
         {
             this.needsRedraw = true;
         }
-    },
+    }
+    ,
 
     mounted()
     {
@@ -429,7 +505,8 @@ export default {
 
         // Handle window resize
         window.addEventListener('resize', this.handleResize);
-    },
+    }
+    ,
 
     beforeDestroy()
     {
@@ -437,7 +514,8 @@ export default {
         if (this.animationFrame) {
             cancelAnimationFrame(this.animationFrame);
         }
-    },
+    }
+    ,
 
     methods: {
         initCanvas()
@@ -447,7 +525,6 @@ export default {
 
             // Set high DPI for retina displays
             const dpr = 1;
-            // const dpr = window.devicePixelRatio || 1;
             this.canvasWidth = this.width * dpr;
             this.canvasHeight = this.height * dpr;
             canvas.width = this.canvasWidth;
@@ -469,18 +546,176 @@ export default {
             animate();
         },
 
+        // Track management methods
+        createTrack(trackId, name = null)
+        {
+            const colorIndex = this.tracks.size % this.colorPalette.length;
+            const track = {
+                name:     name || `Track ${this.tracks.size + 1}`,
+                color:    this.colorPalette[colorIndex],
+                points:   [],
+                isActive: true
+            };
+
+            this.tracks.set(trackId, track);
+
+            if (!this.activeTrackId) {
+                this.activeTrackId = trackId;
+            }
+
+            this.$emit('track-created', {trackId, track});
+            this.needsRedraw = true;
+        },
+
+        removeTrack(trackId)
+        {
+            if (this.tracks.has(trackId)) {
+                this.tracks.delete(trackId);
+
+                if (this.activeTrackId === trackId) {
+                    this.activeTrackId = this.tracks.keys().next().value || null;
+                }
+
+                this.$emit('track-removed', trackId);
+                this.needsRedraw = true;
+            }
+
+            this.$emit('trackPgn', trackId);
+            // this.trackPgn(trackId);
+
+        },
+
+        setActiveTrack(trackId)
+        {
+            if (this.tracks.has(trackId)) {
+                this.activeTrackId = trackId;
+                this.$emit('track-activated', trackId);
+            }
+        },
+
+        clearTrack(trackId)
+        {
+            if (trackId && this.tracks.has(trackId)) {
+                const track = this.tracks.get(trackId);
+                track.points = [];
+                track.startTime = null;
+                this.tracks.set(trackId, track);
+
+                if (this.activeTrackId === trackId) {
+                    this.currentPosition = null;
+                    this.previousPosition = null;
+                    this.totalDistance = 0;
+                    this.currentSpeed = 0;
+                    this.avgSpeed = 0;
+                }
+
+                this.$emit('track-cleared', trackId);
+                this.needsRedraw = true;
+            }
+        },
+
+        clearAllTracks()
+        {
+            this.tracks.clear();
+            this.activeTrackId = null;
+            this.currentPosition = null;
+            this.previousPosition = null;
+            this.totalDistance = 0;
+            this.currentSpeed = 0;
+            this.avgSpeed = 0;
+            this.startTime = null;
+            this.panX = 0;
+            this.panY = 0;
+            this.zoom = 150;
+            this.$emit('all-tracks-cleared');
+            this.needsRedraw = true;
+        },
+
+        updateTrackColor()
+        {
+            if (this.activeTrack) {
+                this.$emit('track-updated', {
+                    trackId: this.activeTrackId,
+                    field:   'color',
+                    value:   this.activeTrack.color
+                });
+                this.needsRedraw = true;
+            }
+        },
+
+        addPointToTrack(trackId, point)
+        {
+            if (!this.tracks.has(trackId)) return;
+
+            const track = this.tracks.get(trackId);
+            const newPoint = {
+                latitude:  point.latitude,
+                longitude: point.longitude,
+                timestamp: point.timestamp || Date.now(),
+                speed:     point.speed || 0
+            };
+
+            // Add to track
+            track.points.push(newPoint);
+            this.tracks.set(trackId, track);
+
+            // Update current position for active track
+            if (trackId === this.activeTrackId) {
+                this.currentPosition = newPoint;
+
+                // Update total distance
+                if (this.previousPosition) {
+                    this.totalDistance += this.calculateDistance(
+                        this.previousPosition.latitude,
+                        this.previousPosition.longitude,
+                        point.latitude,
+                        point.longitude
+                    );
+                }
+
+                this.previousPosition = newPoint;
+                this.currentSpeed = newPoint.speed;
+
+                // Auto-center if enabled
+                if (this.autoCenter && this.isTracking) {
+                    this.centerOnPoint(newPoint);
+                }
+            }
+
+            // Apply max points limit
+            if (this.maxPoints > 0 && track.points.length > this.maxPoints) {
+                track.points.shift();
+                this.tracks.set(trackId, track);
+            }
+
+            // Emit events
+            this.$emit('point-added', {
+                trackId,
+                point:       newPoint,
+                totalPoints: track.points.length
+            });
+
+            this.$emit('track-updated', {
+                trackId,
+                field: 'points',
+                value: track.points
+            });
+
+            this.needsRedraw = true;
+        },
+
         // Project latitude/longitude to canvas coordinates
         projectToCanvas(lat, lon)
         {
-            // Simple equirectangular projection
-            // Scale factor: 1 degree = 111km at equator
-            const scale = 111319.9 * this.zoom; // meters per pixel at zoom 1
+            const scale = 111319.9 * this.zoom;
 
-            // Use first point as reference if we have track
+            // Use first point of all tracks as reference
             let refLat = 0, refLon = 0;
-            if (this.track.length > 0) {
-                refLat = this.track[0].latitude;
-                refLon = this.track[0].longitude;
+            const allPoints = this.getAllPoints();
+
+            if (allPoints.length > 0) {
+                refLat = allPoints[0].latitude;
+                refLon = allPoints[0].longitude;
             } else
                 if (this.currentPosition) {
                     refLat = this.currentPosition.latitude;
@@ -488,7 +723,7 @@ export default {
                 }
 
             const x = this.width / 2 + (lon - refLon) * scale * Math.cos(refLat * Math.PI / 180) + this.panX;
-            const y = this.height / 2 - (lat - refLat) * scale + this.panY; // Invert Y axis
+            const y = this.height / 2 - (lat - refLat) * scale + this.panY;
 
             return {x, y};
         },
@@ -497,11 +732,14 @@ export default {
         canvasToLatLon(x, y)
         {
             const scale = 111319.9 * this.zoom;
-            let refLat = 0, refLon = 0;
 
-            if (this.track.length > 0) {
-                refLat = this.track[0].latitude;
-                refLon = this.track[0].longitude;
+            // Use first point of all tracks as reference
+            let refLat = 0, refLon = 0;
+            const allPoints = this.getAllPoints();
+
+            if (allPoints.length > 0) {
+                refLat = allPoints[0].latitude;
+                refLon = allPoints[0].longitude;
             }
 
             const lon = refLon + (x - this.width / 2 - this.panX) / (scale * Math.cos(refLat * Math.PI / 180));
@@ -522,19 +760,21 @@ export default {
                 this.drawGrid();
             }
 
-            // Draw track line
-            if (this.track.length > 1) {
-                this.drawTrack();
+            // Draw tracks
+            for (const [trackId, track] of this.tracks) {
+                if (this.showAllTracks || trackId === this.activeTrackId) {
+                    this.drawTrack(trackId, track);
+                }
             }
 
-            // Draw points
-            if (this.track.length > 0) {
-                this.drawPoints();
+            // Draw points for active track
+            if (this.activeTrack && this.activeTrack.points.length > 0) {
+                this.drawPoints(this.activeTrack);
             }
 
-            // Draw start/finish markers
-            if (this.track.length > 0) {
-                this.drawMarkers();
+            // Draw start/finish markers for active track
+            if (this.activeTrack && this.activeTrack.points.length > 0) {
+                this.drawMarkers(this.activeTrack);
             }
         },
 
@@ -543,8 +783,7 @@ export default {
             this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
             this.ctx.lineWidth = 1;
 
-            const gridSize = 50 / (this.zoom * 10); // Grid spacing in pixels
-
+            const gridSize = 50;
             const startX = (this.panX % gridSize) - gridSize;
             const startY = (this.panY % gridSize) - gridSize;
 
@@ -565,46 +804,45 @@ export default {
             }
         },
 
-        drawTrack()
+        drawTrack(trackId, track)
         {
+            if (track.points.length < 2) return;
+
             this.ctx.beginPath();
-            this.ctx.strokeStyle = this.trackColor;
-            this.ctx.lineWidth = this.trackWidth;
+            this.ctx.strokeStyle = track.color;
+            this.ctx.lineWidth = trackId === this.activeTrackId ? 3 : 2;
             this.ctx.lineJoin = 'round';
             this.ctx.lineCap = 'round';
+            this.ctx.globalAlpha = trackId === this.activeTrackId ? 1 : 0.7;
 
-            // Draw smooth line through all points
             const firstPoint = this.projectToCanvas(
-                this.track[0].latitude,
-                this.track[0].longitude
+                track.points[0].latitude,
+                track.points[0].longitude
             );
             this.ctx.moveTo(firstPoint.x, firstPoint.y);
 
-            for (let i = 1; i < this.track.length; i++) {
+            for (let i = 1; i < track.points.length; i++) {
                 const point = this.projectToCanvas(
-                    this.track[i].latitude,
-                    this.track[i].longitude
+                    track.points[i].latitude,
+                    track.points[i].longitude
                 );
                 this.ctx.lineTo(point.x, point.y);
             }
 
             this.ctx.stroke();
-
-            // Draw distance markers every 1km
-            if (this.totalDistance > 1) {
-                this.drawDistanceMarkers();
-            }
+            this.ctx.globalAlpha = 1;
         },
 
-        drawPoints()
+        drawPoints(track)
         {
-            // Draw all points
-            this.track.forEach((point, index) => {
+            track.points.forEach((point, index) => {
                 const canvasPoint = this.projectToCanvas(point.latitude, point.longitude);
 
                 // Draw point circle
                 this.ctx.beginPath();
-                this.ctx.fillStyle = index === this.track.length - 1 ? this.currentPointColor : this.pointColor;
+                this.ctx.fillStyle = index === track.points.length - 1 ?
+                    '#F44336' : // Red for last point
+                    this.darkenColor(track.color, 0.2); // Darker version of track color
                 this.ctx.arc(canvasPoint.x, canvasPoint.y, 3, 0, Math.PI * 2);
                 this.ctx.fill();
 
@@ -617,16 +855,16 @@ export default {
             });
         },
 
-        drawMarkers()
+        drawMarkers(track)
         {
             // Draw start marker
             const startPoint = this.projectToCanvas(
-                this.track[0].latitude,
-                this.track[0].longitude
+                track.points[0].latitude,
+                track.points[0].longitude
             );
 
             this.ctx.beginPath();
-            this.ctx.fillStyle = '#4CAF50'; // Green for start
+            this.ctx.fillStyle = '#4CAF50';
             this.ctx.arc(startPoint.x, startPoint.y, 6, 0, Math.PI * 2);
             this.ctx.fill();
             this.ctx.strokeStyle = '#FFFFFF';
@@ -639,15 +877,15 @@ export default {
             this.ctx.textBaseline = 'middle';
             this.ctx.fillText('S', startPoint.x, startPoint.y);
 
-            // Draw end marker if track has ended
-            if (!this.isTracking || this.isPaused) {
+            // Draw end marker if track is not active
+            if (!this.isTracking) {
                 const endPoint = this.projectToCanvas(
-                    this.track[this.track.length - 1].latitude,
-                    this.track[this.track.length - 1].longitude
+                    track.points[track.points.length - 1].latitude,
+                    track.points[track.points.length - 1].longitude
                 );
 
                 this.ctx.beginPath();
-                this.ctx.fillStyle = '#F44336'; // Red for end
+                this.ctx.fillStyle = '#F44336';
                 this.ctx.arc(endPoint.x, endPoint.y, 6, 0, Math.PI * 2);
                 this.ctx.fill();
                 this.ctx.strokeStyle = '#FFFFFF';
@@ -659,46 +897,10 @@ export default {
             }
         },
 
-        drawDistanceMarkers()
-        {
-            let accumulatedDistance = 0;
-
-            for (let i = 1; i < this.track.length; i++) {
-                const segmentDistance = this.calculateDistance(
-                    this.track[i - 1].latitude,
-                    this.track[i - 1].longitude,
-                    this.track[i].latitude,
-                    this.track[i].longitude
-                );
-                accumulatedDistance += segmentDistance;
-
-                // Every 1km
-                if (accumulatedDistance >= 1) {
-                    const point = this.projectToCanvas(
-                        this.track[i].latitude,
-                        this.track[i].longitude
-                    );
-
-                    this.ctx.beginPath();
-                    this.ctx.fillStyle = '#666';
-                    this.ctx.arc(point.x, point.y, 2, 0, Math.PI * 2);
-                    this.ctx.fill();
-
-                    this.ctx.fillStyle = '#666';
-                    this.ctx.font = '9px Arial';
-                    this.ctx.textAlign = 'center';
-                    this.ctx.fillText(`${Math.floor(accumulatedDistance)}k`, point.x, point.y - 8);
-
-                    accumulatedDistance = 0; // Reset for next marker
-                }
-            }
-        },
-
         // Core tracking methods
         startTracking()
         {
             this.isTracking = true;
-            this.isPaused = false;
             this.startTime = Date.now();
             this.$emit('tracking-started');
         },
@@ -706,11 +908,10 @@ export default {
         stopTracking()
         {
             this.isTracking = false;
-            this.isPaused = false;
             this.$emit('tracking-stopped', {
-                points:   this.track.length,
-                distance: this.totalDistance,
-                duration: this.duration
+                tracks:        this.tracks.size,
+                totalPoints:   this.getAllPoints().length,
+                totalDistance: this.getTotalDistance()
             });
         },
 
@@ -719,81 +920,13 @@ export default {
             if (this.isTracking) {
                 this.stopTracking();
             } else {
+
+                if (!this.autoUpdate) {
+                    this.$emit('update:autoUpdate', true);
+                }
+
                 this.startTracking();
             }
-        },
-
-        togglePause()
-        {
-            if (!this.isTracking) return;
-
-            this.isPaused = !this.isPaused;
-            if (this.isPaused) {
-                this.$emit('tracking-paused');
-            } else {
-                this.$emit('tracking-resumed');
-            }
-        },
-
-        addPoint(point)
-        {
-            const newPoint = {
-                latitude:  point.latitude,
-                longitude: point.longitude,
-                timestamp: point.timestamp || Date.now(),
-                speed:     point.speed || 0
-            };
-
-            // Calculate speed if not provided
-            if (!point.speed && this.previousPosition) {
-                // const distance = this.calculateDistance(
-                //     this.previousPosition.latitude,
-                //     this.previousPosition.longitude,
-                //     point.latitude,
-                //     point.longitude
-                // );
-                // const timeDiff = (newPoint.timestamp - this.previousPosition.timestamp) / 3600000; // hours
-                // if (timeDiff > 0) {
-                //     newPoint.speed = distance / timeDiff;
-                // }
-            }
-
-            // Add to track
-            this.track.push(newPoint);
-            this.currentPosition = newPoint;
-
-            // Apply max points limit
-            if (this.maxPoints > 0 && this.track.length > this.maxPoints) {
-                this.track.shift();
-            }
-
-            // Update total distance
-            if (this.previousPosition) {
-                this.totalDistance += this.calculateDistance(
-                    this.previousPosition.latitude,
-                    this.previousPosition.longitude,
-                    point.latitude,
-                    point.longitude
-                );
-            }
-
-            // Auto-center if enabled
-            if (this.autoCenter && this.isTracking && !this.isPaused) {
-                this.centerOnPoint(newPoint);
-            }
-
-            this.previousPosition = newPoint;
-            this.currentSpeed = newPoint.speed;
-
-            // Emit event
-            this.$emit('point-added', newPoint);
-            this.$emit('track-updated', {
-                point:         newPoint,
-                totalPoints:   this.track.length,
-                totalDistance: this.totalDistance
-            });
-
-            this.needsRedraw = true;
         },
 
         centerOnPoint(point)
@@ -809,32 +942,20 @@ export default {
             this.needsRedraw = true;
         },
 
-        clearTrack()
-        {
-            this.track = [];
-            this.currentPosition = null;
-            this.previousPosition = null;
-            this.totalDistance = 0;
-            this.currentSpeed = 0;
-            this.avgSpeed = 0;
-            this.startTime = null;
-            this.panX = 0;
-            this.panY = 0;
-            this.zoom = 150;
-            this.$emit('track-cleared');
-            this.needsRedraw = true;
-        },
-
         updateMetrics()
         {
-            if (this.track.length < 2) {
+            if (!this.activeTrack || this.activeTrack.points.length < 2) {
                 this.avgSpeed = 0;
+                this.totalDistance = this.activeTrack ? this.calculateTrackDistance(this.activeTrack) : 0;
                 return;
             }
 
-            const firstPoint = this.track[0];
-            const lastPoint = this.track[this.track.length - 1];
-            const totalTime = (lastPoint.timestamp - firstPoint.timestamp) / 3600000; // hours
+            const points = this.activeTrack.points;
+            const firstPoint = points[0];
+            const lastPoint = points[points.length - 1];
+            const totalTime = (lastPoint.timestamp - firstPoint.timestamp) / 3600000;
+
+            this.totalDistance = this.calculateTrackDistance(this.activeTrack);
 
             if (totalTime > 0) {
                 this.avgSpeed = this.totalDistance / totalTime;
@@ -848,21 +969,17 @@ export default {
             const mouseX = event.offsetX;
             const mouseY = event.offsetY;
 
-            // Store mouse position in world coordinates before zoom
             const worldBefore = this.canvasToLatLon(mouseX, mouseY);
-
-            // Apply zoom
             this.zoom *= zoomFactor;
             this.zoom = Math.max(0.1, Math.min(this.zoom, 20));
 
-            // Adjust pan to keep mouse position stable
             const worldAfter = this.canvasToLatLon(mouseX, mouseY);
             const deltaLon = worldAfter.lon - worldBefore.lon;
             const deltaLat = worldAfter.lat - worldBefore.lat;
 
             const scale = 111319.9 * this.zoom;
             this.panX -= deltaLon * scale * Math.cos(worldBefore.lat * Math.PI / 180);
-            this.panY += deltaLat * scale; // Inverted Y axis
+            this.panY += deltaLat * scale;
 
             this.needsRedraw = true;
         },
@@ -881,12 +998,10 @@ export default {
             const mouseX = event.offsetX;
             const mouseY = event.offsetY;
 
-            // Update mouse position display
             this.mousePosition = this.canvasToLatLon(mouseX, mouseY);
             this.mouseCanvasX = mouseX;
             this.mouseCanvasY = mouseY;
 
-            // Handle dragging
             if (this.isDragging) {
                 const deltaX = mouseX - this.dragStartX;
                 const deltaY = mouseY - this.dragStartY;
@@ -914,9 +1029,79 @@ export default {
             this.needsRedraw = true;
         },
 
-        // Export methods
-        exportGeoJSON()
+        // Utility methods
+        calculateDistance(lat1, lon1, lat2, lon2)
         {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        },
+
+        calculateTrackDistance(track)
+        {
+            if (track.points.length < 2) return 0;
+
+            let distance = 0;
+            for (let i = 1; i < track.points.length; i++) {
+                distance += this.calculateDistance(
+                    track.points[i - 1].latitude,
+                    track.points[i - 1].longitude,
+                    track.points[i].latitude,
+                    track.points[i].longitude
+                );
+            }
+            return distance;
+        },
+
+        formatTime(timestamp)
+        {
+            return new Date(timestamp).toLocaleTimeString();
+        },
+
+        getAllPoints()
+        {
+            const allPoints = [];
+            for (const track of this.tracks.values()) {
+                allPoints.push(...track.points);
+            }
+            return allPoints;
+        },
+
+        getTotalDistance()
+        {
+            let total = 0;
+            for (const track of this.tracks.values()) {
+                total += this.calculateTrackDistance(track);
+            }
+            return total;
+        },
+
+        darkenColor(color, amount)
+        {
+            // Convert hex to RGB
+            let r = parseInt(color.slice(1, 3), 16);
+            let g = parseInt(color.slice(3, 5), 16);
+            let b = parseInt(color.slice(5, 7), 16);
+
+            // Darken
+            r = Math.floor(r * (1 - amount));
+            g = Math.floor(g * (1 - amount));
+            b = Math.floor(b * (1 - amount));
+
+            // Convert back to hex
+            return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+        },
+
+        // Export methods
+        exportActiveTrack()
+        {
+            if (!this.activeTrack) return;
+
             const geojson = {
                 type:     "FeatureCollection",
                 features: [
@@ -924,62 +1109,60 @@ export default {
                         type:       "Feature",
                         geometry:   {
                             type:        "LineString",
-                            coordinates: this.track.map(p => [p.longitude, p.latitude])
+                            coordinates: this.activeTrack.points.map(p => [p.longitude, p.latitude])
                         },
                         properties: {
-                            name:      "GPS Track",
-                            points:    this.track.length,
-                            distance:  this.totalDistance,
-                            duration:  this.duration,
-                            startTime: this.track[0]?.timestamp,
-                            endTime:   this.track[this.track.length - 1]?.timestamp
+                            color:    this.activeTrack.color,
+                            points:   this.activeTrack.points.length,
+                            distance: this.totalDistance,
+                            duration: this.duration
                         }
                     }
                 ]
             };
 
-            this.downloadFile('track.geojson', JSON.stringify(geojson, null, 2));
-            this.$emit('exported', {format: 'geojson', data: geojson});
+            this.downloadFile(`${this.activeTrackId}.geojson`, JSON.stringify(geojson, null, 2));
         },
 
-        exportGPX()
+        exportAllTracks()
         {
-            let gpx = `<?xml version="1.0" encoding="UTF-8"?>
-<gpx version="1.1" creator="GPS Tracker">
-  <trk>
-    <name>GPS Track</name>
-    <trkseg>`;
+            const features = [];
 
-            this.track.forEach(point => {
-                gpx += `
-      <trkpt lat="${point.latitude}" lon="${point.longitude}">
-        <time>${new Date(point.timestamp).toISOString()}</time>
-      </trkpt>`;
-            });
+            for (const [trackId, track] of this.tracks) {
+                if (track.points.length > 0) {
+                    features.push({
+                        type:       "Feature",
+                        geometry:   {
+                            type:        "LineString",
+                            coordinates: track.points.map(p => [p.longitude, p.latitude])
+                        },
+                        properties: {
+                            id:       trackId,
+                            color:    track.color,
+                            points:   track.points.length,
+                            distance: this.calculateTrackDistance(track)
+                        }
+                    });
+                }
+            }
 
-            gpx += `
-    </trkseg>
-  </trk>
-</gpx>`;
+            const geojson = {
+                type: "FeatureCollection",
+                features
+            };
 
-            this.downloadFile('track.gpx', gpx);
-            this.$emit('exported', {format: 'gpx', data: gpx});
+            this.downloadFile('all-tracks.geojson', JSON.stringify(geojson, null, 2));
         },
 
-        exportCSV()
+        copyActiveTrack()
         {
-            let csv = "latitude,longitude,timestamp,speed_kmh\n";
-            this.track.forEach(point => {
-                csv += `${point.latitude},${point.longitude},${point.timestamp},${point.speed || 0}\n`;
-            });
+            if (!this.activeTrack) return;
 
-            this.downloadFile('track.csv', csv);
-            this.$emit('exported', {format: 'csv', data: csv});
-        },
+            const text = JSON.stringify({
+                trackId: this.activeTrackId,
+                ...this.activeTrack
+            }, null, 2);
 
-        copyTrack()
-        {
-            const text = JSON.stringify(this.track, null, 2);
             navigator.clipboard.writeText(text).then(() => {
                 this.$emit('copied');
             });
@@ -987,7 +1170,7 @@ export default {
 
         downloadFile(filename, content)
         {
-            const blob = new Blob([content], {type: 'text/plain'});
+            const blob = new Blob([content], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -996,105 +1179,68 @@ export default {
             URL.revokeObjectURL(url);
         },
 
-        // Utility methods
-        calculateDistance(lat1, lon1, lat2, lon2)
+        // Demo
+        simulateMultipleTracks()
         {
-            const R = 6371; // Earth's radius in km
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a =
-                      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            return R * c;
-        },
+            this.clearAllTracks();
 
-        formatTime(timestamp)
-        {
-            return new Date(timestamp).toLocaleTimeString();
-        },
+            // Create 3 demo tracks
+            const trackIds = ['boat-1', 'boat-2', 'boat-3'];
+            const centers = [
+                {lat: 40.7128, lon: -74.0060},
+                {lat: 40.7200, lon: -74.0100},
+                {lat: 40.7050, lon: -74.0000}
+            ];
 
-        handleResize()
-        {
-            // Optional: Implement responsive resizing
-            this.needsRedraw = true;
-        },
+            trackIds.forEach((trackId, index) => {
+                this.createTrack(trackId, `Boat ${index + 1}`);
+                this.startTracking();
 
-        // Demo/Simulation
-        simulateTrack()
-        {
-            this.clearTrack();
-            this.startTracking();
+                // Generate points in a spiral pattern
+                const points = 20;
+                const radius = 0.003 * (index + 1);
 
-            // Create a circular track
-            const centerLat = 40.7128;
-            const centerLon = -74.0060;
-            const radius = 0.1; // ~1.1km
-            const points = 1000;
+                for (let i = 0; i < points; i++) {
+                    setTimeout(() => {
+                        const angle = (i / points) * Math.PI * 2 + (index * Math.PI / 3);
+                        const lat = centers[index].lat + Math.sin(angle) * radius * (i / points);
+                        const lon = centers[index].lon + Math.cos(angle) * radius * (i / points);
 
-            for (let i = 0; i < points; i++) {
-                const angle = (i / points) * Math.PI * 2;
-                const lat = centerLat + Math.sin(angle) * radius;
-                const lon = centerLon + Math.cos(angle) * radius;
+                        this.addPointToTrack(trackId, {
+                            latitude:  lat,
+                            longitude: lon,
+                            timestamp: Date.now()
+                        });
+                    }, i * 100);
+                }
+            });
 
-                setTimeout(() => {
-                    this.addPoint({
-                        latitude:  lat,
-                        longitude: lon,
-                        timestamp: Date.now()
-                    });
-                }, i * 100);
-            }
-
-            // Stop after completing circle
+            // Fit all tracks to view after simulation
             setTimeout(() => {
+                // this.fitToView();
                 this.stopTracking();
-            }, points * 100 + 100);
-        },
-
-        // Public API methods (can be called from parent)
-        addPosition(latitude, longitude, timestamp, speed)
-        {
-            if (this.isTracking && !this.isPaused) {
-                this.addPoint({latitude, longitude, timestamp, speed});
-            }
-        },
-
-        getTrack()
-        {
-            return [...this.track];
-        },
-
-        getStatistics()
-        {
-            return {
-                points:       this.track.length,
-                distance:     this.totalDistance,
-                duration:     this.duration,
-                avgSpeed:     this.avgSpeed,
-                currentSpeed: this.currentSpeed
-            };
+            }, trackIds.length * 20 * 100 + 100);
         },
 
         fitToView()
         {
-            if (this.track.length === 0) return;
+            const allPoints = this.getAllPoints();
+            if (allPoints.length === 0) return;
 
-            // Calculate bounds
-            let minLat = this.track[0].latitude;
-            let maxLat = this.track[0].latitude;
-            let minLon = this.track[0].longitude;
-            let maxLon = this.track[0].longitude;
+            // Calculate bounds of all points
+            let minLat = allPoints[0].latitude;
+            let maxLat = allPoints[0].latitude;
+            let minLon = allPoints[0].longitude;
+            let maxLon = allPoints[0].longitude;
 
-            this.track.forEach(point => {
+            allPoints.forEach(point => {
                 minLat = Math.min(minLat, point.latitude);
                 maxLat = Math.max(maxLat, point.latitude);
                 minLon = Math.min(minLon, point.longitude);
                 maxLon = Math.max(maxLon, point.longitude);
             });
 
-            // Calculate required zoom to fit
+            // Calculate required zoom
             const latSpan = maxLat - minLat;
             const lonSpan = maxLon - minLon;
 
@@ -1113,14 +1259,18 @@ export default {
             this.panY = this.height / 2 - centerPoint.y;
 
             this.needsRedraw = true;
+        },
+
+        handleResize()
+        {
+            this.needsRedraw = true;
         }
     }
-};
+}
+;
 </script>
 
 <style scoped>
-
-
 .gps-tracker {
     margin: 20px 0;
     gap: 20px;
@@ -1183,14 +1333,19 @@ button:disabled {
     font-size: 18px;
 }
 
-.pause-btn {
-    background: #2196F3;
-    color: white;
-}
-
 .clear-btn {
     background: #9E9E9E;
     color: white;
+}
+
+.track-select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    color: #333;
+    font-size: 14px;
+    min-width: 150px;
 }
 
 .zoom-controls {
@@ -1409,13 +1564,11 @@ canvas {
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     padding: 20px;
-    background: #f5f5f5;
-    border-top: 1px solid #e0e0e0;
+    border-top: 1px solid var(--border-color);
 }
 
 .info-section h4 {
     margin: 0 0 12px 0;
-    color: #333;
     font-size: 14px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -1424,23 +1577,33 @@ canvas {
 .position-info {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
 }
 
 .coord {
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
     font-size: 13px;
 }
 
 .coord .label {
-    color: #666;
+    color: var(--text-light);
     font-weight: 500;
+    min-width: 60px;
 }
 
 .coord .value {
     font-family: monospace;
-    color: #333;
+}
+
+.color-picker {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 0;
 }
 
 .no-position {
@@ -1490,12 +1653,104 @@ canvas {
     padding: 8px;
 }
 
+/* Tracks List Panel */
+.tracks-list-panel {
+    padding: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.tracks-list-panel h4 {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tracks-container {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background: white;
+}
+
+.track-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.track-item:hover {
+    background-color: #f8f8f8;
+}
+
+.track-item.active {
+    background-color: #e3f2fd;
+    border-left: 3px solid #2196F3;
+}
+
+.track-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    margin-right: 12px;
+    border: 2px solid white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.track-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.track-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.track-details {
+    display: flex;
+    gap: 12px;
+    font-size: 11px;
+    color: #666;
+}
+
+.track-actions {
+    margin-left: auto;
+}
+
+.remove-btn {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffebee;
+    color: #f44336;
+    border-radius: 50%;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.remove-btn:hover {
+    background: #ffcdd2;
+    transform: scale(1.1);
+}
+
 @media (max-width: 1024px) {
     .info-panel {
         grid-template-columns: 1fr;
     }
 
-    .control-panel {
+    .panel-header {
         flex-wrap: wrap;
         gap: 12px;
     }

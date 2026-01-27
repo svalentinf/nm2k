@@ -10,40 +10,38 @@
         />
 
         <PgnsPanel
+                :autoUpdate="autoUpdate"
                 :filteredPGNs="filteredPGNs"
                 :panelTitle="panelTitle"
                 :pgnFilter="pgnFilter"
                 :blockedPGNs="blockedPGNs"
-                :filteredHistory="filteredHistory"
+                :trackingPGNs="trackingPGNs"
                 @selectDevice="$emit('selectDevice', $event)"
                 @filterPgn="$emit('filterPgn', $event)"
                 @blockPgn="$emit('blockPgn', $event)"
+                @trackPgn="$emit('trackPgn', $event)"
         />
 
-        <HistoryPanel
-                :filteredHistory="filteredHistory"
-                @clearHistory="clearHistory"
-        />
     </div>
 </template>
 
 <script setup>
 import DevicesPanel from './panels/DevicesPanel.vue'
 import PgnsPanel from './panels/PgnsPanel.vue'
-import HistoryPanel from './panels/HistoryPanel.vue'
 
 defineProps({
-    devicesList:     Array,
-    filteredPGNs:    Array,
-    blockedPGNs:     Set,
-    filteredHistory: Array,
-    selectedDevice:  [String, Number],
-    serverFilter:    String,
-    pgnFilter:       String,
-    panelTitle:      String
+    devicesList:    Array,
+    filteredPGNs:   Array,
+    blockedPGNs:    Set,
+    trackingPGNs:   Set,
+    selectedDevice: [String, Number],
+    serverFilter:   String,
+    pgnFilter:      String,
+    panelTitle:     String,
+    autoUpdate:     Boolean,
 })
 
-const emit = defineEmits(['selectDevice', 'filterPgn', 'blockPgn', 'clearHistory'])
+const emit = defineEmits(['selectDevice', 'filterPgn', 'blockPgn', 'clearHistory', 'trackPgn'])
 
 function clearHistory()
 {

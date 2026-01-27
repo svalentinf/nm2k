@@ -4,16 +4,13 @@
     >
         <div class="pgn-header">
             <span class="pgn-id">
+                <span v-if="pgn.fields && pgn.fields.longitude" :class="{'text-success':trackingPGNs.has(`${pgn.src}:${pgn.pgn}`)}" @click="$emit('trackPgn', `${pgn.src}:${pgn.pgn}`)" style="cursor: crosshair;">
+                    <i class="fas fa-map-location"></i>&nbsp;</span>
                 <span @click="$emit('filterPgn', pgn.pgn)" style="cursor: zoom-in;">
-                    <i class="fas fa-magnifying-glass"></i> PGN
+                    <i class="fas fa-magnifying-glass"></i>&nbsp;PGN
                 </span>
-                <span v-if="typeof pgn.pgn === 'number'" @click="$emit('blockPgn', computedPgn)" style="cursor: not-allowed">
-                    <span v-if="blockedPGNs.has(computedPgn)">
-                        <i class="fas fa-ban"></i>
-                    </span>
-                    <span v-else>
-                        <i class="fas fa-plus-circle"></i>
-                    </span>
+                <span v-if="typeof pgn.pgn === 'number'" @click="$emit('blockPgn', computedPgn)" :class="{'text-danger':blockedPGNs.has(computedPgn)}" style="cursor: not-allowed">
+                    <i class="fas " :class="{'fa-ban':blockedPGNs.has(computedPgn), 'fa-plus-circle':!blockedPGNs.has(computedPgn)}"></i>
                 </span>
                 {{ pgn.pgn }}
                 <span v-if="typeof pgn.pgn === 'number'">[{{ pgn.pgn.toString(16).padStart(5, '0').toUpperCase() }}]</span>
@@ -73,7 +70,7 @@
             {{ pgn.raw }}
         </div>
 
-        <div class="pgn-history" v-if="0">
+        <div class="pgn-history" v-if="!autoUpdate">
             <table>
                 <tbody>
                 <tr>
@@ -82,7 +79,7 @@
                         {{ fieldName }}
                     </th>
                 </tr>
-                <tr v-for="pgnHistory in filteredHistory">
+                <tr v-for="pgnHistory in pgn.history">
                     <template v-if="pgnHistory && pgnHistory.src === pgn.src && pgnHistory.pgn === pgn.pgn">
                         <td class="small">
                             {{ formatTime(pgnHistory.timestamp) }}
@@ -109,13 +106,14 @@
 import {computed} from "vue";
 
 const props = defineProps({
-    pgn:             Object,
-    pgnFilter:       [String, Number],
-    blockedPGNs:     Set,
-    filteredHistory: Array,
+    pgn:          Object,
+    pgnFilter:    [String, Number],
+    blockedPGNs:  Set,
+    trackingPGNs: Set,
+    autoUpdate:   Boolean,
 })
 
-defineEmits(['selectDevice', 'filterPgn', 'blockPgn']);
+defineEmits(['selectDevice', 'filterPgn', 'blockPgn', 'trackPgn']);
 
 const computedPgn = computed(() => {
     return `0x${props.pgn.pgn.toString(16).padStart(5, '0').toUpperCase()}${props.pgn.src.toString(16).padStart(2, '0').toUpperCase()}`;

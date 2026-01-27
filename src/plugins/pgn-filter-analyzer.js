@@ -300,9 +300,9 @@ export class PGNFilterAnalyzer
                         );
 
                         conflicts.push({
-                            pgns:     conflictedGroup,
-                            reason:   'Entire group conflicts with wanted PGNs',
-                            binaries: [...remainingToBlock]
+                            devicesPGNs: conflictedGroup,
+                            reason:      'Entire group conflicts with wanted PGNs',
+                            binaries:    [...remainingToBlock]
                         });
 
                         if (strictMode) {
@@ -399,8 +399,8 @@ export class PGNFilterAnalyzer
                 remainingToBlock:    remainingToBlock.length,
                 conflicts:           conflicts.map(c => ({
                     ...c,
-                    pgns: Array.isArray(c.pgns) ?
-                              c.pgns.map(p => this.pgnToString(p)) :
+                    devicesPGNs: Array.isArray(c.devicesPGNs) ?
+                              c.devicesPGNs.map(p => this.pgnToString(p)) :
                               this.pgnToString(c.pgn)
                 })),
                 maxFiltersReached:   filters.length >= maxFilters

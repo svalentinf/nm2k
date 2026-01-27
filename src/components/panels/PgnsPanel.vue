@@ -15,8 +15,10 @@
                         :pgn="pgn"
                         :pgnFilter="pgnFilter"
                         :blockedPGNs="blockedPGNs"
-                        :filteredHistory="filteredHistory"
+                        :trackingPGNs="trackingPGNs"
+                        :autoUpdate="autoUpdate"
                         @selectDevice="$emit('selectDevice', $event)"
+                        @trackPgn="$emit('trackPgn', $event)"
                         @filterPgn="$emit('filterPgn', $event)"
                         @blockPgn="$emit('blockPgn', $event)"
                 />
@@ -33,12 +35,13 @@
 import PgnCard from '../cards/PgnCard.vue'
 
 defineProps({
-    filteredPGNs:    Array,
-    blockedPGNs:     Set,
-    panelTitle:      String,
-    pgnFilter:       String,
-    filteredHistory: Array,
+    filteredPGNs: Array,
+    blockedPGNs:  Set,
+    panelTitle:   String,
+    pgnFilter:    String,
+    autoUpdate:   Boolean,
+    trackingPGNs: Set,
 })
 
-defineEmits(['selectDevice', 'filterPgn', 'blockPgn'])
+defineEmits(['selectDevice', 'filterPgn', 'blockPgn', 'trackPgn'])
 </script>

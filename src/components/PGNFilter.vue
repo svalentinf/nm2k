@@ -75,7 +75,7 @@
                 <div v-if="result.analysis.conflicts.length">
                     <strong>Conflicts:</strong>
                     <div v-for="(conflict, idx) in result.analysis.conflicts" :key="idx" class="conflict">
-                        {{ conflict.reason }}: {{ Array.isArray(conflict.pgns) ? conflict.pgns.join(', ') : conflict.pgns }}
+                        {{ conflict.reason }}: {{ Array.isArray(conflict.devicesPGNs) ? conflict.devicesPGNs.join(', ') : conflict.devicesPGNs }}
                     </div>
                 </div>
             </div>
@@ -217,10 +217,10 @@ export default {
             this.result.filters.forEach((filter) => {
 
                 text += "" +
-                         `#DROP + ${filter.blockedPGNs.join(', ')}\n` +
-                         `match(CAN1, ${filter.filter}, ${filter.mask})\n` +
-                         "{\n" +
-                         "}";
+                        `#DROP + ${filter.blockedPGNs.join(', ')}\n` +
+                        `match(CAN1, ${filter.filter}, ${filter.mask})\n` +
+                        "{\n" +
+                        "}";
             });
 
             console.log(text);

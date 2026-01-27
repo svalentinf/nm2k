@@ -19,20 +19,19 @@
             </div>
 
             <StatsBar
-                    :total-devices="totalDevices"
-                    :total-pgns="totalPgns"
-                    :total-updates="totalUpdates"
-                    :history-length="history.length"
+                    :totalDevices="totalDevices"
+                    :totalPgns="totalPgns"
+                    :totalUpdates="totalUpdates"
             />
 
             <Controls
-                    :auto-update="autoUpdate"
-                    :search-query="searchQuery"
+                    :autoUpdate="autoUpdate"
+                    :searchQuery="searchQuery"
                     :serverFilter="serverFilter"
                     :pgnFilter="pgnFilter"
                     :devicesList="devicesList"
-                    :servers-list="serversList"
-                    :unique-pgns="uniquePgns"
+                    :serversList="serversList"
+                    :uniquePgns="uniquePgns"
                     @update:autoUpdate="autoUpdate = $event"
                     @update:searchQuery="searchQuery = $event"
                     @update:pgnFilter="pgnFilter = $event"
@@ -41,22 +40,28 @@
                     @clear-data="clearAllData"
             />
             <Dashboard
+                    :autoUpdate="autoUpdate"
                     :devicesList="devicesList"
                     :filteredPGNs="filteredPGNs"
-                    :filteredHistory="filteredHistory"
                     :selectedDevice="selectedDevice"
                     :serverFilter="serverFilter"
                     :pgnFilter="pgnFilter"
                     :blockedPGNs="blockedPGNs"
                     :panelTitle="panelTitle"
+                    :trackingPGNs="trackingPGNs"
                     @selectDevice="selectDevice"
                     @filterPgn="filterPgn"
                     @blockPgn="blockPgn"
                     @clear-history="clearHistory"
+                    @trackPgn="trackPgn"
             />
 
             <GpsTracker
+                    :autoUpdate="autoUpdate"
+                    @update:autoUpdate="autoUpdate = $event"
                     ref="tracker"
+                    :trackingPGNs="trackingPGNs"
+                    @trackPgn="trackPgn"
                     :pgn="lastPgn"
                     :autoStart="true"
                     :width="2000"
@@ -101,27 +106,26 @@ import PGNFilter from "@/components/PGNFilter.vue";
 import GpsTracker from "@/components/GPSTracker.vue";
 
 // Config store
-const {config} = useConfigStore()
+const {config} = useConfigStore();
 
 // UI State
-const selectedDevice = ref(null)
-const searchQuery = ref('')
-const serverFilter = ref('')
-const pgnFilter = ref('')
-const autoUpdate = ref(true)
-const isConfigModalVisible = ref(false)
-const blockedPGNs = ref(new Set)
+const selectedDevice = ref(null);
+const searchQuery = ref('');
+const serverFilter = ref('');
+const pgnFilter = ref('');
+const autoUpdate = ref(false);
+const isConfigModalVisible = ref(false);
+const blockedPGNs = ref(new Set);
+const trackingPGNs = ref(loadFromLocalStorage('trackingPGNs', 'Set'));
 
 // Use WebSocket composable with config
 const {
           isConnected,
           isConnecting,
           connectionError,
-          devices,
           servers,
-          pgns,
+          devicesPGNs,
           lastPgn,
-          history,
           connectionStatus,
           connectWebSocket,
           disconnectWebSocket,
@@ -139,7 +143,7 @@ const themeClass = computed(() => {
 
 // Computed properties
 const devicesList = computed(() => {
-    return Array.from(devices.value.values())
+    return Array.from(devicesPGNs.value.values())
                 .sort((a, b) => a.src < b.src)
                 .map(device => ({
                     ...device,
@@ -154,8 +158,8 @@ const serversList = computed(() => {
 
 const allPgns = computed(() => {
     const all = []
-    for (const [src, devicePgnsMap] of pgns.value.entries()) {
-        for (const [pgnId, pgnData] of devicePgnsMap.entries()) {
+    for (const [src, device] of devicesPGNs.value.entries()) {
+        for (const [pgnId, pgnData] of device.pgns.entries()) {
             // Apply age filter from config
             const age = Date.now() - new Date(pgnData.timestamp).getTime()
             if (config.value.filters.maxAge > 0 && age > config.value.filters.maxAge) {
@@ -212,43 +216,10 @@ const filteredPGNs = computed(() => {
     return filtered
 })
 
-const filteredHistory = computed(() => {
-    let filtered = history.value
-
-    if (serverFilter.value) {
-        filtered = filtered.filter(item =>
-            item.serverAddress.toString() === serverFilter.value.toString()
-        )
-    }
-
-    if (pgnFilter.value) {
-        filtered = filtered.filter(item =>
-            item.pgn.toString() === pgnFilter.value.toString()
-        )
-    }
-
-    if (searchQuery.value) {
-        const query = searchQuery.value.toLowerCase();
-        filtered = filtered.filter(item =>
-            (typeof item.description === 'string' && item.description.toLowerCase().includes(query)) ||
-            (typeof item.serverAddress === 'string' && item.serverAddress.toLowerCase().includes(query)) ||
-            item.pgn.toString().includes(query) ||
-            Object.keys(item.fields || {}).some(field =>
-                field.toLowerCase().includes(query)
-            ) ||
-            Object.values(item.fields || {}).some(value =>
-                String(value).toLowerCase().includes(query)
-            )
-        )
-    }
-
-    return filtered.slice(0, 50)
-})
-
-const totalDevices = computed(() => devices.value.size)
+const totalDevices = computed(() => devicesPGNs.value.size)
 const totalPgns = computed(() => allPgns.value.length)
 const totalUpdates = computed(() =>
-    Array.from(devices.value.values())
+    Array.from(devicesPGNs.value.values())
          .reduce((sum, device) => sum + device.updates, 0)
 )
 
@@ -272,6 +243,20 @@ const panelTitle = computed(() => {
 function selectDevice(src)
 {
     selectedDevice.value = selectedDevice.value === src ? null : src
+}
+
+// Methods
+function trackPgn(track)
+{
+    const key = typeof track === 'string' ? track : `${track.src}:${track.pgn}`;
+    if (trackingPGNs.value.has(key)) {
+        trackingPGNs.value.delete(key)
+    } else {
+        trackingPGNs.value.add(key);
+    }
+
+    saveToLocalStorage('trackingPGNs', 'Set');
+    //@todo save it to browser data so we can have it after fresh
 }
 
 function filterPgn(value, event)
@@ -307,14 +292,6 @@ function blockPgn(pgn, event)
     }
 }
 
-function selectServer(value, event)
-{
-    if (event) {
-        event.stopPropagation()
-    }
-    serverFilter.value = serverFilter.value !== value ? value.toString() : ''
-}
-
 function clearHistory()
 {
     if (confirm('Clear all history?')) {
@@ -338,6 +315,49 @@ function onConfigChange(newConfig)
 function applyTheme(theme)
 {
     document.documentElement.setAttribute('data-theme', theme)
+}
+
+function loadFromLocalStorage(key, type)
+{
+    try {
+        // Load trackingPGNs
+        const savedValue = localStorage.getItem(key);
+        switch (type) {
+            case 'Set':
+                const setArray = JSON.parse(savedValue);
+                console.log('Loaded trackingPGNs from localStorage:', setArray);
+                return new Set(setArray);
+            case 'Map':
+                const mapArray = JSON.parse(savedValue);
+                console.log('Loaded trackingPGNs from localStorage:', mapArray);
+                return new Map(mapArray);
+
+            default:
+                return JSON.parse(savedValue);
+        }
+    } catch (error) {
+        console.error('Error loading from localStorage:', 'key', error);
+        // Clear corrupted data
+        localStorage.removeItem(key);
+    }
+
+    switch (type) {
+        case 'Set':
+            return new Set();
+        case 'Map':
+            return new Map();
+        default:
+            return null;
+
+    }
+}
+
+function saveToLocalStorage(KEY, type)
+{
+    // Save trackingPGNs (convert Set to Array for JSON)
+    const trackingArray = Array.from(trackingPGNs.value);
+    localStorage.setItem(KEY, JSON.stringify(trackingArray));
+
 }
 
 // Lifecycle

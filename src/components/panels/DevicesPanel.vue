@@ -16,7 +16,7 @@
                         :selected="selectedDevice === device.src"
                         :pgnFilter="pgnFilter"
                         :serverFilter="serverFilter"
-                        @selectDevice="$emit('selectDevice', device.src)"
+                        @selectDevice="$emit('selectDevice', $event)"
                         @filterPgn="$emit('filterPgn', $event)"
                 />
                 <div v-if="devicesList.length === 0" class="empty-state">
@@ -38,5 +38,5 @@ defineProps({
     pgnFilter:      String
 })
 
-defineEmits(['selectDevice', 'filterPgn'])
+defineEmits(['selectDevice', 'filterPgn', 'trackPgn'])
 </script>
