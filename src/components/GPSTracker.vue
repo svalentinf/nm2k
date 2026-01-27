@@ -31,6 +31,16 @@
                     >
                         Clear
                     </button>
+
+                    {{ tracked }}
+
+                    <button
+                            @click="$emit('trackPgn', tracked)"
+                            :class="['track-btn', { active: isTracking, paused: isPaused }]"
+                            :title="isTracking ? 'Stop tracking' : 'Start tracking'"
+                    >
+                        Remove
+                    </button>
                 </div>
 
                 <div class="center-controls">
@@ -68,7 +78,6 @@
             <div
                     class="canvas-container"
                     :class="{ 'cursor-grab': !isDragging, 'cursor-grabbing': isDragging }"
-                    @wheel.prevent="handleWheel"
                     @mousedown="startDrag"
                     @mousemove="handleMouseMove"
                     @mouseup="endDrag"
@@ -183,6 +192,7 @@ export default {
     name: 'GpsTracker',
 
     props: {
+        tracked: String,
         // Single point to add (reactive)
         pgn: {
             type:    Object, // {fields :{ latitude, longitude, timestamp?, speed? }}
@@ -247,7 +257,7 @@ export default {
             canvasWidth:  this.width,
             canvasHeight: this.height,
             ctx:          null,
-            zoom:         1,
+            zoom:         10,
             panX:         0,
             panY:         0,
             isDragging:   false,
@@ -346,16 +356,18 @@ export default {
         pgn(newPgn)
         {
             try {
+                if (`${newPgn.src}:${newPgn.pgn}` != this.tracked) {
+                    return;
+                }
+                console.log(this.tracked, `${newPgn.src}:${newPgn.pgn}`)
 
                 if (newPgn && this.isTracking && !this.isPaused) {
                     //@todo only if is different then previous one ??
-                    if (newPgn.pgn === 129025111 || (typeof newPgn.pgn === 'string' && (newPgn.pgn.includes('GGA') || newPgn.pgn.includes('GLL')))) {
-                        console.log('newPgnnewPgnnewPgn', newPgn);
+                    if (typeof newPgn.fields !== 'undefined' && newPgn.fields.latitude !== 'undefined' && newPgn.fields.longitude !== 'undefined' && newPgn.fields.latitude && newPgn.fields.longitude) {
                         this.addPoint({
                             latitude:  newPgn.fields.latitude,
                             longitude: newPgn.fields.longitude,
                         });
-
                     }
                 }
             } catch (e) {
@@ -808,7 +820,7 @@ export default {
             this.startTime = null;
             this.panX = 0;
             this.panY = 0;
-            this.zoom = 1;
+            this.zoom = 150;
             this.$emit('track-cleared');
             this.needsRedraw = true;
         },
