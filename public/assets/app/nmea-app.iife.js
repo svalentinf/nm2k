@@ -8538,7 +8538,7 @@ Expected function or array of functions, received type ${typeof value}.`
               }, "Device"),
               createTextVNode(" " + toDisplayString(`${__props.pgn.src} [${__props.pgn.src.toString(16).padStart(2, "0").toUpperCase()}]`), 1),
               _cache[6] || (_cache[6] = createBaseVNode("br", null, null, -1)),
-              createBaseVNode("span", null, toDisplayString(__props.pgn.servers), 1)
+              createBaseVNode("span", null, toDisplayString(__props.pgn.servers.implode(", ")), 1)
             ])
           ]),
           createBaseVNode("div", _hoisted_5$4, toDisplayString(__props.pgn.description), 1),
