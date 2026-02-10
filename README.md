@@ -1,4 +1,4 @@
-# 🛥️ NMEA 2000 PGN Monitor and NMEA 0183
+# 🛥️ NMEA 2000 PGN's Monitor and NMEA 0183
 
 A professional, real-time web interface for monitoring, analyzing, and visualizing NMEA 2000&183 network data. Built with Vue.js 3, this application provides a comprehensive dashboard for marine electronics, letting you see every PGN, connected device, and historical data stream on your vessel's network.
 
