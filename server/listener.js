@@ -316,7 +316,6 @@ function parseMsg(msg, serverAddress)
                         }
                     } catch (error) {
                         console.log('xxxxx', err, error, typeof err);
-                        console.log('YYYYY', typeof err);
                     }
                 }
             });
@@ -350,17 +349,13 @@ wss.on('connection', (ws) => {
             if (message?.servers) {
                 console.log('WebSocket: update servers', message.servers);
                 serversUDP.forEach((socket, key) => {
-                    console.log('WebSocket: close UDP', key, socket);
                     socket.close();
                     serversUDP.delete(key);
                 });
                 serversTCP.forEach((socket, key) => {
-                    console.log('WebSocket: destroy TCP', key, socket);
                     serversTCP.delete(key);
                     socket.destroy();
                 });
-
-                console.log('serversTCP', serversTCP);
 
                 if (message.servers?.UDP) {
                     message.servers?.UDP.forEach(connectUDP);
