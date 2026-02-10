@@ -39,7 +39,7 @@ const defaultConfig = {
             },
             //yden
             {
-                'enable': true,
+                'enable': false,
                 'host':   '192.168.1.222',
                 'port':   '1457',
             },
