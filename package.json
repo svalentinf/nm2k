@@ -12,6 +12,7 @@
     "start-server": "node server/listener.js"
   },
   "dependencies": {
+    "dotenv": "*",
     "@canboat/canboatjs": "*",
     "@signalk/nmea0183-signalk": "*",
     "cors": "^2.8.5",

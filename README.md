@@ -40,3 +40,7 @@ npm run server/listener.js
 ```
 
 You can also use the index.html file from the public folder. (You need to run the websocket server)
+
+### Windows installer
+
+Download and run instal.cmd
