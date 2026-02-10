@@ -20,6 +20,95 @@
     --text: #f8fafc;
     --text-light: #94a3b8;
     --text-dark: #0f172a;
+    --primary-rgb: 52, 152, 219;
+    --border-color: #2d3748;
+}
+
+/* Theme variables */
+.theme-dark {
+    --bg-primary: #1a1a2e;
+    --bg-secondary: #16213e;
+    --bg-tertiary: #0f3460;
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --text-light: #888888;
+    --border-color: #2d3748;
+    --card-bg: rgba(255, 255, 255, 0.05);
+}
+
+.theme-light {
+    --bg-primary: #f8f9fa;
+    --bg-secondary: #e9ecef;
+    --bg-tertiary: #dee2e6;
+    --text-primary: #212529;
+    --text-secondary: #495057;
+    --text-light: #6c757d;
+    --border-color: #ced4da;
+    --card-bg: rgba(0, 0, 0, 0.02);
+}
+
+.error-banner {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    animation: slideDown 0.3s ease-out;
+}
+
+.error-banner .btn {
+    margin-left: auto;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.error-banner .btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.config-button {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 20px rgba(var(--primary-rgb), 0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+
+.config-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 30px rgba(var(--primary-rgb), 0.4);
+}
+
+.config-button:active {
+    transform: scale(0.95);
+}
+
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 * {
@@ -588,19 +677,32 @@ input[type="range"]::-moz-range-thumb {
 
 footer {
     position: fixed;
-    left: 0;
     bottom: 0;
+    left: 0;
     width: 100%;
-    background-color: #333;
-    color: white;
+    background: linear-gradient(135deg, #2c3e50 0%, #1a2530 100%);
+    color: var(--text-primary);
     text-align: center;
-    padding: 10px 0;
+    padding: 15px 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    box-shadow: 0 -3px 15px rgba(0, 0, 0, 0.1);
+    border-top: 3px solid var(--border-color);
+    z-index: 1000;
 }
+
 footer a {
-    color: #4da6ff;
+    color: var(--success);
     text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border-bottom: 1px dotted var(--border-color);
+    padding-bottom: 1px;
 }
+
 footer a:hover {
+    color: var(--text-primary);
+    border-bottom-color: var(--text-primary);
     text-decoration: underline;
 }
 
