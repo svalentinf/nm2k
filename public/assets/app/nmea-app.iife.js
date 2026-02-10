@@ -8730,7 +8730,7 @@ Expected function or array of functions, received type ${typeof value}.`
         //yden
         {
           "enable": false,
-          "port": "101110"
+          "port": "10110"
         },
         {
           "enable": false,
@@ -8746,7 +8746,7 @@ Expected function or array of functions, received type ${typeof value}.`
         },
         //yden
         {
-          "enable": true,
+          "enable": false,
           "host": "192.168.1.222",
           "port": "1457"
         }
@@ -11492,4 +11492,4 @@ match(CAN1, ${filter.filter}, ${filter.mask})
   };
   createApp(_sfc_main).mount("#app");
 })();
-//# sourceMappingURL=nm2k-app.iife.js.map
+//# sourceMappingURL=nmea-app.iife.js.map
