@@ -17,7 +17,7 @@ echo.
 REM ===== CHECK NODE =====
 where node >nul 2>&1
 if errorlevel 1 (
-    echo ERROR: Node.js is not installed
+    echo ERROR: Node.js is not installed. Download from: https://nodejs.org/en/download
     pause
     exit /b 1
 )
@@ -148,23 +148,10 @@ node %FULL_EXTRACTED_PATH%\%NODE_ENTRY%
 
 echo.
 
-pause
-echo === If you press again the server will stop and exit ===
-
-pause
-echo === If you press again the server will stop and exit ===
-
-pause
-echo === If you press again the server will stop and exit ===
-
-pause
-echo === If you press again the server will stop and exit ===
-
-
-pause
-echo === If you press again the server will stop and exit ===
-
-pause
-echo === If you press again the server will stop and exit ===
+echo ========================================
+:confirm_exit
+choice /c X /n /m "Press X to close: "
+if errorlevel 2 goto confirm_exit
 
 echo === Server stopped ===
+pause
