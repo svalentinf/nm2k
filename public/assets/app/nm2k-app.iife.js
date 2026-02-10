@@ -6708,6 +6708,11 @@ Component that was made reactive: `,
   function createTextVNode(text = " ", flag = 0) {
     return createVNode(Text, null, text, flag);
   }
+  function createStaticVNode(content, numberOfNodes) {
+    const vnode = createVNode(Static, null, content);
+    vnode.staticCount = numberOfNodes;
+    return vnode;
+  }
   function createCommentVNode(text = "", asBlock = false) {
     return asBlock ? (openBlock(), createBlock(Comment, null, text)) : createVNode(Comment, null, text);
   }
@@ -8159,10 +8164,8 @@ Expected function or array of functions, received type ${typeof value}.`
   const _hoisted_3$8 = { class: "stat-number" };
   const _hoisted_4$8 = { class: "stat-card" };
   const _hoisted_5$8 = { class: "stat-number" };
-  const _hoisted_6$7 = { class: "stat-card" };
-  const _hoisted_7$5 = { class: "stat-number" };
-  const _hoisted_8$4 = { class: "stat-card" };
-  const _hoisted_9$4 = { class: "stat-number" };
+  const _hoisted_6$8 = { class: "stat-card" };
+  const _hoisted_7$6 = { class: "stat-number" };
   const _sfc_main$a = {
     __name: "StatsBar",
     props: {
@@ -8182,13 +8185,9 @@ Expected function or array of functions, received type ${typeof value}.`
             createBaseVNode("div", _hoisted_5$8, toDisplayString(__props.totalPgns), 1),
             _cache[1] || (_cache[1] = createBaseVNode("div", { class: "stat-label" }, "Active PGNs", -1))
           ]),
-          createBaseVNode("div", _hoisted_6$7, [
-            createBaseVNode("div", _hoisted_7$5, toDisplayString(__props.totalUpdates), 1),
+          createBaseVNode("div", _hoisted_6$8, [
+            createBaseVNode("div", _hoisted_7$6, toDisplayString(__props.totalUpdates), 1),
             _cache[2] || (_cache[2] = createBaseVNode("div", { class: "stat-label" }, "Total Updates", -1))
-          ]),
-          createBaseVNode("div", _hoisted_8$4, [
-            createBaseVNode("div", _hoisted_9$4, toDisplayString(__props.historyLength), 1),
-            _cache[3] || (_cache[3] = createBaseVNode("div", { class: "stat-label" }, "History Entries", -1))
           ])
         ]);
       };
@@ -8199,10 +8198,11 @@ Expected function or array of functions, received type ${typeof value}.`
   const _hoisted_3$7 = ["value"];
   const _hoisted_4$7 = ["value"];
   const _hoisted_5$7 = ["value"];
-  const _hoisted_6$6 = ["value"];
+  const _hoisted_6$7 = ["value"];
   const _sfc_main$9 = {
     __name: "Controls",
     props: {
+      freezePGNs: Boolean,
       autoUpdate: Boolean,
       searchQuery: String,
       serverFilter: String,
@@ -8216,7 +8216,7 @@ Expected function or array of functions, received type ${typeof value}.`
       "update:serverFilter",
       "update:pgnFilter",
       "toggle-auto-update",
-      "clear-history"
+      "toggleFreezePGNs"
     ],
     setup(__props, { emit: __emit }) {
       const props = __props;
@@ -8237,11 +8237,16 @@ Expected function or array of functions, received type ${typeof value}.`
           ]),
           createBaseVNode("button", {
             class: "btn btn-outline",
-            onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("clear-history"))
-          }, [..._cache[4] || (_cache[4] = [
-            createBaseVNode("i", { class: "fas fa-trash" }, null, -1),
-            createTextVNode(" Clear History ", -1)
-          ])]),
+            onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("toggleFreezePGNs"))
+          }, [
+            !__props.freezePGNs ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
+              _cache[4] || (_cache[4] = createBaseVNode("i", { class: "fas fa-play" }, null, -1)),
+              _cache[5] || (_cache[5] = createTextVNode(" Pause display ", -1))
+            ], 64)) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [
+              _cache[6] || (_cache[6] = createBaseVNode("i", { class: "fas fa-pause" }, null, -1)),
+              _cache[7] || (_cache[7] = createTextVNode(" Resume live update ", -1))
+            ], 64))
+          ]),
           createBaseVNode("input", {
             value: __props.searchQuery,
             onInput: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("update:searchQuery", $event.target.value)),
@@ -8253,7 +8258,7 @@ Expected function or array of functions, received type ${typeof value}.`
             onChange: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("update:serverFilter", $event.target.value)),
             class: "search"
           }, [
-            _cache[5] || (_cache[5] = createBaseVNode("option", { value: "" }, "All Servers", -1)),
+            _cache[8] || (_cache[8] = createBaseVNode("option", { value: "" }, "All Servers", -1)),
             (openBlock(true), createElementBlock(Fragment, null, renderList(__props.serversList, (server) => {
               return openBlock(), createElementBlock("option", {
                 key: server,
@@ -8266,12 +8271,12 @@ Expected function or array of functions, received type ${typeof value}.`
             onChange: _cache[3] || (_cache[3] = ($event) => _ctx.$emit("update:pgnFilter", $event.target.value)),
             class: "search"
           }, [
-            _cache[6] || (_cache[6] = createBaseVNode("option", { value: "" }, "All PGNs", -1)),
+            _cache[9] || (_cache[9] = createBaseVNode("option", { value: "" }, "All PGNs", -1)),
             (openBlock(true), createElementBlock(Fragment, null, renderList(__props.uniquePgns, (pgn) => {
               return openBlock(), createElementBlock("option", {
                 key: pgn,
                 value: pgn
-              }, " PGN " + toDisplayString(pgn), 9, _hoisted_6$6);
+              }, " PGN " + toDisplayString(pgn), 9, _hoisted_6$7);
             }), 128))
           ], 40, _hoisted_5$7)
         ]);
@@ -8283,15 +8288,15 @@ Expected function or array of functions, received type ${typeof value}.`
   const _hoisted_3$6 = { class: "device-stats" };
   const _hoisted_4$6 = { class: "device-stat" };
   const _hoisted_5$6 = { class: "device-stat-value" };
-  const _hoisted_6$5 = { class: "device-stat" };
-  const _hoisted_7$4 = { class: "device-stat-value" };
-  const _hoisted_8$3 = { class: "device-stat" };
-  const _hoisted_9$3 = { class: "device-stat-value" };
-  const _hoisted_10$2 = { class: "device-stat" };
-  const _hoisted_11$2 = { class: "device-stat-value" };
-  const _hoisted_12$2 = { class: "pgn-list" };
-  const _hoisted_13$2 = ["onClick"];
-  const _hoisted_14$2 = { class: "server-list" };
+  const _hoisted_6$6 = { class: "device-stat" };
+  const _hoisted_7$5 = { class: "device-stat-value" };
+  const _hoisted_8$4 = { class: "device-stat" };
+  const _hoisted_9$4 = { class: "device-stat-value" };
+  const _hoisted_10$4 = { class: "device-stat" };
+  const _hoisted_11$4 = { class: "device-stat-value" };
+  const _hoisted_12$4 = { class: "pgn-list" };
+  const _hoisted_13$3 = ["onClick"];
+  const _hoisted_14$3 = { class: "server-list" };
   const _sfc_main$8 = {
     __name: "DeviceCard",
     props: {
@@ -8300,7 +8305,7 @@ Expected function or array of functions, received type ${typeof value}.`
       pgnFilter: [String, Number],
       serverFilter: [String, Number]
     },
-    emits: ["select-device", "filter-pgn"],
+    emits: ["selectDevice", "filterPgn"],
     setup(__props) {
       function formatTime(timestamp, short = false) {
         if (!timestamp) return "N/A";
@@ -8323,7 +8328,7 @@ Expected function or array of functions, received type ${typeof value}.`
       return (_ctx, _cache) => {
         return openBlock(), createElementBlock("div", {
           class: normalizeClass(["device-card", { active: __props.selected }]),
-          onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("select-device", __props.device.src))
+          onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("selectDevice", __props.device.src))
         }, [
           createBaseVNode("div", _hoisted_1$8, [
             createBaseVNode("span", null, toDisplayString(__props.device.name), 1),
@@ -8334,30 +8339,30 @@ Expected function or array of functions, received type ${typeof value}.`
               _cache[1] || (_cache[1] = createBaseVNode("div", { class: "device-stat-label" }, "PGNs", -1)),
               createBaseVNode("div", _hoisted_5$6, toDisplayString(__props.device.pgnCount), 1)
             ]),
-            createBaseVNode("div", _hoisted_6$5, [
+            createBaseVNode("div", _hoisted_6$6, [
               _cache[2] || (_cache[2] = createBaseVNode("div", { class: "device-stat-label" }, "Updates", -1)),
-              createBaseVNode("div", _hoisted_7$4, toDisplayString(__props.device.updates), 1)
+              createBaseVNode("div", _hoisted_7$5, toDisplayString(__props.device.updates), 1)
             ]),
-            createBaseVNode("div", _hoisted_8$3, [
+            createBaseVNode("div", _hoisted_8$4, [
               _cache[3] || (_cache[3] = createBaseVNode("div", { class: "device-stat-label" }, "First Seen", -1)),
-              createBaseVNode("div", _hoisted_9$3, toDisplayString(formatTime(__props.device.firstSeen, true)), 1)
+              createBaseVNode("div", _hoisted_9$4, toDisplayString(formatTime(__props.device.firstSeen, true)), 1)
             ]),
-            createBaseVNode("div", _hoisted_10$2, [
+            createBaseVNode("div", _hoisted_10$4, [
               _cache[4] || (_cache[4] = createBaseVNode("div", { class: "device-stat-label" }, "Last Seen", -1)),
-              createBaseVNode("div", _hoisted_11$2, toDisplayString(formatTime(__props.device.lastSeen, true)), 1)
+              createBaseVNode("div", _hoisted_11$4, toDisplayString(formatTime(__props.device.lastSeen, true)), 1)
             ])
           ]),
-          createBaseVNode("div", _hoisted_12$2, [
+          createBaseVNode("div", _hoisted_12$4, [
             _cache[5] || (_cache[5] = createTextVNode(" PGN's: ", -1)),
-            (openBlock(true), createElementBlock(Fragment, null, renderList(__props.device.pgns, (pgn) => {
+            (openBlock(true), createElementBlock(Fragment, null, renderList(__props.device.pgns, ([pgn, pgnInfo]) => {
               return openBlock(), createElementBlock("span", {
                 key: pgn,
                 class: normalizeClass({ "item": true, "active": pgn == __props.pgnFilter }),
-                onClick: withModifiers(($event) => _ctx.$emit("filter-pgn", pgn), ["stop"])
-              }, toDisplayString(pgn), 11, _hoisted_13$2);
+                onClick: withModifiers(($event) => _ctx.$emit("filterPgn", pgn), ["stop"])
+              }, toDisplayString(pgn), 11, _hoisted_13$3);
             }), 128))
           ]),
-          createBaseVNode("div", _hoisted_14$2, [
+          createBaseVNode("div", _hoisted_14$3, [
             _cache[6] || (_cache[6] = createTextVNode(" Servers: ", -1)),
             (openBlock(true), createElementBlock(Fragment, null, renderList(__props.device.servers, (server) => {
               return openBlock(), createElementBlock("span", {
@@ -8377,8 +8382,8 @@ Expected function or array of functions, received type ${typeof value}.`
     style: { "font-size": "1.5rem" }
   };
   const _hoisted_4$5 = { class: "panel-content" };
-  const _hoisted_5$5 = { class: "devices-list" };
-  const _hoisted_6$4 = {
+  const _hoisted_5$5 = { class: "devicesList" };
+  const _hoisted_6$5 = {
     key: 0,
     class: "empty-state"
   };
@@ -8390,12 +8395,12 @@ Expected function or array of functions, received type ${typeof value}.`
       serverFilter: [String, Number],
       pgnFilter: String
     },
-    emits: ["select-device", "filter-pgn"],
+    emits: ["selectDevice", "filterPgn", "trackPgn"],
     setup(__props) {
       return (_ctx, _cache) => {
         return openBlock(), createElementBlock("div", _hoisted_1$7, [
           createBaseVNode("div", _hoisted_2$6, [
-            _cache[1] || (_cache[1] = createBaseVNode("h3", { class: "panel-title" }, [
+            _cache[2] || (_cache[2] = createBaseVNode("h3", { class: "panelTitle" }, [
               createBaseVNode("i", { class: "fas fa-microchip" }),
               createTextVNode(" Connected Devices ")
             ], -1)),
@@ -8408,13 +8413,13 @@ Expected function or array of functions, received type ${typeof value}.`
                   key: device.src,
                   device,
                   selected: __props.selectedDevice === device.src,
-                  "pgn-filter": __props.pgnFilter,
-                  "server-filter": __props.serverFilter,
-                  onSelectDevice: ($event) => _ctx.$emit("select-device", device.src),
-                  onFilterPgn: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("filter-pgn", $event))
-                }, null, 8, ["device", "selected", "pgn-filter", "server-filter", "onSelectDevice"]);
+                  pgnFilter: __props.pgnFilter,
+                  serverFilter: __props.serverFilter,
+                  onSelectDevice: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("selectDevice", $event)),
+                  onFilterPgn: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("filterPgn", $event))
+                }, null, 8, ["device", "selected", "pgnFilter", "serverFilter"]);
               }), 128)),
-              __props.devicesList.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_6$4, [..._cache[2] || (_cache[2] = [
+              __props.devicesList.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_6$5, [..._cache[3] || (_cache[3] = [
                 createBaseVNode("i", { class: "fas fa-plug" }, null, -1),
                 createBaseVNode("p", null, "No devices connected yet", -1)
               ])])) : createCommentVNode("", true)
@@ -8426,27 +8431,41 @@ Expected function or array of functions, received type ${typeof value}.`
   };
   const _hoisted_1$6 = { class: "pgn-header" };
   const _hoisted_2$5 = { class: "pgn-id" };
-  const _hoisted_3$4 = { style: { "color": "var(--text-light)", "font-size": "0.9rem", "text-align": "right" } };
-  const _hoisted_4$4 = { class: "pgn-description" };
-  const _hoisted_5$4 = { class: "fields-grid" };
-  const _hoisted_6$3 = { class: "field-name" };
-  const _hoisted_7$3 = { class: "field-value" };
-  const _hoisted_8$2 = { class: "pgn-footer" };
-  const _hoisted_9$2 = { style: { "color": "var(--text-light)" } };
-  const _hoisted_10$1 = { class: "pgn-raw" };
-  const _hoisted_11$1 = { class: "pgn-history" };
-  const _hoisted_12$1 = { class: "small" };
-  const _hoisted_13$1 = { key: 0 };
-  const _hoisted_14$1 = { class: "small" };
+  const _hoisted_3$4 = { key: 2 };
+  const _hoisted_4$4 = { style: { "color": "var(--text-light)", "font-size": "0.9rem", "text-align": "right" } };
+  const _hoisted_5$4 = { class: "pgn-description" };
+  const _hoisted_6$4 = { class: "fields-grid" };
+  const _hoisted_7$4 = { class: "field-name" };
+  const _hoisted_8$3 = { class: "field-value" };
+  const _hoisted_9$3 = { class: "small" };
+  const _hoisted_10$3 = { class: "small" };
+  const _hoisted_11$3 = { key: 2 };
+  const _hoisted_12$3 = { class: "small" };
+  const _hoisted_13$2 = { class: "pgn-footer" };
+  const _hoisted_14$2 = { style: { "color": "var(--text-light)" } };
+  const _hoisted_15$2 = { class: "pgn-raw" };
+  const _hoisted_16$2 = {
+    key: 0,
+    class: "pgn-history"
+  };
+  const _hoisted_17$2 = { class: "small" };
+  const _hoisted_18$2 = { key: 0 };
+  const _hoisted_19$2 = { class: "small" };
   const _sfc_main$6 = {
     __name: "PgnCard",
     props: {
       pgn: Object,
       pgnFilter: [String, Number],
-      filteredHistory: Array
+      blockedPGNs: Set,
+      trackingPGNs: Set,
+      autoUpdate: Boolean
     },
-    emits: ["select-device", "filter-pgn"],
+    emits: ["selectDevice", "filterPgn", "blockPgn", "trackPgn"],
     setup(__props) {
+      const props = __props;
+      const computedPgn = computed(() => {
+        return `0x${props.pgn.pgn.toString(16).padStart(5, "0").toUpperCase()}${props.pgn.src.toString(16).padStart(2, "0").toUpperCase()}`;
+      });
       function formatTime(timestamp) {
         if (!timestamp) return "N/A";
         const date = new Date(timestamp);
@@ -8462,66 +8481,120 @@ Expected function or array of functions, received type ${typeof value}.`
         if (typeof value === "object") return JSON.stringify(value);
         return String(value);
       }
+      function formatAngle(value) {
+        return (value * 57.295779).toFixed(3);
+      }
+      function formatPosition(value, isLatitude, precision = 5) {
+        const hemisphere = isLatitude ? value >= 0 ? "N" : "S" : value >= 0 ? "E" : "W";
+        const absValue = Math.abs(value);
+        const degrees = Math.floor(absValue);
+        const minutes = (absValue - degrees) * 60;
+        const formattedMinutes = minutes.toFixed(3).padStart(6, "0");
+        return `${hemisphere} ${degrees}°${formattedMinutes}'`;
+      }
+      function sub(a, b) {
+        const len = a.toString().length > b.toString().length ? a.toString().length : b.toString().length;
+        return (a - b).toFixed(len);
+      }
       return (_ctx, _cache) => {
         return openBlock(), createElementBlock("div", {
           class: normalizeClass(["pgn-card", { updated: __props.pgn.isNew }])
         }, [
           createBaseVNode("div", _hoisted_1$6, [
             createBaseVNode("span", _hoisted_2$5, [
+              __props.pgn.fields && __props.pgn.fields.longitude ? (openBlock(), createElementBlock("span", {
+                key: 0,
+                class: normalizeClass({ "text-success": __props.trackingPGNs.has(`${__props.pgn.src}:${__props.pgn.pgn}`) }),
+                onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("trackPgn", `${__props.pgn.src}:${__props.pgn.pgn}`)),
+                style: { "cursor": "crosshair" }
+              }, [..._cache[4] || (_cache[4] = [
+                createBaseVNode("i", { class: "fas fa-map-location" }, null, -1),
+                createTextVNode(" ", -1)
+              ])], 2)) : createCommentVNode("", true),
               createBaseVNode("span", {
-                onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("filter-pgn", __props.pgn.pgn)),
+                onClick: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("filterPgn", __props.pgn.pgn)),
                 style: { "cursor": "zoom-in" }
-              }, "PGN"),
-              createTextVNode(" " + toDisplayString(__props.pgn.pgn), 1)
+              }, [..._cache[5] || (_cache[5] = [
+                createBaseVNode("i", { class: "fas fa-magnifying-glass" }, null, -1),
+                createTextVNode(" PGN ", -1)
+              ])]),
+              typeof __props.pgn.pgn === "number" ? (openBlock(), createElementBlock("span", {
+                key: 1,
+                onClick: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("blockPgn", computedPgn.value)),
+                class: normalizeClass({ "text-danger": __props.blockedPGNs.has(computedPgn.value) }),
+                style: { "cursor": "not-allowed" }
+              }, [
+                createBaseVNode("i", {
+                  class: normalizeClass(["fas", { "fa-ban": __props.blockedPGNs.has(computedPgn.value), "fa-plus-circle": !__props.blockedPGNs.has(computedPgn.value) }])
+                }, null, 2)
+              ], 2)) : createCommentVNode("", true),
+              createTextVNode(" " + toDisplayString(__props.pgn.pgn) + " ", 1),
+              typeof __props.pgn.pgn === "number" ? (openBlock(), createElementBlock("span", _hoisted_3$4, "[" + toDisplayString(__props.pgn.pgn.toString(16).padStart(5, "0").toUpperCase()) + "]", 1)) : createCommentVNode("", true)
             ]),
-            createBaseVNode("span", _hoisted_3$4, [
+            createBaseVNode("span", _hoisted_4$4, [
               createBaseVNode("span", {
-                onClick: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("select-device", __props.pgn.src)),
+                onClick: _cache[3] || (_cache[3] = ($event) => _ctx.$emit("selectDevice", __props.pgn.src)),
                 style: { "cursor": "zoom-in" }
               }, "Device"),
-              createTextVNode(" " + toDisplayString(__props.pgn.src), 1),
-              _cache[2] || (_cache[2] = createBaseVNode("br", null, null, -1)),
-              createBaseVNode("span", null, toDisplayString(__props.pgn.serverAddress), 1)
+              createTextVNode(" " + toDisplayString(`${__props.pgn.src} [${__props.pgn.src.toString(16).padStart(2, "0").toUpperCase()}]`), 1),
+              _cache[6] || (_cache[6] = createBaseVNode("br", null, null, -1)),
+              createBaseVNode("span", null, toDisplayString(__props.pgn.servers), 1)
             ])
           ]),
-          createBaseVNode("div", _hoisted_4$4, toDisplayString(__props.pgn.description), 1),
-          createBaseVNode("div", _hoisted_5$4, [
+          createBaseVNode("div", _hoisted_5$4, toDisplayString(__props.pgn.description), 1),
+          createBaseVNode("div", _hoisted_6$4, [
             (openBlock(true), createElementBlock(Fragment, null, renderList(__props.pgn.fields, (value, field) => {
               return openBlock(), createElementBlock("div", {
                 key: field,
                 class: normalizeClass(["field-row", { updated: __props.pgn.updatedFields?.includes(field) }])
               }, [
-                createBaseVNode("span", _hoisted_6$3, toDisplayString(field), 1),
-                createBaseVNode("span", _hoisted_7$3, toDisplayString(formatValue(value)), 1)
+                createBaseVNode("span", _hoisted_7$4, toDisplayString(field), 1),
+                createBaseVNode("span", _hoisted_8$3, [
+                  field === "latitude" ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
+                    createTextVNode(toDisplayString(formatPosition(value, true)) + " ", 1),
+                    _cache[7] || (_cache[7] = createBaseVNode("br", null, null, -1)),
+                    createBaseVNode("span", _hoisted_9$3, toDisplayString(formatValue(value)), 1)
+                  ], 64)) : field === "longitude" ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
+                    createTextVNode(toDisplayString(formatPosition(value, false)) + " ", 1),
+                    _cache[8] || (_cache[8] = createBaseVNode("br", null, null, -1)),
+                    createBaseVNode("span", _hoisted_10$3, toDisplayString(formatValue(value)), 1)
+                  ], 64)) : field === "heading" || field === "windAngle" || field === "courseOverGroundMagnetic" || field === "courseOverGroundTrue" || field === "headingMagnetic" || field === "headingCompass" || field === "headingTrue" || field === "angleApparent" || field === "angleTrueWater" ? (openBlock(), createElementBlock("span", _hoisted_11$3, [
+                    createTextVNode(toDisplayString(formatAngle(value)) + " ", 1),
+                    _cache[9] || (_cache[9] = createBaseVNode("br", null, null, -1)),
+                    createBaseVNode("span", _hoisted_12$3, toDisplayString(formatValue(value)), 1)
+                  ])) : (openBlock(), createElementBlock(Fragment, { key: 3 }, [
+                    createTextVNode(toDisplayString(formatValue(value)), 1)
+                  ], 64))
+                ])
               ], 2);
             }), 128))
           ]),
-          createBaseVNode("div", _hoisted_8$2, [
+          createBaseVNode("div", _hoisted_13$2, [
             createBaseVNode("span", null, toDisplayString(formatTime(__props.pgn.timestamp)), 1),
-            createBaseVNode("span", _hoisted_9$2, toDisplayString(__props.pgn.direction || "Unknown"), 1)
+            createBaseVNode("span", _hoisted_14$2, toDisplayString(__props.pgn.direction || "Unknown"), 1)
           ]),
-          createBaseVNode("div", _hoisted_10$1, toDisplayString(__props.pgn.raw), 1),
-          createBaseVNode("div", _hoisted_11$1, [
+          createBaseVNode("div", _hoisted_15$2, toDisplayString(__props.pgn.raw), 1),
+          !__props.autoUpdate ? (openBlock(), createElementBlock("div", _hoisted_16$2, [
             createBaseVNode("table", null, [
               createBaseVNode("tbody", null, [
                 createBaseVNode("tr", null, [
-                  _cache[3] || (_cache[3] = createBaseVNode("th", null, "Timestamp", -1)),
+                  _cache[10] || (_cache[10] = createBaseVNode("th", null, "Timestamp", -1)),
                   (openBlock(true), createElementBlock(Fragment, null, renderList(__props.pgn.fields, (field, fieldName) => {
                     return openBlock(), createElementBlock("th", null, toDisplayString(fieldName), 1);
                   }), 256))
                 ]),
-                (openBlock(true), createElementBlock(Fragment, null, renderList(__props.filteredHistory, (pgnHistory) => {
+                (openBlock(true), createElementBlock(Fragment, null, renderList(__props.pgn.history, (pgnHistory) => {
                   return openBlock(), createElementBlock("tr", null, [
                     pgnHistory && pgnHistory.src === __props.pgn.src && pgnHistory.pgn === __props.pgn.pgn ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
-                      createBaseVNode("td", _hoisted_12$1, [
+                      createBaseVNode("td", _hoisted_17$2, [
                         createTextVNode(toDisplayString(formatTime(pgnHistory.timestamp)) + " ", 1),
-                        _cache[4] || (_cache[4] = createBaseVNode("br", null, null, -1)),
+                        _cache[11] || (_cache[11] = createBaseVNode("br", null, null, -1)),
                         createTextVNode(" " + toDisplayString(pgnHistory.serverAddress), 1)
                       ]),
                       (openBlock(true), createElementBlock(Fragment, null, renderList(__props.pgn.fields, (field, fieldName) => {
                         return openBlock(), createElementBlock("td", null, [
-                          typeof pgnHistory["fields"][fieldName] === "number" ? (openBlock(), createElementBlock("div", _hoisted_13$1, toDisplayString(__props.pgn.fields[fieldName] - pgnHistory.fields[fieldName]), 1)) : createCommentVNode("", true),
-                          createBaseVNode("div", _hoisted_14$1, toDisplayString(pgnHistory["fields"][fieldName] ?? "-"), 1)
+                          typeof pgnHistory["fields"] !== "undefined" && typeof pgnHistory["fields"][fieldName] === "number" ? (openBlock(), createElementBlock("div", _hoisted_18$2, toDisplayString(sub(__props.pgn.fields[fieldName] ?? "", pgnHistory.fields[fieldName] ?? "")), 1)) : createCommentVNode("", true),
+                          createBaseVNode("div", _hoisted_19$2, toDisplayString(typeof pgnHistory["fields"] !== "undefined" && typeof pgnHistory["fields"][fieldName] !== "undefined" ? pgnHistory["fields"][fieldName] : "-"), 1)
                         ]);
                       }), 256))
                     ], 64)) : createCommentVNode("", true)
@@ -8529,56 +8602,62 @@ Expected function or array of functions, received type ${typeof value}.`
                 }), 256))
               ])
             ])
-          ])
+          ])) : createCommentVNode("", true)
         ], 2);
       };
     }
   };
   const _hoisted_1$5 = { class: "panel" };
   const _hoisted_2$4 = { class: "panel-header" };
-  const _hoisted_3$3 = { class: "panel-title" };
+  const _hoisted_3$3 = { class: "panelTitle" };
   const _hoisted_4$3 = {
     class: "stat-number",
     style: { "font-size": "1.5rem" }
   };
   const _hoisted_5$3 = { class: "panel-content" };
-  const _hoisted_6$2 = { class: "pgns-grid" };
-  const _hoisted_7$2 = {
+  const _hoisted_6$3 = { class: "pgns-grid" };
+  const _hoisted_7$3 = {
     key: 0,
     class: "empty-state"
   };
   const _sfc_main$5 = {
     __name: "PgnsPanel",
     props: {
-      filteredPgns: Array,
+      filteredPGNs: Array,
+      blockedPGNs: Set,
       panelTitle: String,
       pgnFilter: String,
-      filteredHistory: Array
+      autoUpdate: Boolean,
+      trackingPGNs: Set
     },
-    emits: ["select-device", "filter-pgn"],
+    emits: ["selectDevice", "filterPgn", "blockPgn", "trackPgn"],
     setup(__props) {
       return (_ctx, _cache) => {
         return openBlock(), createElementBlock("div", _hoisted_1$5, [
           createBaseVNode("div", _hoisted_2$4, [
             createBaseVNode("h3", _hoisted_3$3, [
-              _cache[2] || (_cache[2] = createBaseVNode("i", { class: "fas fa-stream" }, null, -1)),
+              _cache[4] || (_cache[4] = createBaseVNode("i", { class: "fas fa-stream" }, null, -1)),
               createTextVNode(" " + toDisplayString(__props.panelTitle), 1)
             ]),
-            createBaseVNode("span", _hoisted_4$3, toDisplayString(__props.filteredPgns.length), 1)
+            createBaseVNode("span", _hoisted_4$3, toDisplayString(__props.filteredPGNs.length), 1)
           ]),
           createBaseVNode("div", _hoisted_5$3, [
-            createBaseVNode("div", _hoisted_6$2, [
-              (openBlock(true), createElementBlock(Fragment, null, renderList(__props.filteredPgns, (pgn) => {
+            createBaseVNode("div", _hoisted_6$3, [
+              (openBlock(true), createElementBlock(Fragment, null, renderList(__props.filteredPGNs, (pgn) => {
                 return openBlock(), createBlock(_sfc_main$6, {
                   key: pgn.id,
                   pgn,
-                  "pgn-filter": __props.pgnFilter,
-                  filteredHistory: __props.filteredHistory,
-                  onSelectDevice: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("select-device", $event)),
-                  onFilterPgn: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("filter-pgn", $event))
-                }, null, 8, ["pgn", "pgn-filter", "filteredHistory"]);
+                  pgnFilter: __props.pgnFilter,
+                  blockedPGNs: __props.blockedPGNs,
+                  trackingPGNs: __props.trackingPGNs,
+                  autoUpdate: __props.autoUpdate,
+                  onSelectDevice: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("selectDevice", $event)),
+                  onTrackPgn: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("trackPgn", $event)),
+                  onFilterPgn: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("filterPgn", $event)),
+                  onBlockPgn: _cache[3] || (_cache[3] = ($event) => _ctx.$emit("blockPgn", $event))
+                }, null, 8, ["pgn", "pgnFilter", "blockedPGNs", "trackingPGNs", "autoUpdate"]);
               }), 128)),
-              __props.filteredPgns.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_7$2, [..._cache[3] || (_cache[3] = [
+              __props.filteredPGNs.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_7$3, [..._cache[5] || (_cache[5] = [
                 createBaseVNode("i", { class: "fas fa-search" }, null, -1),
                 createBaseVNode("p", null, "No PGNs match your filters", -1)
               ])])) : createCommentVNode("", true)
@@ -8588,158 +8667,44 @@ Expected function or array of functions, received type ${typeof value}.`
       };
     }
   };
-  const _hoisted_1$4 = { class: "history-item" };
-  const _hoisted_2$3 = { class: "history-header" };
-  const _hoisted_3$2 = { class: "history-pgn" };
-  const _hoisted_4$2 = { class: "history-device" };
-  const _hoisted_5$2 = { class: "history-description" };
-  const _hoisted_6$1 = { class: "history-time" };
-  const _hoisted_7$1 = {
-    key: 0,
-    class: "fields-grid"
-  };
-  const _hoisted_8$1 = { class: "field-name" };
-  const _hoisted_9$1 = { class: "field-value" };
+  const _hoisted_1$4 = { class: "dashboard" };
   const _sfc_main$4 = {
-    __name: "HistoryItem",
-    props: {
-      item: Object
-    },
-    setup(__props) {
-      function formatTime(timestamp) {
-        if (!timestamp) return "N/A";
-        const date = new Date(timestamp);
-        return date.toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          fractionalSecondDigits: 3
-        });
-      }
-      function formatValue(value) {
-        if (value === null || value === void 0) return "null";
-        if (typeof value === "object") return JSON.stringify(value);
-        return String(value);
-      }
-      return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$4, [
-          createBaseVNode("div", _hoisted_2$3, [
-            createBaseVNode("span", _hoisted_3$2, "PGN " + toDisplayString(__props.item.pgn), 1),
-            createBaseVNode("span", _hoisted_4$2, [
-              createTextVNode(" Device " + toDisplayString(__props.item.src) + " ", 1),
-              _cache[0] || (_cache[0] = createBaseVNode("br", null, null, -1)),
-              createTextVNode(" " + toDisplayString(__props.item.serverAddress), 1)
-            ])
-          ]),
-          createBaseVNode("div", _hoisted_5$2, toDisplayString(__props.item.description), 1),
-          createBaseVNode("div", _hoisted_6$1, toDisplayString(formatTime(__props.item.timestamp)), 1),
-          __props.item.fields ? (openBlock(), createElementBlock("div", _hoisted_7$1, [
-            (openBlock(true), createElementBlock(Fragment, null, renderList(__props.item.fields, (value, field) => {
-              return openBlock(), createElementBlock("div", {
-                key: field,
-                class: "field-row"
-              }, [
-                createBaseVNode("span", _hoisted_8$1, toDisplayString(field), 1),
-                createBaseVNode("span", _hoisted_9$1, toDisplayString(formatValue(value)), 1)
-              ]);
-            }), 128))
-          ])) : createCommentVNode("", true)
-        ]);
-      };
-    }
-  };
-  const _hoisted_1$3 = { class: "panel" };
-  const _hoisted_2$2 = { class: "panel-header" };
-  const _hoisted_3$1 = { class: "panel-content" };
-  const _hoisted_4$1 = { class: "history-list" };
-  const _hoisted_5$1 = {
-    key: 0,
-    class: "empty-state"
-  };
-  const _sfc_main$3 = {
-    __name: "HistoryPanel",
-    props: {
-      filteredHistory: Array
-    },
-    emits: ["clear-history"],
-    setup(__props) {
-      return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$3, [
-          createBaseVNode("div", _hoisted_2$2, [
-            _cache[1] || (_cache[1] = createBaseVNode("h3", { class: "panel-title" }, [
-              createBaseVNode("i", { class: "fas fa-history" }),
-              createTextVNode(" Recent History ")
-            ], -1)),
-            createBaseVNode("button", {
-              class: "btn",
-              onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("clear-history")),
-              style: { "padding": "5px 10px", "font-size": "0.9rem" }
-            }, " Clear ")
-          ]),
-          createBaseVNode("div", _hoisted_3$1, [
-            createBaseVNode("div", _hoisted_4$1, [
-              (openBlock(true), createElementBlock(Fragment, null, renderList(__props.filteredHistory, (item) => {
-                return openBlock(), createBlock(_sfc_main$4, {
-                  key: item.id,
-                  item
-                }, null, 8, ["item"]);
-              }), 128)),
-              __props.filteredHistory.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_5$1, [..._cache[2] || (_cache[2] = [
-                createBaseVNode("i", { class: "fas fa-clock" }, null, -1),
-                createBaseVNode("p", null, "No history yet", -1)
-              ])])) : createCommentVNode("", true)
-            ])
-          ])
-        ]);
-      };
-    }
-  };
-  const _hoisted_1$2 = { class: "dashboard" };
-  const _sfc_main$2 = {
     __name: "Dashboard",
     props: {
       devicesList: Array,
-      filteredPgns: Array,
-      filteredHistory: Array,
+      filteredPGNs: Array,
+      blockedPGNs: Set,
+      trackingPGNs: Set,
       selectedDevice: [String, Number],
       serverFilter: String,
       pgnFilter: String,
-      panelTitle: String
+      panelTitle: String,
+      autoUpdate: Boolean
     },
-    emits: ["select-device", "filter-pgn", "clear-history"],
+    emits: ["selectDevice", "filterPgn", "blockPgn", "trackPgn"],
     setup(__props, { emit: __emit }) {
-      const emit2 = __emit;
-      function selectDevice(src) {
-        emit2("select-device", src);
-      }
-      function filterPgn(pgn, event) {
-        emit2("filter-pgn", pgn, event);
-      }
-      function clearHistory() {
-        emit2("clear-history");
-      }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$2, [
+        return openBlock(), createElementBlock("div", _hoisted_1$4, [
           createVNode(_sfc_main$7, {
             devicesList: __props.devicesList,
             selectedDevice: __props.selectedDevice,
             pgnFilter: __props.pgnFilter,
             serverFilter: __props.serverFilter,
-            onSelectDevice: selectDevice,
-            onFilterPgn: filterPgn
+            onSelectDevice: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("selectDevice", $event)),
+            onFilterPgn: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("filterPgn", $event))
           }, null, 8, ["devicesList", "selectedDevice", "pgnFilter", "serverFilter"]),
           createVNode(_sfc_main$5, {
-            filteredPgns: __props.filteredPgns,
+            autoUpdate: __props.autoUpdate,
+            filteredPGNs: __props.filteredPGNs,
             panelTitle: __props.panelTitle,
             pgnFilter: __props.pgnFilter,
-            filteredHistory: __props.filteredHistory,
-            onSelectDevice: selectDevice,
-            onFilterPgn: filterPgn
-          }, null, 8, ["filteredPgns", "panelTitle", "pgnFilter", "filteredHistory"]),
-          createVNode(_sfc_main$3, {
-            filteredHistory: __props.filteredHistory,
-            onClearHistory: clearHistory
-          }, null, 8, ["filteredHistory"])
+            blockedPGNs: __props.blockedPGNs,
+            trackingPGNs: __props.trackingPGNs,
+            onSelectDevice: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("selectDevice", $event)),
+            onFilterPgn: _cache[3] || (_cache[3] = ($event) => _ctx.$emit("filterPgn", $event)),
+            onBlockPgn: _cache[4] || (_cache[4] = ($event) => _ctx.$emit("blockPgn", $event)),
+            onTrackPgn: _cache[5] || (_cache[5] = ($event) => _ctx.$emit("trackPgn", $event))
+          }, null, 8, ["autoUpdate", "filteredPGNs", "panelTitle", "pgnFilter", "blockedPGNs", "trackingPGNs"])
         ]);
       };
     }
@@ -8749,19 +8714,49 @@ Expected function or array of functions, received type ${typeof value}.`
     wsUrl: "ws://localhost:8080",
     // wsUrl:       'ws://192.168.1.111/api/websocket',
     autoConnect: true,
-    maxHistory: 5e3,
-    refreshRate: 1e3,
     showRawData: false,
     theme: "dark",
-    filters: {
-      minPriority: 0,
-      maxAge: 36e5
-      // 1 hour
+    dataServers: {
+      "UDP": [
+        //actisense
+        {
+          "enable": true,
+          "port": "60001"
+        },
+        {
+          "enable": false,
+          "port": "60002"
+        },
+        //yden
+        {
+          "enable": false,
+          "port": "101110"
+        },
+        {
+          "enable": false,
+          "port": "1456"
+        }
+      ],
+      "TCP": [
+        //actisense
+        {
+          "enable": true,
+          "host": "192.168.1.111",
+          "port": "60003"
+        },
+        //yden
+        {
+          "enable": true,
+          "host": "192.168.1.222",
+          "port": "1457"
+        }
+      ]
     }
+    //we need to send the port to the server
   };
+  const savedConfig = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+  const config = ref({ ...defaultConfig, ...savedConfig });
   function useConfigStore() {
-    const savedConfig = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-    const config = ref({ ...defaultConfig, ...savedConfig });
     watch(config, (newConfig) => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(newConfig));
     }, { deep: true });
@@ -8788,26 +8783,36 @@ Expected function or array of functions, received type ${typeof value}.`
     }
     return target;
   };
-  const _hoisted_1$1 = { class: "modal-content" };
-  const _hoisted_2$1 = { class: "modal-body" };
-  const _hoisted_3 = { class: "config-section" };
-  const _hoisted_4 = { class: "form-group" };
-  const _hoisted_5 = { class: "form-group" };
-  const _hoisted_6 = { class: "checkbox-label" };
-  const _hoisted_7 = { class: "form-group" };
-  const _hoisted_8 = { class: "config-section" };
-  const _hoisted_9 = { class: "form-group" };
-  const _hoisted_10 = { class: "form-group" };
-  const _hoisted_11 = { class: "checkbox-label" };
-  const _hoisted_12 = { class: "form-group" };
-  const _hoisted_13 = { class: "config-section" };
-  const _hoisted_14 = { class: "form-group" };
-  const _hoisted_15 = { class: "range-value" };
-  const _hoisted_16 = { class: "form-group" };
-  const _hoisted_17 = { class: "config-section" };
-  const _hoisted_18 = { class: "connection-test" };
-  const _hoisted_19 = ["disabled"];
-  const _sfc_main$1 = {
+  const _hoisted_1$3 = { class: "modal-content" };
+  const _hoisted_2$3 = { class: "modal-body" };
+  const _hoisted_3$2 = { class: "config-section" };
+  const _hoisted_4$2 = { class: "form-group" };
+  const _hoisted_5$2 = { class: "form-group" };
+  const _hoisted_6$2 = { class: "checkbox-label" };
+  const _hoisted_7$2 = { class: "config-section" };
+  const _hoisted_8$2 = {
+    class: "table",
+    style: { "width": "100%" }
+  };
+  const _hoisted_9$2 = { class: "d-flex" };
+  const _hoisted_10$2 = { class: "checkbox-label" };
+  const _hoisted_11$2 = ["onUpdate:modelValue"];
+  const _hoisted_12$2 = ["onUpdate:modelValue"];
+  const _hoisted_13$1 = ["onClick"];
+  const _hoisted_14$1 = { class: "d-flex" };
+  const _hoisted_15$1 = { class: "checkbox-label" };
+  const _hoisted_16$1 = ["onUpdate:modelValue"];
+  const _hoisted_17$1 = ["onUpdate:modelValue"];
+  const _hoisted_18$1 = ["onUpdate:modelValue"];
+  const _hoisted_19$1 = ["onClick"];
+  const _hoisted_20$1 = { class: "config-section" };
+  const _hoisted_21$1 = { class: "form-group" };
+  const _hoisted_22$1 = { class: "checkbox-label" };
+  const _hoisted_23$1 = { class: "form-group" };
+  const _hoisted_24$1 = { class: "config-section" };
+  const _hoisted_25$1 = { class: "connection-test" };
+  const _hoisted_26$1 = ["disabled"];
+  const _sfc_main$3 = {
     __name: "ConfigModal",
     props: {
       isVisible: Boolean
@@ -8815,8 +8820,8 @@ Expected function or array of functions, received type ${typeof value}.`
     emits: ["close", "config-change"],
     setup(__props, { emit: __emit }) {
       const emit2 = __emit;
-      const { config, updateConfig, resetConfig } = useConfigStore();
-      const localConfig = ref(JSON.parse(JSON.stringify(config.value)));
+      const { config: config2, updateConfig, resetConfig } = useConfigStore();
+      const localConfig = ref(JSON.parse(JSON.stringify(config2.value)));
       const testing = ref(false);
       const testResult = ref(null);
       const testStatus = computed(() => {
@@ -8847,12 +8852,42 @@ Expected function or array of functions, received type ${typeof value}.`
       function saveConfig() {
         updateConfig(localConfig.value);
         emit2("config-change", localConfig.value);
-        close();
       }
       function resetToDefaults() {
         if (confirm("Reset all settings to defaults?")) {
           resetConfig();
-          localConfig.value = JSON.parse(JSON.stringify(config.value));
+          localConfig.value = JSON.parse(JSON.stringify(config2.value));
+        }
+      }
+      function addServer(type) {
+        switch (type) {
+          case "TCP":
+            localConfig.value.dataServers?.TCP.push({
+              "enable": false,
+              "host": "",
+              "port": ""
+            });
+            break;
+          case "UDP":
+            localConfig.value.dataServers?.UDP.push({
+              "enable": false,
+              "port": ""
+            });
+            break;
+          default:
+            console.error(`Type: "${type}" is not configured!`);
+        }
+      }
+      function removeServer(type, index) {
+        switch (type) {
+          case "TCP":
+            localConfig.value.dataServers?.TCP.splice(index, 1);
+            break;
+          case "UDP":
+            localConfig.value.dataServers?.UDP.splice(index, 1);
+            break;
+          default:
+            console.error(`Type: "${type}" is not configured!`);
         }
       }
       async function testConnection() {
@@ -8892,9 +8927,9 @@ Expected function or array of functions, received type ${typeof value}.`
           class: "modal-overlay",
           onClick: withModifiers(close, ["self"])
         }, [
-          createBaseVNode("div", _hoisted_1$1, [
+          createBaseVNode("div", _hoisted_1$3, [
             createBaseVNode("div", { class: "modal-header" }, [
-              _cache[8] || (_cache[8] = createBaseVNode("h2", null, [
+              _cache[6] || (_cache[6] = createBaseVNode("h2", null, [
                 createBaseVNode("i", { class: "fas fa-cog" }),
                 createTextVNode(" Configuration")
               ], -1)),
@@ -8903,14 +8938,14 @@ Expected function or array of functions, received type ${typeof value}.`
                 onClick: close
               }, "×")
             ]),
-            createBaseVNode("div", _hoisted_2$1, [
-              createBaseVNode("div", _hoisted_3, [
-                _cache[14] || (_cache[14] = createBaseVNode("h3", null, [
+            createBaseVNode("div", _hoisted_2$3, [
+              createBaseVNode("div", _hoisted_3$2, [
+                _cache[10] || (_cache[10] = createBaseVNode("h3", null, [
                   createBaseVNode("i", { class: "fas fa-plug" }),
                   createTextVNode(" Connection Settings")
                 ], -1)),
-                createBaseVNode("div", _hoisted_4, [
-                  _cache[9] || (_cache[9] = createBaseVNode("label", { for: "wsUrl" }, "WebSocket URL", -1)),
+                createBaseVNode("div", _hoisted_4$2, [
+                  _cache[7] || (_cache[7] = createBaseVNode("label", { for: "wsUrl" }, "WebSocket URL", -1)),
                   withDirectives(createBaseVNode("input", {
                     id: "wsUrl",
                     "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => localConfig.value.wsUrl = $event),
@@ -8920,10 +8955,10 @@ Expected function or array of functions, received type ${typeof value}.`
                   }, null, 512), [
                     [vModelText, localConfig.value.wsUrl]
                   ]),
-                  _cache[10] || (_cache[10] = createBaseVNode("div", { class: "form-help" }, " Enter the WebSocket URL for your NMEA 2000 data source ", -1))
+                  _cache[8] || (_cache[8] = createBaseVNode("div", { class: "form-help" }, " Enter the WebSocket URL for your NMEA 2000 data source ", -1))
                 ]),
-                createBaseVNode("div", _hoisted_5, [
-                  createBaseVNode("label", _hoisted_6, [
+                createBaseVNode("div", _hoisted_5$2, [
+                  createBaseVNode("label", _hoisted_6$2, [
                     withDirectives(createBaseVNode("input", {
                       "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => localConfig.value.autoConnect = $event),
                       type: "checkbox",
@@ -8931,57 +8966,115 @@ Expected function or array of functions, received type ${typeof value}.`
                     }, null, 512), [
                       [vModelCheckbox, localConfig.value.autoConnect]
                     ]),
-                    _cache[11] || (_cache[11] = createBaseVNode("span", null, "Auto-connect on startup", -1))
+                    _cache[9] || (_cache[9] = createBaseVNode("span", null, "Auto-connect on startup", -1))
                   ])
-                ]),
-                createBaseVNode("div", _hoisted_7, [
-                  _cache[12] || (_cache[12] = createBaseVNode("label", { for: "refreshRate" }, "Refresh Rate (ms)", -1)),
-                  withDirectives(createBaseVNode("input", {
-                    id: "refreshRate",
-                    "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => localConfig.value.refreshRate = $event),
-                    type: "number",
-                    min: "100",
-                    max: "10000",
-                    step: "100",
-                    class: "form-control"
-                  }, null, 512), [
-                    [
-                      vModelText,
-                      localConfig.value.refreshRate,
-                      void 0,
-                      { number: true }
-                    ]
-                  ]),
-                  _cache[13] || (_cache[13] = createBaseVNode("div", { class: "form-help" }, " How often to update the display (100-10000 ms) ", -1))
                 ])
               ]),
-              createBaseVNode("div", _hoisted_8, [
-                _cache[20] || (_cache[20] = createBaseVNode("h3", null, [
+              createBaseVNode("div", _hoisted_7$2, [
+                _cache[18] || (_cache[18] = createBaseVNode("h3", null, [
+                  createBaseVNode("i", { class: "fas fa-server" }),
+                  createTextVNode(" Data servers")
+                ], -1)),
+                createBaseVNode("table", _hoisted_8$2, [
+                  _cache[17] || (_cache[17] = createBaseVNode("tr", null, [
+                    createBaseVNode("th", null, "UDP"),
+                    createBaseVNode("th", null, "TCP")
+                  ], -1)),
+                  createBaseVNode("tr", null, [
+                    createBaseVNode("td", null, [
+                      (openBlock(true), createElementBlock(Fragment, null, renderList(localConfig.value.dataServers?.UDP, (udp, index) => {
+                        return openBlock(), createElementBlock("div", _hoisted_9$2, [
+                          createBaseVNode("label", _hoisted_10$2, [
+                            withDirectives(createBaseVNode("input", {
+                              "onUpdate:modelValue": ($event) => udp.enable = $event,
+                              type: "checkbox",
+                              class: "form-checkbox"
+                            }, null, 8, _hoisted_11$2), [
+                              [vModelCheckbox, udp.enable]
+                            ]),
+                            _cache[11] || (_cache[11] = createBaseVNode("span", null, null, -1))
+                          ]),
+                          withDirectives(createBaseVNode("input", {
+                            "onUpdate:modelValue": ($event) => udp.port = $event,
+                            type: "number",
+                            style: { "max-width": "100px" },
+                            class: "form-control"
+                          }, null, 8, _hoisted_12$2), [
+                            [vModelText, udp.port]
+                          ]),
+                          createBaseVNode("button", {
+                            class: "btn btn-sm btn-danger",
+                            onClick: ($event) => removeServer("UDP", index)
+                          }, [..._cache[12] || (_cache[12] = [
+                            createBaseVNode("i", { class: "fas fa-trash" }, null, -1)
+                          ])], 8, _hoisted_13$1)
+                        ]);
+                      }), 256)),
+                      createBaseVNode("button", {
+                        class: "btn btn-success",
+                        onClick: _cache[2] || (_cache[2] = ($event) => addServer("UDP")),
+                        style: { "margin": "auto" }
+                      }, [..._cache[13] || (_cache[13] = [
+                        createBaseVNode("i", { class: "fas fa-plus-circle" }, null, -1),
+                        createTextVNode(" Add Connection ", -1)
+                      ])])
+                    ]),
+                    createBaseVNode("td", null, [
+                      (openBlock(true), createElementBlock(Fragment, null, renderList(localConfig.value.dataServers?.TCP, (tcp, index) => {
+                        return openBlock(), createElementBlock("div", _hoisted_14$1, [
+                          createBaseVNode("label", _hoisted_15$1, [
+                            withDirectives(createBaseVNode("input", {
+                              "onUpdate:modelValue": ($event) => tcp.enable = $event,
+                              type: "checkbox",
+                              class: "form-checkbox"
+                            }, null, 8, _hoisted_16$1), [
+                              [vModelCheckbox, tcp.enable]
+                            ]),
+                            _cache[14] || (_cache[14] = createBaseVNode("span", null, null, -1))
+                          ]),
+                          withDirectives(createBaseVNode("input", {
+                            "onUpdate:modelValue": ($event) => tcp.host = $event,
+                            placeholder: "host",
+                            class: "form-control"
+                          }, null, 8, _hoisted_17$1), [
+                            [vModelText, tcp.host]
+                          ]),
+                          withDirectives(createBaseVNode("input", {
+                            "onUpdate:modelValue": ($event) => tcp.port = $event,
+                            type: "number",
+                            style: { "max-width": "100px" },
+                            placeholder: "port",
+                            class: "form-control"
+                          }, null, 8, _hoisted_18$1), [
+                            [vModelText, tcp.port]
+                          ]),
+                          createBaseVNode("button", {
+                            class: "btn btn-sm btn-danger",
+                            onClick: ($event) => removeServer("TCP", index)
+                          }, [..._cache[15] || (_cache[15] = [
+                            createBaseVNode("i", { class: "fas fa-trash" }, null, -1)
+                          ])], 8, _hoisted_19$1)
+                        ]);
+                      }), 256)),
+                      createBaseVNode("button", {
+                        class: "btn btn-success",
+                        onClick: _cache[3] || (_cache[3] = ($event) => addServer("TCP")),
+                        style: { "margin": "auto" }
+                      }, [..._cache[16] || (_cache[16] = [
+                        createBaseVNode("i", { class: "fas fa-plus" }, null, -1),
+                        createTextVNode(" Add Connection ", -1)
+                      ])])
+                    ])
+                  ])
+                ])
+              ]),
+              createBaseVNode("div", _hoisted_20$1, [
+                _cache[22] || (_cache[22] = createBaseVNode("h3", null, [
                   createBaseVNode("i", { class: "fas fa-desktop" }),
                   createTextVNode(" Display Settings")
                 ], -1)),
-                createBaseVNode("div", _hoisted_9, [
-                  _cache[15] || (_cache[15] = createBaseVNode("label", { for: "maxHistory" }, "Max History Entries", -1)),
-                  withDirectives(createBaseVNode("input", {
-                    id: "maxHistory",
-                    "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => localConfig.value.maxHistory = $event),
-                    type: "number",
-                    min: "100",
-                    max: "100000",
-                    step: "100",
-                    class: "form-control"
-                  }, null, 512), [
-                    [
-                      vModelText,
-                      localConfig.value.maxHistory,
-                      void 0,
-                      { number: true }
-                    ]
-                  ]),
-                  _cache[16] || (_cache[16] = createBaseVNode("div", { class: "form-help" }, " Maximum number of history entries to keep (100-100000) ", -1))
-                ]),
-                createBaseVNode("div", _hoisted_10, [
-                  createBaseVNode("label", _hoisted_11, [
+                createBaseVNode("div", _hoisted_21$1, [
+                  createBaseVNode("label", _hoisted_22$1, [
                     withDirectives(createBaseVNode("input", {
                       "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => localConfig.value.showRawData = $event),
                       type: "checkbox",
@@ -8989,16 +9082,16 @@ Expected function or array of functions, received type ${typeof value}.`
                     }, null, 512), [
                       [vModelCheckbox, localConfig.value.showRawData]
                     ]),
-                    _cache[17] || (_cache[17] = createBaseVNode("span", null, "Show raw data in PGN cards", -1))
+                    _cache[19] || (_cache[19] = createBaseVNode("span", null, "Show raw data in PGN cards", -1))
                   ])
                 ]),
-                createBaseVNode("div", _hoisted_12, [
-                  _cache[19] || (_cache[19] = createBaseVNode("label", { for: "theme" }, "Theme", -1)),
+                createBaseVNode("div", _hoisted_23$1, [
+                  _cache[21] || (_cache[21] = createBaseVNode("label", { for: "theme" }, "Theme", -1)),
                   withDirectives(createBaseVNode("select", {
                     id: "theme",
                     "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => localConfig.value.theme = $event),
                     class: "form-control"
-                  }, [..._cache[18] || (_cache[18] = [
+                  }, [..._cache[20] || (_cache[20] = [
                     createBaseVNode("option", { value: "dark" }, "Dark", -1),
                     createBaseVNode("option", { value: "light" }, "Light", -1),
                     createBaseVNode("option", { value: "auto" }, "Auto (System)", -1)
@@ -9007,59 +9100,12 @@ Expected function or array of functions, received type ${typeof value}.`
                   ])
                 ])
               ]),
-              createBaseVNode("div", _hoisted_13, [
-                _cache[25] || (_cache[25] = createBaseVNode("h3", null, [
-                  createBaseVNode("i", { class: "fas fa-filter" }),
-                  createTextVNode(" Filter Settings")
-                ], -1)),
-                createBaseVNode("div", _hoisted_14, [
-                  _cache[21] || (_cache[21] = createBaseVNode("label", { for: "minPriority" }, "Minimum Priority", -1)),
-                  withDirectives(createBaseVNode("input", {
-                    id: "minPriority",
-                    "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => localConfig.value.filters.minPriority = $event),
-                    type: "range",
-                    min: "0",
-                    max: "7",
-                    step: "1",
-                    class: "form-range"
-                  }, null, 512), [
-                    [
-                      vModelText,
-                      localConfig.value.filters.minPriority,
-                      void 0,
-                      { number: true }
-                    ]
-                  ]),
-                  createBaseVNode("div", _hoisted_15, toDisplayString(localConfig.value.filters.minPriority), 1),
-                  _cache[22] || (_cache[22] = createBaseVNode("div", { class: "form-help" }, " Filter out PGNs with lower priority (0=all, 7=highest only) ", -1))
-                ]),
-                createBaseVNode("div", _hoisted_16, [
-                  _cache[23] || (_cache[23] = createBaseVNode("label", { for: "maxAge" }, "Max Age (hours)", -1)),
-                  withDirectives(createBaseVNode("input", {
-                    id: "maxAge",
-                    "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => localConfig.value.filters.maxAge = $event),
-                    type: "number",
-                    min: "0",
-                    max: "24",
-                    step: "0.5",
-                    class: "form-control"
-                  }, null, 512), [
-                    [
-                      vModelText,
-                      localConfig.value.filters.maxAge,
-                      void 0,
-                      { number: true }
-                    ]
-                  ]),
-                  _cache[24] || (_cache[24] = createBaseVNode("div", { class: "form-help" }, " Hide data older than this (0 = no limit) ", -1))
-                ])
-              ]),
-              createBaseVNode("div", _hoisted_17, [
-                _cache[27] || (_cache[27] = createBaseVNode("h3", null, [
+              createBaseVNode("div", _hoisted_24$1, [
+                _cache[24] || (_cache[24] = createBaseVNode("h3", null, [
                   createBaseVNode("i", { class: "fas fa-wifi" }),
                   createTextVNode(" Test Connection")
                 ], -1)),
-                createBaseVNode("div", _hoisted_18, [
+                createBaseVNode("div", _hoisted_25$1, [
                   createBaseVNode("div", {
                     class: normalizeClass(["connection-status", testStatus.value])
                   }, [
@@ -9069,15 +9115,15 @@ Expected function or array of functions, received type ${typeof value}.`
                     createTextVNode(" " + toDisplayString(testMessage.value), 1)
                   ], 2),
                   createBaseVNode("button", {
-                    class: "btn btn-test",
+                    class: "btn btn-success",
                     onClick: testConnection,
                     disabled: testing.value
                   }, [
                     createBaseVNode("i", {
                       class: normalizeClass(["fas fa-sync", { spinning: testing.value }])
                     }, null, 2),
-                    _cache[26] || (_cache[26] = createTextVNode(" Test Connection ", -1))
-                  ], 8, _hoisted_19)
+                    _cache[23] || (_cache[23] = createTextVNode(" Test Connection ", -1))
+                  ], 8, _hoisted_26$1)
                 ])
               ])
             ]),
@@ -9085,7 +9131,7 @@ Expected function or array of functions, received type ${typeof value}.`
               createBaseVNode("button", {
                 class: "btn btn-outline",
                 onClick: resetToDefaults
-              }, [..._cache[28] || (_cache[28] = [
+              }, [..._cache[25] || (_cache[25] = [
                 createBaseVNode("i", { class: "fas fa-undo" }, null, -1),
                 createTextVNode(" Reset to Defaults ", -1)
               ])]),
@@ -9096,7 +9142,7 @@ Expected function or array of functions, received type ${typeof value}.`
               createBaseVNode("button", {
                 class: "btn btn-primary",
                 onClick: saveConfig
-              }, [..._cache[29] || (_cache[29] = [
+              }, [..._cache[26] || (_cache[26] = [
                 createBaseVNode("i", { class: "fas fa-save" }, null, -1),
                 createTextVNode(" Save & Apply ", -1)
               ])])
@@ -9106,47 +9152,39 @@ Expected function or array of functions, received type ${typeof value}.`
       };
     }
   };
-  const ConfigModal = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-4fb4cf72"]]);
-  function useNmeaWebSocket(autoUpdate, config) {
+  const ConfigModal = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-7f423937"]]);
+  function useNmeaWebSocket(autoUpdate, config2) {
     const ws = ref(null);
     const isConnected = ref(false);
     const connectionError = ref(null);
     const isConnecting = ref(false);
-    const devices = ref(/* @__PURE__ */ new Map());
-    const pgns = ref(/* @__PURE__ */ new Map());
-    const history = ref([]);
+    const freezePGNs = ref(false);
+    const devicesPGNs = ref(/* @__PURE__ */ new Map());
     const servers = ref(/* @__PURE__ */ new Set());
+    let lastPgn = ref({});
+    const maxHistory = 50;
     const connectionStatus = computed(() => {
       if (connectionError.value) return "Error";
       if (isConnecting.value) return "Connecting";
       return isConnected.value ? "Connected" : "Disconnected";
     });
     function connectWebSocket() {
-      if (isConnecting.value || !config.value.wsUrl) return;
+      if (isConnecting.value || !config2.value.wsUrl) return;
       isConnecting.value = true;
       connectionError.value = null;
       try {
         if (ws.value) {
           ws.value.close();
         }
-        console.log(`Connecting to WebSocket: ${config.value.wsUrl}`);
-        ws.value = new WebSocket(config.value.wsUrl);
+        console.log(`Connecting to WebSocket: ${config2.value.wsUrl}`);
+        ws.value = new WebSocket(config2.value.wsUrl);
         ws.value.onopen = () => {
           console.log("WebSocket connected");
           isConnected.value = true;
           isConnecting.value = false;
           connectionError.value = null;
           console.log("ws", ws.value);
-          let test = {
-            "t": "ws_init",
-            "c": {
-              "subscriptions": [{ "name": "data", "enabled": "true" }, {
-                "name": "repo_data",
-                "enabled": "true"
-              }]
-            }
-          };
-          ws.value.send(JSON.stringify(test));
+          ws?.value?.send(JSON.stringify(getDataServers()));
         };
         ws.value.onmessage = (event) => {
           if (!autoUpdate.value) return;
@@ -9163,7 +9201,7 @@ Expected function or array of functions, received type ${typeof value}.`
           isConnecting.value = false;
           if (event.code !== 1e3) {
             setTimeout(() => {
-              if (config.value.autoConnect) {
+              if (config2.value.autoConnect) {
                 connectWebSocket();
               }
             }, 3e3);
@@ -9192,68 +9230,47 @@ Expected function or array of functions, received type ${typeof value}.`
       disconnectWebSocket();
       setTimeout(() => connectWebSocket(), 100);
     }
-    watch(() => config.value.wsUrl, (newUrl, oldUrl) => {
-      if (newUrl !== oldUrl && config.value.autoConnect) {
+    function getDataServers() {
+      let dataServers = {
+        "servers": {
+          UDP: [],
+          TCP: []
+        }
+      };
+      config2.value.dataServers.TCP.forEach((server) => {
+        if (server.enable && server.host && server.port) {
+          dataServers.servers.TCP.push({
+            "host": server.host,
+            "port": server.port
+          });
+        }
+      });
+      config2.value.dataServers.UDP.forEach((server) => {
+        if (server.enable && server.port) {
+          dataServers.servers.UDP.push(server.port);
+        }
+      });
+      return dataServers;
+    }
+    watch(() => config2.value.wsUrl, (newUrl, oldUrl) => {
+      if (newUrl !== oldUrl && config2.value.autoConnect) {
         reconnectWebSocket();
       }
     });
-    watch(() => config.value.autoConnect, (newValue) => {
+    watch(() => config2, (newServers, oldServers) => {
+      ws?.value?.send(JSON.stringify(getDataServers()));
+    }, { deep: true });
+    watch(() => config2.value.autoConnect, (newValue) => {
       if (newValue && !isConnected.value && !isConnecting.value) {
         connectWebSocket();
       } else if (!newValue && isConnected.value) {
         disconnectWebSocket();
       }
     });
-    function getSensorType(pgn) {
-      const sensorMap = {
-        127237: "Heading/Track Control",
-        127250: "Vessel Heading",
-        127251: "Rate of Turn",
-        127257: "Attitude",
-        127488: "Engine Parameters Rapid",
-        127489: "Engine Parameters Dynamic",
-        127493: "Transmission Parameters",
-        127497: "Trip Fuel Consumption",
-        127498: "Engine Parameters Static",
-        127501: "Binary Status",
-        127505: "Fluid Level",
-        127506: "DC Detailed Status",
-        127507: "Charger Status",
-        127508: "Battery Status",
-        127509: "Inverter Status",
-        128275: "Distance Log",
-        128259: "Speed",
-        128267: "Water Depth",
-        129025: "Position Rapid Update",
-        129026: "COG & SOG Rapid Update",
-        129027: "Position Delta High Precision",
-        129028: "Altitude Delta High Precision",
-        129029: "GNSS Position Data",
-        129033: "Time & Date",
-        129038: "AIS Class A Position Report",
-        129039: "AIS Class B Position Report",
-        129040: "AIS Class B Extended Position Report",
-        129041: "AIS Aids to Navigation (AtoN) Report",
-        129283: "Cross Track Error",
-        129284: "Navigation Data"
-      };
-      return sensorMap[pgn] || "Unknown Sensor";
-    }
     function updateDeviceData(pgnData) {
       const now = Date.now();
       const src = pgnData.src;
-      if (!devices.value.has(src)) {
-        devices.value.set(src, {
-          src,
-          firstSeen: now,
-          lastSeen: now,
-          pgnCount: 0,
-          updates: 1,
-          pgns: /* @__PURE__ */ new Set(),
-          servers: /* @__PURE__ */ new Set()
-        });
-      }
-      const device = devices.value.get(src);
+      const device = devicesPGNs.value.get(src);
       device.lastSeen = now;
       device.updates++;
       if (!device.name) {
@@ -9289,27 +9306,6 @@ Expected function or array of functions, received type ${typeof value}.`
             device.manufacturerInformation = pgnData.fields.manufacturerInformation;
           }
           break;
-        case 127237:
-        // Heading/Track Control
-        case 127250:
-        // Vessel Heading
-        case 127251:
-        // Rate of Turn
-        case 127257:
-          if (pgnData.fields) {
-            device.sensorType = getSensorType(pgnData.pgn);
-            device.measurements = device.measurements || /* @__PURE__ */ new Map();
-            device.measurements.set(pgnData.description, {
-              pgn: pgnData.pgn,
-              description: pgnData.description,
-              timestamp: (/* @__PURE__ */ new Date()).toISOString()
-            });
-          }
-          break;
-      }
-      if (!device.pgns.has(pgnData.pgn)) {
-        device.pgnCount++;
-        device.pgns.add(pgnData.pgn);
       }
       if (!device.servers.has(pgnData.serverAddress)) {
         device.servers.add(pgnData.serverAddress);
@@ -9318,66 +9314,82 @@ Expected function or array of functions, received type ${typeof value}.`
     function updatePgnData(newData) {
       const src = newData.src;
       const pgnId = newData.pgn;
-      if (!pgns.value.has(src)) {
-        pgns.value.set(src, /* @__PURE__ */ new Map());
-      }
-      const devicePgns = pgns.value.get(src);
-      const existingPgn = devicePgns.get(pgnId);
-      const updatedFields = [];
-      if (existingPgn && newData.fields) {
-        Object.keys(newData.fields).forEach((field) => {
-          if (existingPgn.fields && JSON.stringify(existingPgn.fields[field]) !== JSON.stringify(newData.fields[field])) {
-            updatedFields.push(field);
-          }
+      if (!devicesPGNs.value.has(src)) {
+        const now = /* @__PURE__ */ new Date();
+        devicesPGNs.value.set(src, {
+          src,
+          firstSeen: now,
+          lastSeen: now,
+          pgnCount: 0,
+          updates: 1,
+          pgns: /* @__PURE__ */ new Map(),
+          servers: /* @__PURE__ */ new Set()
         });
       }
-      newData.isNew = true;
-      newData.updatedFields = updatedFields;
-      devicePgns.set(pgnId, newData);
+      const device = devicesPGNs.value.get(src);
+      const existingPgn = device.pgns.get(pgnId);
+      const updatedFields = [];
+      if (existingPgn) {
+        if (newData.fields) {
+          if (!freezePGNs.value) {
+            Object.keys(newData.fields).forEach((field) => {
+              if (existingPgn.fields && JSON.stringify(existingPgn.fields[field]) !== JSON.stringify(newData.fields[field])) {
+                updatedFields.push(field);
+                existingPgn.fields[field] = newData.fields[field];
+              }
+            });
+            existingPgn.updatedFields = updatedFields;
+          }
+        }
+        existingPgn.raw = newData.raw;
+        existingPgn.history.unshift({
+          historyId: `hist_${Date.now()}_${Math.random()}`,
+          ...newData
+        });
+        if (existingPgn.history.length > maxHistory) {
+          existingPgn.history.length = maxHistory;
+        }
+        if (!existingPgn.servers.includes(newData.serverAddress)) {
+          existingPgn.servers.push(newData.serverAddress);
+        }
+      } else {
+        newData.isNew = true;
+        newData.history = [];
+        newData.servers = [newData.serverAddress];
+        device.pgns.set(pgnId, newData);
+      }
       setTimeout(() => {
-        const currentPgn = pgns.value.get(src)?.get(pgnId);
+        const currentPgn = devicesPGNs.value.get(src)?.pgns.get(pgnId);
         if (currentPgn) {
           currentPgn.isNew = false;
           currentPgn.updatedFields = [];
         }
       }, 1e3);
     }
-    function addToHistory(pgnData) {
-      history.value.unshift({
-        ...pgnData,
-        historyId: `hist_${Date.now()}_${Math.random()}`
-      });
-      const maxHistory = config.value.maxHistory || 5e3;
-      if (history.value.length > maxHistory) {
-        history.value.length = maxHistory;
-      }
-    }
     function updateServers(pgnData) {
       if (!servers.value.has(pgnData.serverAddress)) {
         servers.value.add(pgnData.serverAddress, pgnData.serverAddress);
-        console.log("serversservers", servers, pgnData, pgnData.serverAddress);
       }
     }
     function processPgnUpdate(pgnData) {
-      updateDeviceData(pgnData);
+      lastPgn.value = pgnData;
       updatePgnData(pgnData);
-      addToHistory(pgnData);
+      updateDeviceData(pgnData);
       updateServers(pgnData);
     }
     function clearAllData() {
-      devices.value.clear();
-      pgns.value.clear();
-      history.value = [];
+      devicesPGNs.value.clear();
+      servers.value.clear();
     }
     return {
       ws,
       isConnected,
       isConnecting,
+      freezePGNs,
       connectionError,
-      devices,
       servers,
-      pgns,
-      history,
+      devicesPGNs,
+      lastPgn,
       processPgnUpdate,
       connectionStatus,
       connectWebSocket,
@@ -9386,6 +9398,1786 @@ Expected function or array of functions, received type ${typeof value}.`
       clearAllData
     };
   }
+  class PGNFilterAnalyzer {
+    /**
+     * Convert any input to a binary string of specified length
+     * @param {number|string} pgn - PGN value (hex string or number)
+     * @param {number} bitLength - Desired binary length
+     * @returns {string} Binary string
+     */
+    static toBinary(pgn, bitLength) {
+      let value;
+      if (typeof pgn === "string") {
+        if (pgn.startsWith("0x") || pgn.startsWith("0X")) {
+          value = parseInt(pgn, 16);
+        } else {
+          value = parseInt(pgn, 10);
+        }
+      } else {
+        value = pgn;
+      }
+      if (value > 4294967295) {
+        return BigInt(value).toString(2).padStart(bitLength, "0");
+      }
+      return value.toString(2).padStart(bitLength, "0");
+    }
+    /**
+     * Find minimum bit length needed for all PGNs
+     * @param {Array} pgns - Array of PGNs
+     * @returns {number} Required bit length
+     */
+    static getRequiredBitLength(pgns) {
+      let maxBits = 0;
+      for (const pgn of pgns) {
+        let value;
+        if (typeof pgn === "string") {
+          if (pgn.startsWith("0x")) {
+            value = parseInt(pgn, 16);
+          } else {
+            value = parseInt(pgn, 10);
+          }
+        } else {
+          value = pgn;
+        }
+        let bits;
+        if (value > 4294967295) {
+          bits = BigInt(value).toString(2).length;
+        } else {
+          bits = Math.max(1, Math.floor(Math.log2(value)) + 1);
+        }
+        maxBits = Math.max(maxBits, bits);
+      }
+      return Math.max(maxBits, 1);
+    }
+    /**
+     * Calculate bit mask where bits are the same across all PGNs
+     * @param {string[]} binaries - Array of binary strings
+     * @returns {string} Mask binary string (1=same, 0=different)
+     */
+    static calculateMask(binaries) {
+      if (binaries.length === 0) return "";
+      const length = binaries[0].length;
+      let mask = "";
+      for (let i = 0; i < length; i++) {
+        const firstBit = binaries[0][i];
+        let allSame = true;
+        for (let j = 1; j < binaries.length; j++) {
+          if (binaries[j][i] !== firstBit) {
+            allSame = false;
+            break;
+          }
+        }
+        mask += allSame ? "1" : "0";
+      }
+      console.log("calculateMask", mask, binaries);
+      return mask;
+    }
+    /**
+     * Calculate filter value using mask
+     * @param {string} mask - Mask binary string
+     * @param {string} referenceBinary - Reference PGN binary
+     * @returns {string} Filter value binary
+     */
+    static calculateFilterValue(mask, referenceBinary) {
+      let filter = "";
+      for (let i = 0; i < mask.length; i++) {
+        filter += mask[i] === "1" ? referenceBinary[i] : "0";
+      }
+      return filter;
+    }
+    /**
+     * Check if a PGN matches a filter
+     * @param {string} pgnBinary - PGN binary to test
+     * @param {string} mask - Mask binary
+     * @param {string} filter - Filter value binary
+     * @returns {boolean} True if matches filter
+     */
+    static matchesFilter(pgnBinary, mask, filter) {
+      for (let i = 0; i < mask.length; i++) {
+        if (mask[i] === "1" && pgnBinary[i] !== filter[i]) {
+          return false;
+        }
+      }
+      return true;
+    }
+    /**
+     * Find all bits that are 1 in all PGNs
+     * @param {string[]} binaries - Array of binary strings
+     * @returns {string} Common ones binary string
+     */
+    static findCommonOnes(binaries) {
+      if (binaries.length === 0) return "";
+      const length = binaries[0].length;
+      let result = "";
+      for (let i = 0; i < length; i++) {
+        let allOnes = true;
+        for (const binary of binaries) {
+          if (binary[i] !== "1") {
+            allOnes = false;
+            break;
+          }
+        }
+        result += allOnes ? "1" : "0";
+      }
+      return result;
+    }
+    /**
+     * Optimize filters to block specific PGNs while keeping others
+     * @param {Array} blockPGNs - PGNs to block
+     * @param {Array} keepPGNs - PGNs to keep (must not be blocked)
+     * @param {Object} options - Configuration options
+     * @returns {Object} Result with filters and analysis
+     */
+    static analyze(blockPGNs, keepPGNs, options = {}) {
+      const {
+        maxFilters = 8,
+        strictMode = true,
+        customBitLength = null
+      } = options;
+      if (!Array.isArray(blockPGNs) || !Array.isArray(keepPGNs)) {
+        throw new Error("blockPGNs and keepPGNs must be arrays");
+      }
+      const allPGNs = [...blockPGNs, ...keepPGNs];
+      const bitLength = customBitLength || this.getRequiredBitLength(allPGNs);
+      const blockBinaries = blockPGNs.map((pgn) => this.toBinary(pgn, bitLength));
+      const keepBinaries = keepPGNs.map((pgn) => this.toBinary(pgn, bitLength));
+      const filters = [];
+      const remainingToBlock = [...blockBinaries];
+      const conflicts = [];
+      const createFilter = (binaries) => {
+        console.log("createFiltercreateFilter", binaries);
+        const mask = this.calculateMask(binaries);
+        const filterValue = this.calculateFilterValue(mask, binaries[0]);
+        return {
+          mask,
+          filterValue,
+          maskHex: "0x" + this.binaryToHex(mask),
+          filterHex: "0x" + this.binaryToHex(filterValue),
+          blockedBinaries: binaries
+        };
+      };
+      const filterBlocksWanted = (filter) => {
+        for (const keepBinary of keepBinaries) {
+          if (this.matchesFilter(keepBinary, filter.mask, filter.filterValue)) {
+            return true;
+          }
+        }
+        return false;
+      };
+      console.log("remainingToBlockremainingToBlock", remainingToBlock);
+      while (remainingToBlock.length > 0 && filters.length < maxFilters) {
+        console.log("remainingToBlock.length", remainingToBlock.length);
+        const candidateFilter = createFilter(remainingToBlock);
+        console.log("!filterBlocksWanted", filterBlocksWanted(candidateFilter));
+        if (!filterBlocksWanted(candidateFilter)) {
+          const blockedIndices = [];
+          const stillRemaining = [];
+          for (let i = 0; i < remainingToBlock.length; i++) {
+            if (this.matchesFilter(
+              remainingToBlock[i],
+              candidateFilter.mask,
+              candidateFilter.filterValue
+            )) {
+              blockedIndices.push(i);
+            } else {
+              stillRemaining.push(remainingToBlock[i]);
+            }
+          }
+          filters.push({
+            ...candidateFilter,
+            blockedCount: blockedIndices.length,
+            blockedPGNs: blockedIndices.map(
+              (idx) => blockPGNs[blockBinaries.indexOf(remainingToBlock[idx])]
+            )
+          });
+          remainingToBlock.splice(0, remainingToBlock.length, ...stillRemaining);
+        } else {
+          console.log("asdfasdfasd");
+          if (remainingToBlock.length === 1) {
+            const conflictedPGN = blockPGNs[blockBinaries.indexOf(remainingToBlock[0])];
+            conflicts.push({
+              pgn: conflictedPGN,
+              reason: "Cannot block without affecting wanted PGNs",
+              binary: remainingToBlock[0]
+            });
+            if (strictMode) {
+              throw new Error(`Cannot block PGN ${this.pgnToString(conflictedPGN)} without blocking wanted PGNs: ${conflictedPGN}`);
+            }
+            remainingToBlock.shift();
+          } else {
+            let splitBit = -1;
+            const length = remainingToBlock[0].length;
+            for (let i = 0; i < length; i++) {
+              const firstBit = remainingToBlock[0][i];
+              let differs = false;
+              for (let j = 1; j < remainingToBlock.length; j++) {
+                if (remainingToBlock[j][i] !== firstBit) {
+                  differs = true;
+                  break;
+                }
+              }
+              if (differs) {
+                splitBit = i;
+                break;
+              }
+            }
+            if (splitBit === -1) {
+              const conflictedGroup = remainingToBlock.map(
+                (b) => blockPGNs[blockBinaries.indexOf(b)]
+              );
+              conflicts.push({
+                devicesPGNs: conflictedGroup,
+                reason: "Entire group conflicts with wanted PGNs",
+                binaries: [...remainingToBlock]
+              });
+              if (strictMode) {
+                throw new Error(`Cannot block group of PGNs without blocking wanted PGNs: ${conflictedGroup.map((p2) => this.pgnToString(p2)).join(", ")}`);
+              }
+              remainingToBlock.length = 0;
+            } else {
+              const group0 = [];
+              const group1 = [];
+              for (const binary of remainingToBlock) {
+                if (binary[splitBit] === "0") {
+                  group0.push(binary);
+                } else {
+                  group1.push(binary);
+                }
+              }
+              if (group0.length > 0) {
+                const filter0 = createFilter(group0);
+                if (!filterBlocksWanted(filter0)) {
+                  const blockedPGNs0 = group0.map(
+                    (b) => blockPGNs[blockBinaries.indexOf(b)]
+                  );
+                  filters.push({
+                    ...filter0,
+                    blockedCount: group0.length,
+                    blockedPGNs: blockedPGNs0
+                  });
+                } else {
+                  remainingToBlock.push(...group0);
+                }
+              }
+              if (group1.length > 0) {
+                const filter1 = createFilter(group1);
+                if (!filterBlocksWanted(filter1)) {
+                  const blockedPGNs1 = group1.map(
+                    (b) => blockPGNs[blockBinaries.indexOf(b)]
+                  );
+                  filters.push({
+                    ...filter1,
+                    blockedCount: group1.length,
+                    blockedPGNs: blockedPGNs1
+                  });
+                } else {
+                  remainingToBlock.push(...group1);
+                }
+              }
+              const processed = [...group0, ...group1];
+              remainingToBlock.length = 0;
+              const allRemaining = blockBinaries.filter((b) => !processed.includes(b)).filter((b) => !filters.some((f) => f.blockedBinaries.includes(b)));
+              remainingToBlock.push(...allRemaining);
+            }
+          }
+        }
+      }
+      const totalBlocked = filters.reduce((sum, filter) => sum + filter.blockedCount, 0);
+      const totalToBlock = blockPGNs.length;
+      const efficiency = totalToBlock > 0 ? totalBlocked / totalToBlock * 100 : 100;
+      return {
+        filters: filters.map((filter) => ({
+          mask: filter.maskHex,
+          filter: filter.filterHex,
+          maskBinary: filter.mask,
+          filterBinary: filter.filterValue,
+          blockedCount: filter.blockedCount,
+          blockedPGNs: filter.blockedPGNs.map((p2) => this.pgnToString(p2))
+        })),
+        analysis: {
+          bitLengthUsed: bitLength,
+          totalFilters: filters.length,
+          totalPGNsToBlock: totalToBlock,
+          successfullyBlocked: totalBlocked,
+          efficiency: efficiency.toFixed(1) + "%",
+          remainingToBlock: remainingToBlock.length,
+          conflicts: conflicts.map((c) => ({
+            ...c,
+            devicesPGNs: Array.isArray(c.devicesPGNs) ? c.devicesPGNs.map((p2) => this.pgnToString(p2)) : this.pgnToString(c.pgn)
+          })),
+          maxFiltersReached: filters.length >= maxFilters
+        },
+        raw: {
+          blockBinaries,
+          keepBinaries,
+          bitLength
+        }
+      };
+    }
+    /**
+     * Simple mask calculation for a group of PGNs
+     * @param {Array} pgns - Array of PGNs
+     * @param {number} bitLength - Bit length (auto-detected if not provided)
+     * @returns {Object} Mask analysis
+     */
+    static calculateSimpleMask(pgns, bitLength = null) {
+      if (pgns.length === 0) {
+        return {
+          mask: "0x0",
+          filter: "0x0",
+          commonOnes: "0x0",
+          bitLength: 0
+        };
+      }
+      const actualBitLength = bitLength || this.getRequiredBitLength(pgns);
+      const binaries = pgns.map((pgn) => this.toBinary(pgn, actualBitLength));
+      const mask = this.calculateMask(binaries);
+      const filterValue = this.calculateFilterValue(mask, binaries[0]);
+      const commonOnes = this.findCommonOnes(binaries);
+      return {
+        mask: "0x" + this.binaryToHex(mask),
+        filter: "0x" + this.binaryToHex(filterValue),
+        commonOnes: "0x" + this.binaryToHex(commonOnes),
+        maskBinary: mask,
+        filterBinary: filterValue,
+        commonOnesBinary: commonOnes,
+        bitLength: actualBitLength,
+        binaryRepresentations: binaries
+      };
+    }
+    /**
+     * Convert binary string to hex
+     * @param {string} binary - Binary string
+     * @returns {string} Hex string without 0x prefix
+     */
+    static binaryToHex(binary) {
+      return parseInt(binary, 2).toString(16).toUpperCase();
+    }
+    /**
+     * Format PGN for display
+     * @param {number|string} pgn - PGN value
+     * @returns {string} Formatted string
+     */
+    static pgnToString(pgn) {
+      if (typeof pgn === "string") {
+        return pgn;
+      }
+      return `0x${pgn.toString(16).toUpperCase()} (${pgn})`;
+    }
+    /**
+     * Test if a specific PGN would be blocked by filters
+     * @param {number|string} pgn - PGN to test
+     * @param {Array} filters - Filters from analyze() result
+     * @param {number} bitLength - Bit length
+     * @returns {boolean} True if would be blocked
+     */
+    static wouldBeBlocked(pgn, filters, bitLength) {
+      const binary = this.toBinary(pgn, bitLength);
+      for (const filter of filters) {
+        if (this.matchesFilter(binary, filter.maskBinary, filter.filterBinary)) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+  const _sfc_main$2 = {
+    name: "PGNFilter",
+    props: {
+      selectedDevice: [null, String, Number],
+      filteredPGNs: Array,
+      blockedPGNs: Set
+    },
+    data() {
+      return {
+        blockPGNsInput: "",
+        keepPGNsInput: "",
+        strictMode: true,
+        maxFilters: 8,
+        bitLength: 0,
+        result: null,
+        error: null
+      };
+    },
+    methods: {
+      parsePGNInput(input) {
+        if (!input.trim()) return [];
+        return input.split(/[,;\n\r\s]+/).map((p2) => p2.trim()).filter((p2) => p2).map((p2) => {
+          if (p2.startsWith("0x") || p2.startsWith("0X")) {
+            return parseInt(p2, 16);
+          }
+          return parseInt(p2, 10);
+        }).filter((p2) => !isNaN(p2));
+      },
+      analyze() {
+        this.error = null;
+        this.result = null;
+        try {
+          const blockPGNs = this.parsePGNInput(this.blockPGNsInput);
+          const keepPGNs = this.parsePGNInput(this.keepPGNsInput);
+          if (blockPGNs.length === 0) {
+            throw new Error("Please enter at least one PGN to block");
+          }
+          const options = {
+            maxFilters: this.maxFilters,
+            strictMode: this.strictMode
+          };
+          if (this.bitLength > 0) {
+            options.customBitLength = this.bitLength;
+          }
+          this.result = PGNFilterAnalyzer.analyze(blockPGNs, keepPGNs, options);
+        } catch (err) {
+          this.error = err.message;
+          console.error("Analysis error:", err);
+        }
+      },
+      loadPNGs() {
+        console.log("loadPNGsloadPNGs", this.filteredPGNs, this.blockedPGNs);
+        this.filteredPGNs.forEach((pgn) => {
+          const pgnAddr = `${pgn.pgn.toString(16).padStart(5, "0")}${pgn.src.toString(16).padStart(2, "0")}`.toUpperCase();
+          console.log(pgn.pgn, pgn.src, pgnAddr);
+          if (this.blockPGNsInput.toUpperCase().includes(pgnAddr)) {
+            console.log("Already blocked", this.blockPGNsInput.includes(pgnAddr));
+          }
+          if (this.blockedPGNs.has(pgnAddr)) {
+            return;
+          }
+          if (!this.keepPGNsInput.includes(pgnAddr) && !this.blockPGNsInput.includes(pgnAddr) && !this.blockedPGNs.has("0x" + pgnAddr)) {
+            if (this.keepPGNsInput) {
+              this.keepPGNsInput += ", ";
+            }
+            this.keepPGNsInput += "0x" + pgnAddr;
+          }
+        });
+        this.keepPGNsInput = this.keepPGNsInput.trim();
+        this.blockedPGNs.forEach((pgnAddr) => {
+          if (!this.blockPGNsInput.includes(pgnAddr)) {
+            if (this.blockPGNsInput) {
+              this.blockPGNsInput += ", ";
+            }
+            this.blockPGNsInput += pgnAddr;
+          }
+          console.log("blocc pgnAddr", pgnAddr, this.blockPGNsInput);
+        });
+      },
+      reset() {
+        this.blockPGNsInput = "";
+        this.keepPGNsInput = "";
+        this.result = null;
+        this.error = null;
+      },
+      copyResults() {
+        if (!this.result) return;
+        let text = "";
+        this.result.filters.forEach((filter) => {
+          text += `#DROP + ${filter.blockedPGNs.join(", ")}
+match(CAN1, ${filter.filter}, ${filter.mask})
+{
+}`;
+        });
+        console.log(text);
+        navigator.clipboard.writeText(text).then(() => {
+          alert("Results copied to clipboard!");
+        });
+      }
+    },
+    watch: {
+      blockPGNsInput: function(newVal, oldVal) {
+        if (newVal) ;
+        else {
+          console.log("blockPGNsInputblockPGNsInput", newVal, oldVal);
+        }
+      },
+      blockedPGNs: function(newVal, oldVal) {
+        console.log("blockedPGNsblockedPGNs", newVal, oldVal);
+        if (newVal) ;
+        else {
+          console.log("blockedPGNsblockedPGNs", newVal, oldVal);
+        }
+      }
+    }
+  };
+  const _hoisted_1$2 = { class: "pgnFilter" };
+  const _hoisted_2$2 = { class: "input-section" };
+  const _hoisted_3$1 = { class: "input-group" };
+  const _hoisted_4$1 = { class: "input-group" };
+  const _hoisted_5$1 = { class: "options-section" };
+  const _hoisted_6$1 = { class: "button-section" };
+  const _hoisted_7$1 = {
+    key: 0,
+    class: "results-section"
+  };
+  const _hoisted_8$1 = { class: "filter-details" };
+  const _hoisted_9$1 = { key: 0 };
+  const _hoisted_10$1 = { class: "analysis-section" };
+  const _hoisted_11$1 = { key: 0 };
+  const _hoisted_12$1 = {
+    key: 1,
+    class: "error-section"
+  };
+  function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("div", _hoisted_1$2, [
+      _cache[21] || (_cache[21] = createBaseVNode("h2", null, "PGN Filter Optimizer", -1)),
+      createBaseVNode("div", _hoisted_2$2, [
+        createBaseVNode("div", _hoisted_3$1, [
+          _cache[9] || (_cache[9] = createBaseVNode("label", null, "PGNs to Block:", -1)),
+          withDirectives(createBaseVNode("textarea", {
+            "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.blockPGNsInput = $event),
+            placeholder: "Enter PGNs to block (comma separated)\nExample: 0x1F112, 0x1F801, 129025",
+            rows: "4"
+          }, null, 512), [
+            [vModelText, $data.blockPGNsInput]
+          ])
+        ]),
+        createBaseVNode("div", _hoisted_4$1, [
+          _cache[10] || (_cache[10] = createBaseVNode("label", null, "PGNs to Keep:", -1)),
+          withDirectives(createBaseVNode("textarea", {
+            "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $data.keepPGNsInput = $event),
+            placeholder: "Enter PGNs to keep (comma separated)\nExample: 0x1F802, 0x1F803",
+            rows: "4"
+          }, null, 512), [
+            [vModelText, $data.keepPGNsInput]
+          ])
+        ])
+      ]),
+      createBaseVNode("div", _hoisted_5$1, [
+        createBaseVNode("label", null, [
+          withDirectives(createBaseVNode("input", {
+            type: "checkbox",
+            "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $data.strictMode = $event)
+          }, null, 512), [
+            [vModelCheckbox, $data.strictMode]
+          ]),
+          _cache[11] || (_cache[11] = createTextVNode(" Strict Mode ", -1))
+        ]),
+        createBaseVNode("label", null, [
+          _cache[12] || (_cache[12] = createTextVNode(" Max Filters: ", -1)),
+          withDirectives(createBaseVNode("input", {
+            type: "number",
+            "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => $data.maxFilters = $event),
+            min: "1",
+            max: "16"
+          }, null, 512), [
+            [
+              vModelText,
+              $data.maxFilters,
+              void 0,
+              { number: true }
+            ]
+          ])
+        ]),
+        createBaseVNode("label", null, [
+          _cache[14] || (_cache[14] = createTextVNode(" Bit Length: ", -1)),
+          withDirectives(createBaseVNode("select", {
+            "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => $data.bitLength = $event)
+          }, [..._cache[13] || (_cache[13] = [
+            createStaticVNode('<option value="0" data-v-c3a26798>Auto</option><option value="11" data-v-c3a26798>11-bit (CAN 2.0A)</option><option value="18" data-v-c3a26798>18-bit (PGN only)</option><option value="29" data-v-c3a26798>29-bit (J1939)</option><option value="32" data-v-c3a26798>32-bit</option>', 5)
+          ])], 512), [
+            [
+              vModelSelect,
+              $data.bitLength,
+              void 0,
+              { number: true }
+            ]
+          ])
+        ])
+      ]),
+      createBaseVNode("div", _hoisted_6$1, [
+        createBaseVNode("button", {
+          class: "btn",
+          onClick: _cache[5] || (_cache[5] = (...args) => $options.analyze && $options.analyze(...args))
+        }, "Calculate Filters"),
+        createBaseVNode("button", {
+          class: "btn",
+          onClick: _cache[6] || (_cache[6] = (...args) => $options.loadPNGs && $options.loadPNGs(...args))
+        }, "Load PNG's"),
+        createBaseVNode("button", {
+          class: "btn",
+          onClick: _cache[7] || (_cache[7] = (...args) => $options.reset && $options.reset(...args))
+        }, "Reset")
+      ]),
+      $data.result ? (openBlock(), createElementBlock("div", _hoisted_7$1, [
+        createBaseVNode("h3", null, "Optimized Filters (" + toDisplayString($data.result.filters.length) + ")", 1),
+        (openBlock(true), createElementBlock(Fragment, null, renderList($data.result.filters, (filter, index) => {
+          return openBlock(), createElementBlock("div", {
+            key: index,
+            class: "filter-card"
+          }, [
+            createBaseVNode("h4", null, "Filter " + toDisplayString(index + 1) + ": " + toDisplayString(filter.filter) + " " + toDisplayString(filter.mask), 1),
+            createBaseVNode("div", _hoisted_8$1, [
+              createBaseVNode("div", null, [
+                _cache[15] || (_cache[15] = createBaseVNode("strong", null, "Mask:", -1)),
+                createTextVNode(" " + toDisplayString(filter.mask), 1)
+              ]),
+              createBaseVNode("div", null, [
+                _cache[16] || (_cache[16] = createBaseVNode("strong", null, "Filter Value:", -1)),
+                createTextVNode(" " + toDisplayString(filter.filter), 1)
+              ]),
+              createBaseVNode("div", null, [
+                _cache[17] || (_cache[17] = createBaseVNode("strong", null, "Blocks:", -1)),
+                createTextVNode(" " + toDisplayString(filter.blockedCount) + " PGN(s)", 1)
+              ]),
+              filter.blockedPGNs.length ? (openBlock(), createElementBlock("div", _hoisted_9$1, [
+                _cache[18] || (_cache[18] = createBaseVNode("strong", null, "Blocked PGNs:", -1)),
+                createTextVNode(" " + toDisplayString(filter.blockedPGNs.join(", ")), 1)
+              ])) : createCommentVNode("", true)
+            ])
+          ]);
+        }), 128)),
+        createBaseVNode("div", _hoisted_10$1, [
+          _cache[20] || (_cache[20] = createBaseVNode("h4", null, "Analysis", -1)),
+          createBaseVNode("div", null, "Bit Length Used: " + toDisplayString($data.result.analysis.bitLengthUsed), 1),
+          createBaseVNode("div", null, "Efficiency: " + toDisplayString($data.result.analysis.efficiency), 1),
+          createBaseVNode("div", null, "Successfully Blocked: " + toDisplayString($data.result.analysis.successfullyBlocked) + "/" + toDisplayString($data.result.analysis.totalPGNsToBlock), 1),
+          $data.result.analysis.conflicts.length ? (openBlock(), createElementBlock("div", _hoisted_11$1, [
+            _cache[19] || (_cache[19] = createBaseVNode("strong", null, "Conflicts:", -1)),
+            (openBlock(true), createElementBlock(Fragment, null, renderList($data.result.analysis.conflicts, (conflict, idx) => {
+              return openBlock(), createElementBlock("div", {
+                key: idx,
+                class: "conflict"
+              }, toDisplayString(conflict.reason) + ": " + toDisplayString(Array.isArray(conflict.devicesPGNs) ? conflict.devicesPGNs.join(", ") : conflict.devicesPGNs), 1);
+            }), 128))
+          ])) : createCommentVNode("", true)
+        ]),
+        createBaseVNode("div", {
+          class: "btn",
+          onClick: _cache[8] || (_cache[8] = (...args) => $options.copyResults && $options.copyResults(...args))
+        }, "Copy")
+      ])) : createCommentVNode("", true),
+      $data.error ? (openBlock(), createElementBlock("div", _hoisted_12$1, toDisplayString($data.error), 1)) : createCommentVNode("", true),
+      createTextVNode(" " + toDisplayString($props.blockedPGNs), 1)
+    ]);
+  }
+  const PGNFilter = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__scopeId", "data-v-c3a26798"]]);
+  const _sfc_main$1 = {
+    name: "GpsTracker",
+    props: {
+      autoUpdate: Boolean,
+      trackingPGNs: Set,
+      // Single point to add (reactive)
+      pgn: {
+        type: Object,
+        // {fields :{ latitude, longitude, timestamp?, speed? }}
+        default: null
+      },
+      // Auto-start tracking
+      autoStart: {
+        type: Boolean,
+        default: false
+      },
+      // Maximum points to keep (0 = unlimited)
+      maxPoints: {
+        type: Number,
+        default: 0
+      },
+      // Canvas dimensions
+      width: {
+        type: Number,
+        default: 800
+      },
+      height: {
+        type: Number,
+        default: 600
+      }
+    },
+    data() {
+      return {
+        // Track data
+        tracks: /* @__PURE__ */ new Map(),
+        // Map<trackId, { name, color, points[], isActive }>
+        activeTrackId: null,
+        isTracking: false,
+        startTime: null,
+        currentPosition: null,
+        previousPosition: null,
+        // Canvas rendering
+        canvasWidth: this.width,
+        canvasHeight: this.height,
+        ctx: null,
+        zoom: 10,
+        panX: 0,
+        panY: 0,
+        isDragging: false,
+        dragStartX: 0,
+        dragStartY: 0,
+        lastPanX: 0,
+        lastPanY: 0,
+        // Settings
+        autoCenter: true,
+        showGrid: true,
+        showAllTracks: true,
+        showTime: true,
+        // Mouse position
+        mousePosition: null,
+        mouseCanvasX: 0,
+        mouseCanvasY: 0,
+        // Metrics
+        totalDistance: 0,
+        currentSpeed: 0,
+        avgSpeed: 0,
+        lastUpdateTime: null,
+        // Animation
+        animationFrame: null,
+        needsRedraw: true,
+        // Color palette for tracks
+        colorPalette: [
+          "#2196F3",
+          // Blue
+          "#4CAF50",
+          // Green
+          "#FF9800",
+          // Orange
+          "#9C27B0",
+          // Purple
+          "#F44336",
+          // Red
+          "#00BCD4",
+          // Cyan
+          "#FFEB3B",
+          // Yellow
+          "#795548",
+          // Brown
+          "#607D8B",
+          // Blue Grey
+          "#E91E63"
+          // Pink
+        ]
+      };
+    },
+    computed: {
+      activeTrack() {
+        if (!this.activeTrackId || !this.tracks.has(this.activeTrackId)) {
+          return null;
+        }
+        return this.tracks.get(this.activeTrackId);
+      },
+      hasTrack() {
+        return this.activeTrack && this.activeTrack.points.length > 0;
+      },
+      statusClass() {
+        if (!this.isTracking) return "status-stopped";
+        if (!this.autoUpdate) return "status-paused";
+        return "status-tracking";
+      },
+      statusText() {
+        if (!this.isTracking) return "Stopped";
+        if (!this.autoUpdate) return "Paused";
+        return "Tracking";
+      },
+      zoomLevel() {
+        return this.zoom.toFixed(2);
+      },
+      scaleLabel() {
+        const scaleMeters = 100 / this.zoom;
+        if (scaleMeters >= 1e3) {
+          return `${(scaleMeters / 1e3).toFixed(2)} km`;
+        }
+        return `${scaleMeters.toFixed(2)} m`;
+      },
+      currentMarkerStyle() {
+        if (!this.currentPosition) return {};
+        const point = this.projectToCanvas(
+          this.currentPosition.latitude,
+          this.currentPosition.longitude
+        );
+        return {
+          left: `${point.x}px`,
+          top: `${point.y}px`
+        };
+      },
+      duration() {
+        if (!this.activeTrack || this.activeTrack.points.length < 2) return "00:00";
+        const firstPoint = this.activeTrack.points[0];
+        const lastPoint = this.activeTrack.points[this.activeTrack.points.length - 1];
+        const start = firstPoint.timestamp || this.startTime;
+        const end = lastPoint.timestamp || Date.now();
+        const diff = end - start;
+        const hours = Math.floor(diff / 36e5);
+        const minutes = Math.floor(diff % 36e5 / 6e4);
+        if (hours > 0) {
+          return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+        }
+        return `${minutes.toString().padStart(2, "0")}:${Math.floor(diff % 6e4 / 1e3).toString().padStart(2, "0")}`;
+      }
+    },
+    watch: {
+      pgn(newPgn) {
+        try {
+          if (!newPgn || !newPgn.fields || typeof newPgn.fields.latitude === "undefined" || typeof newPgn.fields.longitude === "undefined" || !newPgn.fields.latitude || !newPgn.fields.longitude) {
+            return;
+          }
+          if (!this.isTracking || !this.autoUpdate) {
+            return;
+          }
+          this.trackingPGNs.forEach((tracked) => {
+            if (`${newPgn.src}:${newPgn.pgn}` !== tracked) {
+              return;
+            }
+            const trackId = tracked || "default";
+            if (!this.tracks.has(trackId)) {
+              this.createTrack(trackId);
+            }
+            if (!this.activeTrackId) {
+              this.activeTrackId = trackId;
+            }
+            if (this.isTracking) {
+              this.addPointToTrack(trackId, {
+                latitude: newPgn.fields.latitude,
+                longitude: newPgn.fields.longitude,
+                timestamp: Date.now()
+              });
+            }
+          });
+        } catch (e) {
+          console.error("Error processing PGN:", e);
+        }
+      },
+      isTracking(newVal) {
+        if (newVal) {
+          this.startTime = Date.now();
+          this.$emit("tracking-started");
+        } else {
+          this.$emit("tracking-stopped", {
+            tracks: this.tracks.size,
+            totalPoints: this.getAllPoints().length,
+            totalDistance: this.getTotalDistance()
+          });
+        }
+      },
+      activeTrackId(newTrackId) {
+        this.updateMetrics();
+        this.needsRedraw = true;
+      },
+      showAllTracks() {
+        this.needsRedraw = true;
+      },
+      showTime() {
+        this.needsRedraw = true;
+      },
+      zoom() {
+        this.needsRedraw = true;
+      },
+      panX() {
+        this.needsRedraw = true;
+      },
+      panY() {
+        this.needsRedraw = true;
+      },
+      showGrid() {
+        this.needsRedraw = true;
+      }
+    },
+    mounted() {
+      this.initCanvas();
+      this.setupAnimation();
+      if (this.autoStart) {
+        this.startTracking();
+      }
+      window.addEventListener("resize", this.handleResize);
+    },
+    beforeDestroy() {
+      window.removeEventListener("resize", this.handleResize);
+      if (this.animationFrame) {
+        cancelAnimationFrame(this.animationFrame);
+      }
+    },
+    methods: {
+      initCanvas() {
+        const canvas = this.$refs.canvas;
+        this.ctx = canvas.getContext("2d");
+        const dpr = 1;
+        this.canvasWidth = this.width * dpr;
+        this.canvasHeight = this.height * dpr;
+        canvas.width = this.canvasWidth;
+        canvas.height = this.canvasHeight;
+        canvas.style.width = `${this.width}px`;
+        canvas.style.height = `${this.height}px`;
+        this.ctx.scale(dpr, dpr);
+      },
+      setupAnimation() {
+        const animate = () => {
+          if (this.needsRedraw) {
+            this.draw();
+            this.needsRedraw = false;
+          }
+          this.animationFrame = requestAnimationFrame(animate);
+        };
+        animate();
+      },
+      // Track management methods
+      createTrack(trackId, name = null) {
+        const colorIndex = this.tracks.size % this.colorPalette.length;
+        const track2 = {
+          name: name || `Track ${this.tracks.size + 1}`,
+          color: this.colorPalette[colorIndex],
+          points: [],
+          isActive: true
+        };
+        this.tracks.set(trackId, track2);
+        if (!this.activeTrackId) {
+          this.activeTrackId = trackId;
+        }
+        this.$emit("track-created", { trackId, track: track2 });
+        this.needsRedraw = true;
+      },
+      removeTrack(trackId) {
+        if (this.tracks.has(trackId)) {
+          this.tracks.delete(trackId);
+          if (this.activeTrackId === trackId) {
+            this.activeTrackId = this.tracks.keys().next().value || null;
+          }
+          this.$emit("track-removed", trackId);
+          this.needsRedraw = true;
+        }
+        this.$emit("trackPgn", trackId);
+      },
+      setActiveTrack(trackId) {
+        if (this.tracks.has(trackId)) {
+          this.activeTrackId = trackId;
+          this.$emit("track-activated", trackId);
+        }
+      },
+      clearTrack(trackId) {
+        if (trackId && this.tracks.has(trackId)) {
+          const track2 = this.tracks.get(trackId);
+          track2.points = [];
+          track2.startTime = null;
+          this.tracks.set(trackId, track2);
+          if (this.activeTrackId === trackId) {
+            this.currentPosition = null;
+            this.previousPosition = null;
+            this.totalDistance = 0;
+            this.currentSpeed = 0;
+            this.avgSpeed = 0;
+          }
+          this.$emit("track-cleared", trackId);
+          this.needsRedraw = true;
+        }
+      },
+      clearAllTracks() {
+        this.tracks.clear();
+        this.activeTrackId = null;
+        this.currentPosition = null;
+        this.previousPosition = null;
+        this.totalDistance = 0;
+        this.currentSpeed = 0;
+        this.avgSpeed = 0;
+        this.startTime = null;
+        this.panX = 0;
+        this.panY = 0;
+        this.zoom = 150;
+        this.$emit("all-tracks-cleared");
+        this.needsRedraw = true;
+      },
+      updateTrackColor() {
+        if (this.activeTrack) {
+          this.$emit("track-updated", {
+            trackId: this.activeTrackId,
+            field: "color",
+            value: this.activeTrack.color
+          });
+          this.needsRedraw = true;
+        }
+      },
+      addPointToTrack(trackId, point) {
+        if (!this.tracks.has(trackId)) return;
+        const track2 = this.tracks.get(trackId);
+        const newPoint = {
+          latitude: point.latitude,
+          longitude: point.longitude,
+          timestamp: point.timestamp || Date.now(),
+          speed: point.speed || 0
+        };
+        track2.points.push(newPoint);
+        this.tracks.set(trackId, track2);
+        if (trackId === this.activeTrackId) {
+          this.currentPosition = newPoint;
+          if (this.previousPosition) {
+            this.totalDistance += this.calculateDistance(
+              this.previousPosition.latitude,
+              this.previousPosition.longitude,
+              point.latitude,
+              point.longitude
+            );
+          }
+          this.previousPosition = newPoint;
+          this.currentSpeed = newPoint.speed;
+          if (this.autoCenter && this.isTracking) {
+            this.centerOnPoint(newPoint);
+          }
+        }
+        if (this.maxPoints > 0 && track2.points.length > this.maxPoints) {
+          track2.points.shift();
+          this.tracks.set(trackId, track2);
+        }
+        this.$emit("point-added", {
+          trackId,
+          point: newPoint,
+          totalPoints: track2.points.length
+        });
+        this.$emit("track-updated", {
+          trackId,
+          field: "points",
+          value: track2.points
+        });
+        this.needsRedraw = true;
+      },
+      // Project latitude/longitude to canvas coordinates
+      projectToCanvas(lat, lon) {
+        const scale = 111319.9 * this.zoom;
+        let refLat = 0, refLon = 0;
+        const allPoints = this.getAllPoints();
+        if (allPoints.length > 0) {
+          refLat = allPoints[0].latitude;
+          refLon = allPoints[0].longitude;
+        } else if (this.currentPosition) {
+          refLat = this.currentPosition.latitude;
+          refLon = this.currentPosition.longitude;
+        }
+        const x = this.width / 2 + (lon - refLon) * scale * Math.cos(refLat * Math.PI / 180) + this.panX;
+        const y = this.height / 2 - (lat - refLat) * scale + this.panY;
+        return { x, y };
+      },
+      // Convert canvas coordinates to lat/lon
+      canvasToLatLon(x, y) {
+        const scale = 111319.9 * this.zoom;
+        let refLat = 0, refLon = 0;
+        const allPoints = this.getAllPoints();
+        if (allPoints.length > 0) {
+          refLat = allPoints[0].latitude;
+          refLon = allPoints[0].longitude;
+        }
+        const lon = refLon + (x - this.width / 2 - this.panX) / (scale * Math.cos(refLat * Math.PI / 180));
+        const lat = refLat - (y - this.height / 2 - this.panY) / scale;
+        return { lat, lon };
+      },
+      draw() {
+        if (!this.ctx) return;
+        this.ctx.clearRect(0, 0, this.width, this.height);
+        if (this.showGrid) {
+          this.drawGrid();
+        }
+        for (const [trackId, track2] of this.tracks) {
+          if (this.showAllTracks || trackId === this.activeTrackId) {
+            this.drawTrack(trackId, track2);
+          }
+        }
+        if (this.activeTrack && this.activeTrack.points.length > 0) {
+          this.drawPoints(this.activeTrack);
+        }
+        if (this.activeTrack && this.activeTrack.points.length > 0) {
+          this.drawMarkers(this.activeTrack);
+        }
+      },
+      drawGrid() {
+        this.ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
+        this.ctx.lineWidth = 1;
+        const gridSize = 50;
+        const startX = this.panX % gridSize - gridSize;
+        const startY = this.panY % gridSize - gridSize;
+        for (let x = startX; x < this.width; x += gridSize) {
+          this.ctx.beginPath();
+          this.ctx.moveTo(x, 0);
+          this.ctx.lineTo(x, this.height);
+          this.ctx.stroke();
+        }
+        for (let y = startY; y < this.height; y += gridSize) {
+          this.ctx.beginPath();
+          this.ctx.moveTo(0, y);
+          this.ctx.lineTo(this.width, y);
+          this.ctx.stroke();
+        }
+      },
+      drawTrack(trackId, track2) {
+        if (track2.points.length < 2) return;
+        this.ctx.beginPath();
+        this.ctx.strokeStyle = track2.color;
+        this.ctx.lineWidth = trackId === this.activeTrackId ? 3 : 2;
+        this.ctx.lineJoin = "round";
+        this.ctx.lineCap = "round";
+        this.ctx.globalAlpha = trackId === this.activeTrackId ? 1 : 0.7;
+        const firstPoint = this.projectToCanvas(
+          track2.points[0].latitude,
+          track2.points[0].longitude
+        );
+        this.ctx.moveTo(firstPoint.x, firstPoint.y);
+        for (let i = 1; i < track2.points.length; i++) {
+          const point = this.projectToCanvas(
+            track2.points[i].latitude,
+            track2.points[i].longitude
+          );
+          this.ctx.lineTo(point.x, point.y);
+        }
+        this.ctx.stroke();
+        this.ctx.globalAlpha = 1;
+      },
+      drawPoints(track2) {
+        track2.points.forEach((point, index) => {
+          const canvasPoint = this.projectToCanvas(point.latitude, point.longitude);
+          this.ctx.beginPath();
+          this.ctx.fillStyle = index === track2.points.length - 1 ? "#F44336" : (
+            // Red for last point
+            this.darkenColor(track2.color, 0.2)
+          );
+          this.ctx.arc(canvasPoint.x, canvasPoint.y, 3, 0, Math.PI * 2);
+          this.ctx.fill();
+          this.ctx.beginPath();
+          this.ctx.strokeStyle = "#FFFFFF";
+          this.ctx.lineWidth = 1;
+          this.ctx.arc(canvasPoint.x, canvasPoint.y, 3, 0, Math.PI * 2);
+          this.ctx.stroke();
+          this.ctx.font = "10px Arial";
+          this.ctx.fillStyle = "#000000";
+          this.ctx.textAlign = "left";
+          this.ctx.textBaseline = "middle";
+          this.ctx.fillText(
+            `${(index + 1).toString()} [${this.showTime ? this.formatTimeWithSeconds(point.timestamp) : ""}]`,
+            // Add 1 to start counting from 1 instead of 0
+            canvasPoint.x + 10,
+            // Offset to the right of the point
+            canvasPoint.y
+            // Same vertical position
+          );
+        });
+      },
+      drawMarkers(track2) {
+        const startPoint = this.projectToCanvas(
+          track2.points[0].latitude,
+          track2.points[0].longitude
+        );
+        this.ctx.beginPath();
+        this.ctx.fillStyle = "#4CAF50";
+        this.ctx.arc(startPoint.x, startPoint.y, 6, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.strokeStyle = "#FFFFFF";
+        this.ctx.lineWidth = 2;
+        this.ctx.stroke();
+        this.ctx.fillStyle = "#FFFFFF";
+        this.ctx.font = "bold 10px Arial";
+        this.ctx.textAlign = "center";
+        this.ctx.textBaseline = "middle";
+        this.ctx.fillText("S", startPoint.x, startPoint.y);
+        if (!this.isTracking) {
+          const endPoint = this.projectToCanvas(
+            track2.points[track2.points.length - 1].latitude,
+            track2.points[track2.points.length - 1].longitude
+          );
+          this.ctx.beginPath();
+          this.ctx.fillStyle = "#F44336";
+          this.ctx.arc(endPoint.x, endPoint.y, 6, 0, Math.PI * 2);
+          this.ctx.fill();
+          this.ctx.strokeStyle = "#FFFFFF";
+          this.ctx.lineWidth = 2;
+          this.ctx.stroke();
+          this.ctx.fillStyle = "#FFFFFF";
+          this.ctx.fillText("F", endPoint.x, endPoint.y);
+        }
+      },
+      // Core tracking methods
+      startTracking() {
+        this.isTracking = true;
+        this.startTime = Date.now();
+        this.$emit("tracking-started");
+      },
+      stopTracking() {
+        this.isTracking = false;
+        this.$emit("tracking-stopped", {
+          tracks: this.tracks.size,
+          totalPoints: this.getAllPoints().length,
+          totalDistance: this.getTotalDistance()
+        });
+      },
+      toggleTracking() {
+        if (this.isTracking) {
+          this.stopTracking();
+        } else {
+          if (!this.autoUpdate) {
+            this.$emit("update:autoUpdate", true);
+          }
+          this.startTracking();
+        }
+      },
+      centerOnPoint(point) {
+        if (!point) return;
+        const canvasPoint = this.projectToCanvas(point.latitude, point.longitude);
+        const targetX = this.width / 2;
+        const targetY = this.height / 4;
+        this.panX += targetX - canvasPoint.x;
+        this.panY += targetY - canvasPoint.y;
+        this.needsRedraw = true;
+      },
+      updateMetrics() {
+        if (!this.activeTrack || this.activeTrack.points.length < 2) {
+          this.avgSpeed = 0;
+          this.totalDistance = this.activeTrack ? this.calculateTrackDistance(this.activeTrack) : 0;
+          return;
+        }
+        const points = this.activeTrack.points;
+        const firstPoint = points[0];
+        const lastPoint = points[points.length - 1];
+        const totalTime = (lastPoint.timestamp - firstPoint.timestamp) / 36e5;
+        this.totalDistance = this.calculateTrackDistance(this.activeTrack);
+        if (totalTime > 0) {
+          this.avgSpeed = this.totalDistance / totalTime;
+        }
+      },
+      // Canvas interaction
+      handleWheel(event) {
+        const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
+        const mouseX = event.offsetX;
+        const mouseY = event.offsetY;
+        const worldBefore = this.canvasToLatLon(mouseX, mouseY);
+        this.zoom *= zoomFactor;
+        this.zoom = Math.max(0.1, Math.min(this.zoom, 20));
+        const worldAfter = this.canvasToLatLon(mouseX, mouseY);
+        const deltaLon = worldAfter.lon - worldBefore.lon;
+        const deltaLat = worldAfter.lat - worldBefore.lat;
+        const scale = 111319.9 * this.zoom;
+        this.panX -= deltaLon * scale * Math.cos(worldBefore.lat * Math.PI / 180);
+        this.panY += deltaLat * scale;
+        this.needsRedraw = true;
+      },
+      startDrag(event) {
+        this.isDragging = true;
+        this.dragStartX = event.offsetX;
+        this.dragStartY = event.offsetY;
+        this.lastPanX = this.panX;
+        this.lastPanY = this.panY;
+      },
+      handleMouseMove(event) {
+        const mouseX = event.offsetX;
+        const mouseY = event.offsetY;
+        this.mousePosition = this.canvasToLatLon(mouseX, mouseY);
+        this.mouseCanvasX = mouseX;
+        this.mouseCanvasY = mouseY;
+        if (this.isDragging) {
+          const deltaX = mouseX - this.dragStartX;
+          const deltaY = mouseY - this.dragStartY;
+          this.panX = this.lastPanX + deltaX;
+          this.panY = this.lastPanY + deltaY;
+          this.needsRedraw = true;
+        }
+      },
+      endDrag() {
+        this.isDragging = false;
+      },
+      zoomIn() {
+        this.zoom *= 1.2;
+        this.needsRedraw = true;
+      },
+      zoomOut() {
+        this.zoom *= 0.8;
+        this.needsRedraw = true;
+      },
+      // Utility methods
+      calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+      },
+      calculateTrackDistance(track2) {
+        if (track2.points.length < 2) return 0;
+        let distance = 0;
+        for (let i = 1; i < track2.points.length; i++) {
+          distance += this.calculateDistance(
+            track2.points[i - 1].latitude,
+            track2.points[i - 1].longitude,
+            track2.points[i].latitude,
+            track2.points[i].longitude
+          );
+        }
+        return distance;
+      },
+      formatTimeWithSeconds(timestamp) {
+        return new Date(timestamp).toISOString().substring(11);
+      },
+      formatTime(timestamp) {
+        return new Date(timestamp).toLocaleTimeString();
+      },
+      getAllPoints() {
+        const allPoints = [];
+        for (const track2 of this.tracks.values()) {
+          allPoints.push(...track2.points);
+        }
+        return allPoints;
+      },
+      getTotalDistance() {
+        let total = 0;
+        for (const track2 of this.tracks.values()) {
+          total += this.calculateTrackDistance(track2);
+        }
+        return total;
+      },
+      darkenColor(color, amount) {
+        let r = parseInt(color.slice(1, 3), 16);
+        let g = parseInt(color.slice(3, 5), 16);
+        let b = parseInt(color.slice(5, 7), 16);
+        r = Math.floor(r * (1 - amount));
+        g = Math.floor(g * (1 - amount));
+        b = Math.floor(b * (1 - amount));
+        return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+      },
+      // Export methods
+      exportActiveTrack() {
+        if (!this.activeTrack) return;
+        const geojson = {
+          type: "FeatureCollection",
+          features: [
+            {
+              type: "Feature",
+              geometry: {
+                type: "LineString",
+                coordinates: this.activeTrack.points.map((p2) => [p2.longitude, p2.latitude])
+              },
+              properties: {
+                color: this.activeTrack.color,
+                points: this.activeTrack.points.length,
+                distance: this.totalDistance,
+                duration: this.duration
+              }
+            }
+          ]
+        };
+        this.downloadFile(`${this.activeTrackId}.geojson`, JSON.stringify(geojson, null, 2));
+      },
+      exportAllTracks() {
+        const features = [];
+        for (const [trackId, track2] of this.tracks) {
+          if (track2.points.length > 0) {
+            features.push({
+              type: "Feature",
+              geometry: {
+                type: "LineString",
+                coordinates: track2.points.map((p2) => [p2.longitude, p2.latitude])
+              },
+              properties: {
+                id: trackId,
+                color: track2.color,
+                points: track2.points.length,
+                distance: this.calculateTrackDistance(track2)
+              }
+            });
+          }
+        }
+        const geojson = {
+          type: "FeatureCollection",
+          features
+        };
+        this.downloadFile("all-tracks.geojson", JSON.stringify(geojson, null, 2));
+      },
+      copyActiveTrack() {
+        if (!this.activeTrack) return;
+        const text = JSON.stringify({
+          trackId: this.activeTrackId,
+          ...this.activeTrack
+        }, null, 2);
+        navigator.clipboard.writeText(text).then(() => {
+          this.$emit("copied");
+        });
+      },
+      downloadFile(filename, content) {
+        const blob = new Blob([content], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+      },
+      // Demo
+      simulateMultipleTracks() {
+        this.clearAllTracks();
+        const trackIds = ["boat-1", "boat-2", "boat-3"];
+        const centers = [
+          { lat: 40.7128, lon: -74.006 },
+          { lat: 40.72, lon: -74.01 },
+          { lat: 40.705, lon: -74 }
+        ];
+        trackIds.forEach((trackId, index) => {
+          this.createTrack(trackId, `Boat ${index + 1}`);
+          this.startTracking();
+          const points = 20;
+          const radius = 3e-3 * (index + 1);
+          for (let i = 0; i < points; i++) {
+            setTimeout(() => {
+              const angle = i / points * Math.PI * 2 + index * Math.PI / 3;
+              const lat = centers[index].lat + Math.sin(angle) * radius * (i / points);
+              const lon = centers[index].lon + Math.cos(angle) * radius * (i / points);
+              this.addPointToTrack(trackId, {
+                latitude: lat,
+                longitude: lon,
+                timestamp: Date.now()
+              });
+            }, i * 100);
+          }
+        });
+        setTimeout(() => {
+          this.stopTracking();
+        }, trackIds.length * 20 * 100 + 100);
+      },
+      fitToView() {
+        const allPoints = this.getAllPoints();
+        if (allPoints.length === 0) return;
+        let minLat = allPoints[0].latitude;
+        let maxLat = allPoints[0].latitude;
+        let minLon = allPoints[0].longitude;
+        let maxLon = allPoints[0].longitude;
+        allPoints.forEach((point) => {
+          minLat = Math.min(minLat, point.latitude);
+          maxLat = Math.max(maxLat, point.latitude);
+          minLon = Math.min(minLon, point.longitude);
+          maxLon = Math.max(maxLon, point.longitude);
+        });
+        const latSpan = maxLat - minLat;
+        const lonSpan = maxLon - minLon;
+        const scaleLat = this.height * 0.8 / (latSpan * 111319.9);
+        const scaleLon = this.width * 0.8 / (lonSpan * 111319.9 * Math.cos(minLat * Math.PI / 180));
+        this.zoom = Math.min(scaleLat, scaleLon, 20);
+        this.zoom = Math.max(this.zoom, 0.1);
+        const centerLat = (minLat + maxLat) / 2;
+        const centerLon = (minLon + maxLon) / 2;
+        const centerPoint = this.projectToCanvas(centerLat, centerLon);
+        this.panX = this.width / 2 - centerPoint.x;
+        this.panY = this.height / 2 - centerPoint.y;
+        this.needsRedraw = true;
+      },
+      handleResize() {
+        this.needsRedraw = true;
+      }
+    }
+  };
+  const _hoisted_1$1 = { class: "gps-tracker" };
+  const _hoisted_2$1 = { class: "panel" };
+  const _hoisted_3 = { class: "panel-header" };
+  const _hoisted_4 = { class: "left-controls" };
+  const _hoisted_5 = ["title"];
+  const _hoisted_6 = { key: 0 };
+  const _hoisted_7 = { key: 1 };
+  const _hoisted_8 = { key: 2 };
+  const _hoisted_9 = ["disabled"];
+  const _hoisted_10 = ["disabled"];
+  const _hoisted_11 = ["value"];
+  const _hoisted_12 = { class: "center-controls" };
+  const _hoisted_13 = { class: "zoom-controls" };
+  const _hoisted_14 = { class: "toggle" };
+  const _hoisted_15 = { class: "toggle" };
+  const _hoisted_16 = { class: "toggle" };
+  const _hoisted_17 = { class: "toggle" };
+  const _hoisted_18 = { class: "right-controls" };
+  const _hoisted_19 = { class: "track-info" };
+  const _hoisted_20 = { key: 0 };
+  const _hoisted_21 = { key: 1 };
+  const _hoisted_22 = { key: 2 };
+  const _hoisted_23 = ["width", "height"];
+  const _hoisted_24 = {
+    key: 0,
+    class: "no-data-overlay"
+  };
+  const _hoisted_25 = { class: "no-data-content" };
+  const _hoisted_26 = { key: 0 };
+  const _hoisted_27 = { key: 1 };
+  const _hoisted_28 = { class: "scale-bar" };
+  const _hoisted_29 = { class: "scale-label" };
+  const _hoisted_30 = {
+    key: 2,
+    class: "coordinates-display"
+  };
+  const _hoisted_31 = {
+    key: 3,
+    class: "tracks-list-panel"
+  };
+  const _hoisted_32 = { class: "tracks-container" };
+  const _hoisted_33 = ["onClick"];
+  const _hoisted_34 = { class: "track-info" };
+  const _hoisted_35 = { class: "track-name" };
+  const _hoisted_36 = { class: "track-details" };
+  const _hoisted_37 = { key: 0 };
+  const _hoisted_38 = { class: "track-actions" };
+  const _hoisted_39 = ["onClick"];
+  const _hoisted_40 = { class: "info-panel" };
+  const _hoisted_41 = { class: "info-section" };
+  const _hoisted_42 = {
+    key: 0,
+    class: "position-info"
+  };
+  const _hoisted_43 = { class: "coord" };
+  const _hoisted_44 = { class: "value" };
+  const _hoisted_45 = { class: "coord" };
+  const _hoisted_46 = { class: "coord" };
+  const _hoisted_47 = { class: "value" };
+  const _hoisted_48 = {
+    key: 0,
+    class: "coord"
+  };
+  const _hoisted_49 = { class: "value" };
+  const _hoisted_50 = {
+    key: 1,
+    class: "no-position"
+  };
+  const _hoisted_51 = { class: "info-section" };
+  const _hoisted_52 = { class: "stats-grid" };
+  const _hoisted_53 = { class: "stat" };
+  const _hoisted_54 = { class: "stat-value" };
+  const _hoisted_55 = { class: "stat" };
+  const _hoisted_56 = { class: "stat-value" };
+  const _hoisted_57 = { class: "stat" };
+  const _hoisted_58 = { class: "stat-value" };
+  const _hoisted_59 = { class: "stat" };
+  const _hoisted_60 = { class: "stat-value" };
+  const _hoisted_61 = { class: "info-section" };
+  const _hoisted_62 = { class: "export-buttons" };
+  function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("div", _hoisted_1$1, [
+      createBaseVNode("div", _hoisted_2$1, [
+        createBaseVNode("div", _hoisted_3, [
+          createBaseVNode("div", _hoisted_4, [
+            createBaseVNode("button", {
+              onClick: _cache[0] || (_cache[0] = (...args) => $options.toggleTracking && $options.toggleTracking(...args)),
+              class: normalizeClass(["track-btn", { active: $data.isTracking, paused: !$props.autoUpdate }]),
+              title: $data.isTracking ? "Stop tracking" : "Start tracking"
+            }, [
+              $data.isTracking && $props.autoUpdate ? (openBlock(), createElementBlock("span", _hoisted_6, "●")) : !$props.autoUpdate ? (openBlock(), createElementBlock("span", _hoisted_7, "❚❚")) : (openBlock(), createElementBlock("span", _hoisted_8, "▶")),
+              createTextVNode(" " + toDisplayString($data.isTracking ? !$props.autoUpdate ? "Paused" : "Tracking" : "Start Track"), 1)
+            ], 10, _hoisted_5),
+            createBaseVNode("button", {
+              class: "btn",
+              onClick: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("update:autoUpdate", !$props.autoUpdate))
+            }, [
+              createBaseVNode("i", {
+                class: normalizeClass($props.autoUpdate ? "fas fa-pause" : "fas fa-play")
+              }, null, 2),
+              createTextVNode(" " + toDisplayString($props.autoUpdate ? "Pause Updates" : "Resume Updates"), 1)
+            ]),
+            createBaseVNode("button", {
+              onClick: _cache[2] || (_cache[2] = ($event) => $options.clearTrack(_ctx.tracked)),
+              disabled: !$options.hasTrack,
+              class: "clear-btn"
+            }, " Clear This Track ", 8, _hoisted_9),
+            createBaseVNode("button", {
+              onClick: _cache[3] || (_cache[3] = (...args) => $options.clearAllTracks && $options.clearAllTracks(...args)),
+              disabled: $data.tracks.size === 0,
+              class: "clear-btn"
+            }, " Clear All Tracks ", 8, _hoisted_10),
+            withDirectives(createBaseVNode("select", {
+              "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => $data.activeTrackId = $event),
+              class: "track-select"
+            }, [
+              _cache[21] || (_cache[21] = createBaseVNode("option", { value: "" }, "Select Track", -1)),
+              (openBlock(true), createElementBlock(Fragment, null, renderList($data.tracks, ([trackId, trackData]) => {
+                return openBlock(), createElementBlock("option", {
+                  key: trackId,
+                  value: trackId
+                }, toDisplayString(trackId) + " (" + toDisplayString(trackData.points.length) + " points) ", 9, _hoisted_11);
+              }), 128))
+            ], 512), [
+              [vModelSelect, $data.activeTrackId]
+            ])
+          ]),
+          createBaseVNode("div", _hoisted_12, [
+            createBaseVNode("div", _hoisted_13, [
+              createBaseVNode("button", {
+                onClick: _cache[5] || (_cache[5] = (...args) => $options.zoomOut && $options.zoomOut(...args)),
+                title: "Zoom out"
+              }, "-"),
+              createBaseVNode("span", null, toDisplayString($options.zoomLevel) + "x", 1),
+              createBaseVNode("button", {
+                onClick: _cache[6] || (_cache[6] = (...args) => $options.zoomIn && $options.zoomIn(...args)),
+                title: "Zoom in"
+              }, "+")
+            ]),
+            createBaseVNode("label", _hoisted_14, [
+              withDirectives(createBaseVNode("input", {
+                type: "checkbox",
+                "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => $data.autoCenter = $event)
+              }, null, 512), [
+                [vModelCheckbox, $data.autoCenter]
+              ]),
+              _cache[22] || (_cache[22] = createBaseVNode("span", null, "Auto-center", -1))
+            ]),
+            createBaseVNode("label", _hoisted_15, [
+              withDirectives(createBaseVNode("input", {
+                type: "checkbox",
+                "onUpdate:modelValue": _cache[8] || (_cache[8] = ($event) => $data.showGrid = $event)
+              }, null, 512), [
+                [vModelCheckbox, $data.showGrid]
+              ]),
+              _cache[23] || (_cache[23] = createBaseVNode("span", null, "Grid", -1))
+            ]),
+            createBaseVNode("label", _hoisted_16, [
+              withDirectives(createBaseVNode("input", {
+                type: "checkbox",
+                "onUpdate:modelValue": _cache[9] || (_cache[9] = ($event) => $data.showAllTracks = $event)
+              }, null, 512), [
+                [vModelCheckbox, $data.showAllTracks]
+              ]),
+              _cache[24] || (_cache[24] = createBaseVNode("span", null, "Show All Tracks", -1))
+            ]),
+            createBaseVNode("label", _hoisted_17, [
+              withDirectives(createBaseVNode("input", {
+                type: "checkbox",
+                "onUpdate:modelValue": _cache[10] || (_cache[10] = ($event) => $data.showTime = $event)
+              }, null, 512), [
+                [vModelCheckbox, $data.showTime]
+              ]),
+              _cache[25] || (_cache[25] = createBaseVNode("span", null, "Show time", -1))
+            ])
+          ]),
+          createBaseVNode("div", _hoisted_18, [
+            createBaseVNode("div", {
+              class: normalizeClass(["status-indicator", $options.statusClass])
+            }, toDisplayString($options.statusText), 3),
+            createBaseVNode("div", _hoisted_19, [
+              $options.activeTrack ? (openBlock(), createElementBlock("span", _hoisted_20, "Points: " + toDisplayString($options.activeTrack.points.length), 1)) : createCommentVNode("", true),
+              $options.activeTrack && $data.totalDistance > 0 ? (openBlock(), createElementBlock("span", _hoisted_21, toDisplayString($data.totalDistance.toFixed(2)) + " km", 1)) : createCommentVNode("", true),
+              $options.activeTrack && $options.activeTrack.points.length > 0 ? (openBlock(), createElementBlock("span", _hoisted_22, toDisplayString($options.duration), 1)) : createCommentVNode("", true),
+              createBaseVNode("span", null, "Tracks: " + toDisplayString($data.tracks.size), 1)
+            ])
+          ])
+        ]),
+        createBaseVNode("div", {
+          class: normalizeClass(["canvas-container", { "cursor-grab": !$data.isDragging, "cursor-grabbing": $data.isDragging }]),
+          onMousedown: _cache[12] || (_cache[12] = (...args) => $options.startDrag && $options.startDrag(...args)),
+          onMousemove: _cache[13] || (_cache[13] = (...args) => $options.handleMouseMove && $options.handleMouseMove(...args)),
+          onMouseup: _cache[14] || (_cache[14] = (...args) => $options.endDrag && $options.endDrag(...args)),
+          onMouseleave: _cache[15] || (_cache[15] = (...args) => $options.endDrag && $options.endDrag(...args))
+        }, [
+          createBaseVNode("canvas", {
+            ref: "canvas",
+            width: $data.canvasWidth,
+            height: $data.canvasHeight
+          }, null, 8, _hoisted_23),
+          !$options.hasTrack && $data.tracks.size === 0 ? (openBlock(), createElementBlock("div", _hoisted_24, [
+            createBaseVNode("div", _hoisted_25, [
+              _cache[26] || (_cache[26] = createBaseVNode("div", { class: "icon" }, "📍", -1)),
+              _cache[27] || (_cache[27] = createBaseVNode("h3", null, "No Track Data", -1)),
+              !$data.isTracking ? (openBlock(), createElementBlock("p", _hoisted_26, 'Click "Start Track" to begin recording')) : (openBlock(), createElementBlock("p", _hoisted_27, "Waiting for GPS data...")),
+              createBaseVNode("button", {
+                onClick: _cache[11] || (_cache[11] = (...args) => $options.simulateMultipleTracks && $options.simulateMultipleTracks(...args)),
+                class: "demo-btn"
+              }, " Try Demo Tracks ")
+            ])
+          ])) : createCommentVNode("", true),
+          $data.currentPosition && $data.isTracking && !$props.autoUpdate ? (openBlock(), createElementBlock("div", {
+            key: 1,
+            class: "current-marker",
+            style: normalizeStyle($options.currentMarkerStyle)
+          }, [..._cache[28] || (_cache[28] = [
+            createBaseVNode("div", { class: "pulse" }, null, -1),
+            createBaseVNode("div", { class: "center-dot" }, null, -1)
+          ])], 4)) : createCommentVNode("", true),
+          createBaseVNode("div", _hoisted_28, [
+            _cache[29] || (_cache[29] = createBaseVNode("div", { class: "scale-line" }, null, -1)),
+            createBaseVNode("div", _hoisted_29, toDisplayString($options.scaleLabel), 1)
+          ]),
+          $data.mousePosition ? (openBlock(), createElementBlock("div", _hoisted_30, toDisplayString($data.mousePosition.lat.toFixed(6)) + ", " + toDisplayString($data.mousePosition.lon.toFixed(6)), 1)) : createCommentVNode("", true),
+          $data.tracks.size > 0 ? (openBlock(), createElementBlock("div", _hoisted_31, [
+            createBaseVNode("h4", null, "All Tracks (" + toDisplayString($data.tracks.size) + ")", 1),
+            createBaseVNode("div", _hoisted_32, [
+              (openBlock(true), createElementBlock(Fragment, null, renderList($data.tracks, ([trackId, trackData]) => {
+                return openBlock(), createElementBlock("div", {
+                  key: trackId,
+                  class: normalizeClass(["track-item", { "active": trackId === $data.activeTrackId }]),
+                  onClick: ($event) => $options.setActiveTrack(trackId)
+                }, [
+                  createBaseVNode("div", {
+                    class: "track-color",
+                    style: normalizeStyle({ backgroundColor: trackData.color })
+                  }, null, 4),
+                  createBaseVNode("div", _hoisted_34, [
+                    createBaseVNode("div", _hoisted_35, toDisplayString(trackId), 1),
+                    createBaseVNode("div", _hoisted_36, [
+                      createBaseVNode("span", null, toDisplayString(trackData.points.length) + " points", 1),
+                      createBaseVNode("span", null, toDisplayString($options.calculateTrackDistance(trackData).toFixed(2)) + " km", 1),
+                      trackData.points.length > 0 ? (openBlock(), createElementBlock("span", _hoisted_37, toDisplayString($options.formatTime(trackData.points[trackData.points.length - 1].timestamp)), 1)) : createCommentVNode("", true)
+                    ])
+                  ]),
+                  createBaseVNode("div", _hoisted_38, [
+                    createBaseVNode("button", {
+                      onClick: withModifiers(($event) => $options.removeTrack(trackId), ["stop"]),
+                      class: "remove-btn",
+                      title: "Remove track"
+                    }, " × ", 8, _hoisted_39)
+                  ])
+                ], 10, _hoisted_33);
+              }), 128))
+            ])
+          ])) : createCommentVNode("", true)
+        ], 34),
+        createBaseVNode("div", _hoisted_40, [
+          createBaseVNode("div", _hoisted_41, [
+            _cache[34] || (_cache[34] = createBaseVNode("h4", null, "Current Track", -1)),
+            $options.activeTrack ? (openBlock(), createElementBlock("div", _hoisted_42, [
+              createBaseVNode("div", _hoisted_43, [
+                _cache[30] || (_cache[30] = createBaseVNode("span", { class: "label" }, "Track ID:", -1)),
+                createBaseVNode("span", _hoisted_44, toDisplayString($data.activeTrackId), 1)
+              ]),
+              createBaseVNode("div", _hoisted_45, [
+                _cache[31] || (_cache[31] = createBaseVNode("span", { class: "label" }, "Color:", -1)),
+                withDirectives(createBaseVNode("input", {
+                  type: "color",
+                  "onUpdate:modelValue": _cache[16] || (_cache[16] = ($event) => $options.activeTrack.color = $event),
+                  onChange: _cache[17] || (_cache[17] = (...args) => $options.updateTrackColor && $options.updateTrackColor(...args)),
+                  class: "color-picker"
+                }, null, 544), [
+                  [vModelText, $options.activeTrack.color]
+                ])
+              ]),
+              createBaseVNode("div", _hoisted_46, [
+                _cache[32] || (_cache[32] = createBaseVNode("span", { class: "label" }, "Points:", -1)),
+                createBaseVNode("span", _hoisted_47, toDisplayString($options.activeTrack.points.length), 1)
+              ]),
+              $data.currentPosition ? (openBlock(), createElementBlock("div", _hoisted_48, [
+                _cache[33] || (_cache[33] = createBaseVNode("span", { class: "label" }, "Last Position:", -1)),
+                createBaseVNode("span", _hoisted_49, toDisplayString($options.formatTime($data.currentPosition.timestamp)), 1)
+              ])) : createCommentVNode("", true)
+            ])) : (openBlock(), createElementBlock("div", _hoisted_50, " No track selected "))
+          ]),
+          createBaseVNode("div", _hoisted_51, [
+            _cache[39] || (_cache[39] = createBaseVNode("h4", null, "Track Statistics", -1)),
+            createBaseVNode("div", _hoisted_52, [
+              createBaseVNode("div", _hoisted_53, [
+                createBaseVNode("div", _hoisted_54, toDisplayString($options.activeTrack ? $options.activeTrack.points.length : 0), 1),
+                _cache[35] || (_cache[35] = createBaseVNode("div", { class: "stat-label" }, "Points", -1))
+              ]),
+              createBaseVNode("div", _hoisted_55, [
+                createBaseVNode("div", _hoisted_56, toDisplayString($data.totalDistance.toFixed(2)), 1),
+                _cache[36] || (_cache[36] = createBaseVNode("div", { class: "stat-label" }, "km", -1))
+              ]),
+              createBaseVNode("div", _hoisted_57, [
+                createBaseVNode("div", _hoisted_58, toDisplayString($options.duration), 1),
+                _cache[37] || (_cache[37] = createBaseVNode("div", { class: "stat-label" }, "Duration", -1))
+              ]),
+              createBaseVNode("div", _hoisted_59, [
+                createBaseVNode("div", _hoisted_60, toDisplayString($data.avgSpeed.toFixed(1)), 1),
+                _cache[38] || (_cache[38] = createBaseVNode("div", { class: "stat-label" }, "km/h avg", -1))
+              ])
+            ])
+          ]),
+          createBaseVNode("div", _hoisted_61, [
+            _cache[40] || (_cache[40] = createBaseVNode("h4", null, "Export", -1)),
+            createBaseVNode("div", _hoisted_62, [
+              createBaseVNode("button", {
+                onClick: _cache[18] || (_cache[18] = (...args) => $options.exportActiveTrack && $options.exportActiveTrack(...args)),
+                title: "Export active track"
+              }, "Export Active"),
+              createBaseVNode("button", {
+                onClick: _cache[19] || (_cache[19] = (...args) => $options.exportAllTracks && $options.exportAllTracks(...args)),
+                title: "Export all tracks"
+              }, "Export All"),
+              createBaseVNode("button", {
+                onClick: _cache[20] || (_cache[20] = (...args) => $options.copyActiveTrack && $options.copyActiveTrack(...args)),
+                title: "Copy to clipboard"
+              }, "📋")
+            ])
+          ])
+        ])
+      ])
+    ]);
+  }
+  const GpsTracker = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__scopeId", "data-v-8b37c1ec"]]);
   const _hoisted_1 = { class: "app-container" };
   const _hoisted_2 = {
     key: 0,
@@ -9394,65 +11186,75 @@ Expected function or array of functions, received type ${typeof value}.`
   const _sfc_main = {
     __name: "App",
     setup(__props) {
-      const { config } = useConfigStore();
+      const { config: config2 } = useConfigStore();
       const selectedDevice = ref(null);
       const searchQuery = ref("");
       const serverFilter = ref("");
       const pgnFilter = ref("");
-      const autoUpdate = ref(true);
+      const autoUpdate = ref(false);
       const isConfigModalVisible = ref(false);
+      const blockedPGNs = ref(/* @__PURE__ */ new Set());
+      const trackingPGNs = ref(loadFromLocalStorage("trackingPGNs", "Set"));
+      let freezePGNsArray = [];
       const {
         isConnected,
         connectionError,
-        devices,
+        freezePGNs,
         servers,
-        pgns,
-        history,
+        devicesPGNs,
+        lastPgn,
         connectionStatus,
         connectWebSocket,
         reconnectWebSocket,
         clearAllData
-      } = useNmeaWebSocket(autoUpdate, config);
+      } = useNmeaWebSocket(autoUpdate, config2);
       const themeClass = computed(() => {
-        if (config.value.theme === "auto") {
+        if (config2.value.theme === "auto") {
           return window.matchMedia("(prefers-color-scheme: dark)").matches ? "theme-dark" : "theme-light";
         }
-        return `theme-${config.value.theme}`;
+        return `theme-${config2.value.theme}`;
       });
       const devicesList = computed(() => {
-        return Array.from(devices.value.values()).sort((a, b) => a.src < b.src).map((device) => ({
-          ...device,
-          firstSeen: new Date(device.firstSeen),
-          lastSeen: new Date(device.lastSeen)
-        }));
+        return Array.from(devicesPGNs.value.values()).sort((a, b) => {
+          return a.src.toString().localeCompare(b.src.toString(), void 0, { numeric: true, sensitivity: "base" });
+        });
       });
       const serversList = computed(() => {
+        console.log("calcll serversList");
         return Array.from(servers.value.values());
       });
       const allPgns = computed(() => {
-        const all = [];
-        for (const [src, devicePgnsMap] of pgns.value.entries()) {
-          for (const [pgnId, pgnData] of devicePgnsMap.entries()) {
-            const age = Date.now() - new Date(pgnData.timestamp).getTime();
-            if (config.value.filters.maxAge > 0 && age > config.value.filters.maxAge) {
-              continue;
-            }
-            all.push({
-              ...pgnData,
-              deviceSrc: src
-            });
+        console.log("redoo all!");
+        if (freezePGNsArray.length) {
+          if (freezePGNs) {
+            return freezePGNsArray;
+          } else {
+            freezePGNsArray = [];
           }
+        }
+        const all = [];
+        for (const [src, device] of devicesPGNs.value.entries()) {
+          for (const [pgnId, pgnData] of device.pgns.entries()) {
+            all.push(pgnData);
+          }
+        }
+        all.sort((a, b) => {
+          a.pgn.toString().localeCompare(b.pgn.toString(), void 0, { numeric: true, sensitivity: "base" });
+        });
+        if (freezePGNs.value) {
+          console.log(freezePGNs);
         }
         return all;
       });
-      const filteredPgns = computed(() => {
+      const filteredPGNs = computed(() => {
+        console.log("ifilll");
         let filtered = allPgns.value;
         if (selectedDevice.value !== null) {
           filtered = filtered.filter((pgn) => pgn.src.toString() === selectedDevice.value.toString());
         }
         if (serverFilter.value !== "" && serverFilter.value !== null) {
           filtered = filtered.filter(
-            (pgn) => pgn.serverAddress.toString() === serverFilter.value.toString()
+            (pgn) => pgn.serverAddress.toString() === serverFilter.value.toString() || pgn.servers.includes(serverFilter.value.toString())
           );
         }
         if (pgnFilter.value !== "" && pgnFilter.value !== null) {
@@ -9465,43 +11267,22 @@ Expected function or array of functions, received type ${typeof value}.`
           filtered = filtered.filter(
             (pgn) => typeof pgn.description === "string" && pgn.description.toLowerCase().includes(query) || typeof pgn.serverAddress === "string" && pgn.serverAddress.toLowerCase().includes(query) || pgn.pgn.toString().includes(query) || Object.keys(pgn.fields || {}).some(
               (field) => field.toLowerCase().includes(query)
-            ) || Object.values(pgn.fields || {}).some(
-              (value) => String(value).toLowerCase().includes(query)
             )
+            //to check the value is very intensive for computation!!!!
+            // ||
+            // Object.values(pgn.fields || {}).some(value =>
+            //     String(value).toLowerCase().includes(query)
+            // )
           );
         }
         filtered.sort((a, b) => (Number(a.src) || 0) - (Number(b.src) || 0));
         filtered.sort((a, b) => (Number(a.pgn) || 0) - (Number(b.pgn) || 0));
         return filtered;
       });
-      const filteredHistory = computed(() => {
-        let filtered = history.value;
-        if (serverFilter.value) {
-          filtered = filtered.filter(
-            (item) => item.serverAddress.toString() === serverFilter.value.toString()
-          );
-        }
-        if (pgnFilter.value) {
-          filtered = filtered.filter(
-            (item) => item.pgn.toString() === pgnFilter.value.toString()
-          );
-        }
-        if (searchQuery.value) {
-          const query = searchQuery.value.toLowerCase();
-          filtered = filtered.filter(
-            (item) => typeof item.description === "string" && item.description.toLowerCase().includes(query) || typeof item.serverAddress === "string" && item.serverAddress.toLowerCase().includes(query) || item.pgn.toString().includes(query) || Object.keys(item.fields || {}).some(
-              (field) => field.toLowerCase().includes(query)
-            ) || Object.values(item.fields || {}).some(
-              (value) => String(value).toLowerCase().includes(query)
-            )
-          );
-        }
-        return filtered.slice(0, 50);
-      });
-      const totalDevices = computed(() => devices.value.size);
+      const totalDevices = computed(() => devicesPGNs.value.size);
       const totalPgns = computed(() => allPgns.value.length);
       const totalUpdates = computed(
-        () => Array.from(devices.value.values()).reduce((sum, device) => sum + device.updates, 0)
+        () => Array.from(devicesPGNs.value.values()).reduce((sum, device) => sum + device.updates, 0)
       );
       const uniquePgns = computed(() => {
         const pgnSet = /* @__PURE__ */ new Set();
@@ -9520,37 +11301,94 @@ Expected function or array of functions, received type ${typeof value}.`
       function selectDevice(src) {
         selectedDevice.value = selectedDevice.value === src ? null : src;
       }
+      function trackPgn(track2) {
+        const key = typeof track2 === "string" ? track2 : `${track2.src}:${track2.pgn}`;
+        if (trackingPGNs.value.has(key)) {
+          trackingPGNs.value.delete(key);
+        } else {
+          trackingPGNs.value.add(key);
+        }
+        saveToLocalStorage("trackingPGNs");
+      }
       function filterPgn(value, event) {
         if (event) {
           event.stopPropagation();
         }
         pgnFilter.value = pgnFilter.value != value ? value.toString() : "";
       }
-      function clearHistory() {
-        if (confirm("Clear all history?")) {
-          history.value = [];
+      function blockPgn(pgn, event) {
+        if (event) {
+          event.stopPropagation();
         }
+        if (typeof pgn === "string") {
+          if (pgn.startsWith("0x") || pgn.startsWith("0X")) {
+            pgn = parseInt(pgn, 16);
+          } else {
+            pgn = parseInt(pgn, 10);
+          }
+        }
+        pgn = `0x${pgn.toString(16).padStart(7, "0").toUpperCase()}`;
+        if (blockedPGNs.value.has(pgn)) {
+          blockedPGNs.value.delete(pgn);
+        } else {
+          blockedPGNs.value.add(pgn);
+        }
+      }
+      function toggleFreezePGNs() {
+        freezePGNs.value = !freezePGNs.value;
       }
       function reconnect() {
         reconnectWebSocket();
       }
       function onConfigChange(newConfig) {
-        if (newConfig.theme !== config.value.theme) {
+        if (newConfig.theme !== config2.value.theme) {
           applyTheme(newConfig.theme);
         }
       }
       function applyTheme(theme) {
         document.documentElement.setAttribute("data-theme", theme);
       }
+      function loadFromLocalStorage(key, type) {
+        try {
+          const savedValue = localStorage.getItem(key);
+          switch (type) {
+            case "Set":
+              const setArray = JSON.parse(savedValue);
+              console.log("Loaded trackingPGNs from localStorage:", setArray);
+              return new Set(setArray);
+            case "Map":
+              const mapArray = JSON.parse(savedValue);
+              console.log("Loaded trackingPGNs from localStorage:", mapArray);
+              return new Map(mapArray);
+            default:
+              return JSON.parse(savedValue);
+          }
+        } catch (error) {
+          console.error("Error loading from localStorage:", "key", error);
+          localStorage.removeItem(key);
+        }
+        switch (type) {
+          case "Set":
+            return /* @__PURE__ */ new Set();
+          case "Map":
+            return /* @__PURE__ */ new Map();
+          default:
+            return null;
+        }
+      }
+      function saveToLocalStorage(KEY, type) {
+        const trackingArray = Array.from(trackingPGNs.value);
+        localStorage.setItem(KEY, JSON.stringify(trackingArray));
+      }
       onMounted(() => {
-        applyTheme(config.value.theme);
+        applyTheme(config2.value.theme);
         const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
         mediaQuery.addEventListener("change", () => {
-          if (config.value.theme === "auto") {
+          if (config2.value.theme === "auto") {
             applyTheme("auto");
           }
         });
-        if (config.value.autoConnect) {
+        if (config2.value.autoConnect) {
           connectWebSocket();
         }
       });
@@ -9568,59 +11406,83 @@ Expected function or array of functions, received type ${typeof value}.`
               onOpenSettings: _cache[0] || (_cache[0] = ($event) => isConfigModalVisible.value = true)
             }, null, 8, ["is-connected", "connection-status", "total-devices", "total-pgns"]),
             unref(connectionError) ? (openBlock(), createElementBlock("div", _hoisted_2, [
-              _cache[8] || (_cache[8] = createBaseVNode("i", { class: "fas fa-exclamation-triangle" }, null, -1)),
+              _cache[10] || (_cache[10] = createBaseVNode("i", { class: "fas fa-exclamation-triangle" }, null, -1)),
               createTextVNode(" Connection Error: " + toDisplayString(unref(connectionError).message) + " ", 1),
               createBaseVNode("button", {
                 class: "btn btn-sm",
                 onClick: reconnect
-              }, [..._cache[7] || (_cache[7] = [
+              }, [..._cache[9] || (_cache[9] = [
                 createBaseVNode("i", { class: "fas fa-redo" }, null, -1),
                 createTextVNode(" Reconnect ", -1)
               ])])
             ])) : createCommentVNode("", true),
             createVNode(_sfc_main$a, {
-              "total-devices": totalDevices.value,
-              "total-pgns": totalPgns.value,
-              "total-updates": totalUpdates.value,
-              "history-length": unref(history).length
-            }, null, 8, ["total-devices", "total-pgns", "total-updates", "history-length"]),
+              totalDevices: totalDevices.value,
+              totalPgns: totalPgns.value,
+              totalUpdates: totalUpdates.value
+            }, null, 8, ["totalDevices", "totalPgns", "totalUpdates"]),
             createVNode(_sfc_main$9, {
-              "auto-update": autoUpdate.value,
-              "search-query": searchQuery.value,
-              "server-filter": serverFilter.value,
-              "pgn-filter": pgnFilter.value,
-              "devices-list": devicesList.value,
-              "servers-list": serversList.value,
-              "unique-pgns": uniquePgns.value,
+              autoUpdate: autoUpdate.value,
+              freezePGNs: unref(freezePGNs),
+              searchQuery: searchQuery.value,
+              serverFilter: serverFilter.value,
+              pgnFilter: pgnFilter.value,
+              devicesList: devicesList.value,
+              serversList: serversList.value,
+              uniquePgns: uniquePgns.value,
               "onUpdate:autoUpdate": _cache[1] || (_cache[1] = ($event) => autoUpdate.value = $event),
               "onUpdate:searchQuery": _cache[2] || (_cache[2] = ($event) => searchQuery.value = $event),
               "onUpdate:pgnFilter": _cache[3] || (_cache[3] = ($event) => pgnFilter.value = $event),
               "onUpdate:serverFilter": _cache[4] || (_cache[4] = ($event) => serverFilter.value = $event),
-              onClearHistory: clearHistory,
+              onToggleFreezePGNs: toggleFreezePGNs,
               onClearData: unref(clearAllData)
-            }, null, 8, ["auto-update", "search-query", "server-filter", "pgn-filter", "devices-list", "servers-list", "unique-pgns", "onClearData"]),
-            createVNode(_sfc_main$2, {
-              "devices-list": devicesList.value,
-              "filtered-pgns": filteredPgns.value,
-              "filtered-history": filteredHistory.value,
-              "selected-device": selectedDevice.value,
-              "server-filter": serverFilter.value,
-              "pgn-filter": pgnFilter.value,
-              "panel-title": panelTitle.value,
+            }, null, 8, ["autoUpdate", "freezePGNs", "searchQuery", "serverFilter", "pgnFilter", "devicesList", "serversList", "uniquePgns", "onClearData"]),
+            createVNode(_sfc_main$4, {
+              autoUpdate: autoUpdate.value,
+              devicesList: devicesList.value,
+              filteredPGNs: filteredPGNs.value,
+              selectedDevice: selectedDevice.value,
+              serverFilter: serverFilter.value,
+              pgnFilter: pgnFilter.value,
+              blockedPGNs: blockedPGNs.value,
+              panelTitle: panelTitle.value,
+              trackingPGNs: trackingPGNs.value,
               onSelectDevice: selectDevice,
               onFilterPgn: filterPgn,
-              onClearHistory: clearHistory
-            }, null, 8, ["devices-list", "filtered-pgns", "filtered-history", "selected-device", "server-filter", "pgn-filter", "panel-title"]),
+              onBlockPgn: blockPgn,
+              onToggleFreezePGNs: toggleFreezePGNs,
+              onTrackPgn: trackPgn
+            }, null, 8, ["autoUpdate", "devicesList", "filteredPGNs", "selectedDevice", "serverFilter", "pgnFilter", "blockedPGNs", "panelTitle", "trackingPGNs"]),
+            createVNode(GpsTracker, {
+              autoUpdate: autoUpdate.value,
+              "onUpdate:autoUpdate": _cache[5] || (_cache[5] = ($event) => autoUpdate.value = $event),
+              ref: "tracker",
+              trackingPGNs: trackingPGNs.value,
+              onTrackPgn: trackPgn,
+              pgn: unref(lastPgn),
+              autoStart: true,
+              width: 2e3,
+              height: 1200,
+              "line-color": "#3F51B5",
+              "point-color": "#FF9800",
+              onPointAdded: _cache[6] || (_cache[6] = () => {
+              })
+            }, null, 8, ["autoUpdate", "trackingPGNs", "pgn"]),
+            createVNode(PGNFilter, {
+              selectedDevice: selectedDevice.value,
+              filteredPGNs: filteredPGNs.value,
+              blockedPGNs: blockedPGNs.value
+            }, null, 8, ["selectedDevice", "filteredPGNs", "blockedPGNs"]),
             createBaseVNode("button", {
               class: "config-button",
-              onClick: _cache[5] || (_cache[5] = ($event) => isConfigModalVisible.value = true)
-            }, [..._cache[9] || (_cache[9] = [
+              onClick: _cache[7] || (_cache[7] = ($event) => isConfigModalVisible.value = true)
+            }, [..._cache[11] || (_cache[11] = [
               createBaseVNode("i", { class: "fas fa-cog" }, null, -1)
             ])]),
             isConfigModalVisible.value ? (openBlock(), createBlock(ConfigModal, {
               key: 1,
               "is-visible": isConfigModalVisible.value,
-              onClose: _cache[6] || (_cache[6] = ($event) => isConfigModalVisible.value = false),
+              onClose: _cache[8] || (_cache[8] = ($event) => isConfigModalVisible.value = false),
               onConfigChange
             }, null, 8, ["is-visible"])) : createCommentVNode("", true)
           ])

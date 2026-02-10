@@ -11,6 +11,7 @@
     --primary: #3b82f6;
     --primary-dark: #2563eb;
     --secondary: #10b981;
+    --success: #10b981;
     --danger: #ef4444;
     --warning: #f59e0b;
     --dark-bg: #0f172a;
@@ -18,12 +19,21 @@
     --border: #334155;
     --text: #f8fafc;
     --text-light: #94a3b8;
+    --text-dark: #0f172a;
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+.text-success {
+    color: var(--success);
+}
+
+.text-danger {
+    color: var(--danger);
 }
 
 body {
@@ -183,7 +193,7 @@ select.search {
 /* Dashboard Layout */
 .dashboard {
     display: grid;
-    grid-template-columns: 300px 1fr 350px;
+    grid-template-columns: 300px 1fr;
     gap: 20px;
     height: calc(100vh - 250px);
 }
@@ -221,7 +231,7 @@ select.search {
     align-items: center;
 }
 
-.panel-title {
+.panelTitle {
     font-size: 1.2rem;
     font-weight: 600;
     display: flex;
@@ -236,7 +246,7 @@ select.search {
 }
 
 /* Devices Panel */
-.devices-list {
+.devicesList {
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -460,50 +470,6 @@ select.search {
     vertical-align: top;
 }
 
-/* History Panel */
-.history-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.history-item {
-    background: rgba(30, 41, 59, 0.5);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 15px;
-}
-
-.history-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-}
-
-.history-pgn {
-    font-weight: 600;
-    color: var(--primary);
-}
-
-.history-device {
-    color: var(--text-light);
-    font-size: 0.9rem;
-    text-align: right;
-}
-
-.history-time {
-    font-size: 0.8rem;
-    color: var(--text-light);
-    margin-top: 5px;
-    text-align: right;
-}
-
-.history-description {
-    font-size: 0.9rem;
-    color: var(--text);
-    margin-bottom: 5px;
-}
-
 /* Empty States */
 .empty-state {
     text-align: center;
@@ -591,17 +557,26 @@ input[type="range"]::-moz-range-thumb {
     background: color-mix(in srgb, var(--primary) 90%, black);
 }
 
-.btn-test {
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: color-mix(in srgb, var(--danger) 90%, black);
+}
+
+.btn-success {
     background: var(--success);
     color: white;
     border: none;
 }
 
-.btn-test:hover {
+.btn-success:hover {
     background: color-mix(in srgb, var(--success) 90%, black);
 }
 
-.btn-test:disabled {
+.btn-success:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
