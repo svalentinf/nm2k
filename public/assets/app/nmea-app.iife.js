@@ -8147,13 +8147,13 @@ Expected function or array of functions, received type ${typeof value}.`
     setup(__props) {
       return (_ctx, _cache) => {
         return openBlock(), createElementBlock("header", null, [
-          _cache[1] || (_cache[1] = createBaseVNode("h1", null, "NMEA 2000 PGN Monitor", -1)),
+          _cache[1] || (_cache[1] = createBaseVNode("h1", null, "NMEA live analysis", -1)),
           createBaseVNode("div", {
             class: normalizeClass(["status", { connected: __props.isConnected }])
           }, [
             _cache[0] || (_cache[0] = createBaseVNode("div", { class: "status-dot" }, null, -1)),
             createBaseVNode("span", null, toDisplayString(__props.connectionStatus), 1),
-            __props.isConnected ? (openBlock(), createElementBlock("span", _hoisted_1$b, "• " + toDisplayString(__props.totalDevices) + " devices • " + toDisplayString(__props.totalPgns) + " PGNs", 1)) : createCommentVNode("", true)
+            __props.isConnected ? (openBlock(), createElementBlock("span", _hoisted_1$b, "• " + toDisplayString(__props.totalDevices) + " devices • " + toDisplayString(__props.totalPgns) + " PGNs/sentences", 1)) : createCommentVNode("", true)
           ], 2)
         ]);
       };
@@ -11247,7 +11247,6 @@ match(CAN1, ${filter.filter}, ${filter.mask})
         return all;
       });
       const filteredPGNs = computed(() => {
-        console.log("ifilll");
         let filtered = allPgns.value;
         if (selectedDevice.value !== null) {
           filtered = filtered.filter((pgn) => pgn.src.toString() === selectedDevice.value.toString());
