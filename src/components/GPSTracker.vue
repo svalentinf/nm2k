@@ -62,6 +62,10 @@
                         <input type="checkbox" v-model="showAllTracks">
                         <span>Show All Tracks</span>
                     </label>
+                    <label class="toggle">
+                        <input type="checkbox" v-model="showTime">
+                        <span>Show time</span>
+                    </label>
                 </div>
 
                 <div class="right-controls">
@@ -126,6 +130,41 @@
                 <div v-if="mousePosition" class="coordinates-display">
                     {{ mousePosition.lat.toFixed(6) }}, {{ mousePosition.lon.toFixed(6) }}
                 </div>
+
+                <!-- Tracks List Panel -->
+                <div class="tracks-list-panel" v-if="tracks.size > 0">
+                    <h4>All Tracks ({{ tracks.size }})</h4>
+                    <div class="tracks-container">
+                        <div
+                                v-for="[trackId, trackData] in tracks"
+                                :key="trackId"
+                                :class="['track-item', { 'active': trackId === activeTrackId }]"
+                                @click="setActiveTrack(trackId)"
+                        >
+                            <div class="track-color" :style="{ backgroundColor: trackData.color }"></div>
+                            <div class="track-info">
+                                <div class="track-name">{{ trackId }}</div>
+                                <div class="track-details">
+                                    <span>{{ trackData.points.length }} points</span>
+                                    <span>{{ calculateTrackDistance(trackData).toFixed(2) }} km</span>
+                                    <span v-if="trackData.points.length > 0">
+                                    {{ formatTime(trackData.points[trackData.points.length - 1].timestamp) }}
+                                </span>
+                                </div>
+                            </div>
+                            <div class="track-actions">
+                                <button
+                                        @click.stop="removeTrack(trackId)"
+                                        class="remove-btn"
+                                        title="Remove track"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <!-- Track Info Panel -->
@@ -189,40 +228,6 @@
                         <button @click="exportActiveTrack" title="Export active track">Export Active</button>
                         <button @click="exportAllTracks" title="Export all tracks">Export All</button>
                         <button @click="copyActiveTrack" title="Copy to clipboard">📋</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tracks List Panel -->
-            <div class="tracks-list-panel" v-if="tracks.size > 0">
-                <h4>All Tracks ({{ tracks.size }})</h4>
-                <div class="tracks-container">
-                    <div
-                            v-for="[trackId, trackData] in tracks"
-                            :key="trackId"
-                            :class="['track-item', { 'active': trackId === activeTrackId }]"
-                            @click="setActiveTrack(trackId)"
-                    >
-                        <div class="track-color" :style="{ backgroundColor: trackData.color }"></div>
-                        <div class="track-info">
-                            <div class="track-name">{{ trackId }}</div>
-                            <div class="track-details">
-                                <span>{{ trackData.points.length }} points</span>
-                                <span>{{ calculateTrackDistance(trackData).toFixed(2) }} km</span>
-                                <span v-if="trackData.points.length > 0">
-                                    {{ formatTime(trackData.points[trackData.points.length - 1].timestamp) }}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="track-actions">
-                            <button
-                                    @click.stop="removeTrack(trackId)"
-                                    class="remove-btn"
-                                    title="Remove track"
-                            >
-                                ×
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -294,6 +299,7 @@ export default {
             autoCenter:    true,
             showGrid:      true,
             showAllTracks: true,
+            showTime: true,
 
             // Mouse position
             mousePosition: null,
@@ -468,6 +474,10 @@ export default {
         },
 
         showAllTracks()
+        {
+            this.needsRedraw = true;
+        },
+        showTime()
         {
             this.needsRedraw = true;
         },
@@ -656,6 +666,7 @@ export default {
             };
 
             // Add to track
+
             track.points.push(newPoint);
             this.tracks.set(trackId, track);
 
@@ -835,6 +846,8 @@ export default {
 
         drawPoints(track)
         {
+
+
             track.points.forEach((point, index) => {
                 const canvasPoint = this.projectToCanvas(point.latitude, point.longitude);
 
@@ -852,6 +865,17 @@ export default {
                 this.ctx.lineWidth = 1;
                 this.ctx.arc(canvasPoint.x, canvasPoint.y, 3, 0, Math.PI * 2);
                 this.ctx.stroke();
+
+                // Draw point number/label
+                this.ctx.font = '10px Arial'; // Adjust font size and family as needed
+                this.ctx.fillStyle = '#000000'; // Black text, adjust as needed
+                this.ctx.textAlign = 'left';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillText(
+                    `${(index + 1).toString()} [${this.showTime?this.formatTimeWithSeconds(point.timestamp):''}]`, // Add 1 to start counting from 1 instead of 0
+                    canvasPoint.x + 10, // Offset to the right of the point
+                    canvasPoint.y // Same vertical position
+                );
             });
         },
 
@@ -1058,6 +1082,10 @@ export default {
             return distance;
         },
 
+        formatTimeWithSeconds(timestamp)
+        {
+            return new Date(timestamp).toISOString().substring(11);
+        },
         formatTime(timestamp)
         {
             return new Date(timestamp).toLocaleTimeString();
@@ -1289,7 +1317,7 @@ button {
     border: none;
     border-radius: 6px;
     background: white;
-    color: #333;
+    color: var(--text-dark);
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
@@ -1343,7 +1371,7 @@ button:disabled {
     border: 1px solid #ddd;
     border-radius: 6px;
     background: white;
-    color: #333;
+    color: var(--text-dark);
     font-size: 14px;
     min-width: 150px;
 }
@@ -1472,7 +1500,7 @@ canvas {
 
 .no-data-content h3 {
     margin: 0 0 8px 0;
-    color: #333;
+    color: var(--text-dark);
 }
 
 .no-data-content p {
@@ -1537,13 +1565,13 @@ canvas {
 .scale-line {
     height: 3px;
     width: 100px;
-    background: #333;
+    background: var(--text-dark);
     margin-bottom: 4px;
 }
 
 .scale-label {
     font-size: 12px;
-    color: #333;
+    color: var(--text-dark);
     text-align: center;
 }
 
@@ -1557,6 +1585,7 @@ canvas {
     font-family: monospace;
     font-size: 14px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: var(--text-dark);
 }
 
 .info-panel {
@@ -1655,8 +1684,11 @@ canvas {
 
 /* Tracks List Panel */
 .tracks-list-panel {
-    padding: 20px;
-    border-top: 1px solid var(--border-color);
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px;
+
 }
 
 .tracks-list-panel h4 {
@@ -1664,6 +1696,7 @@ canvas {
     font-size: 14px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    color: var(--text-dark);
 }
 
 .tracks-container {
@@ -1671,7 +1704,7 @@ canvas {
     overflow-y: auto;
     border: 1px solid #e0e0e0;
     border-radius: 6px;
-    background: white;
+    background: rgba(255, 255, 255, 0.3);
 }
 
 .track-item {
@@ -1708,7 +1741,7 @@ canvas {
 
 .track-name {
     font-weight: 600;
-    color: #333;
+    color: var(--text-dark);
     margin-bottom: 4px;
     white-space: nowrap;
     overflow: hidden;

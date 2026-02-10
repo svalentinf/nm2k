@@ -26,6 +26,7 @@
 
             <Controls
                     :autoUpdate="autoUpdate"
+                    :freezePGNs="freezePGNs"
                     :searchQuery="searchQuery"
                     :serverFilter="serverFilter"
                     :pgnFilter="pgnFilter"
@@ -36,8 +37,8 @@
                     @update:searchQuery="searchQuery = $event"
                     @update:pgnFilter="pgnFilter = $event"
                     @update:serverFilter="serverFilter = $event"
-                    @clear-history="clearHistory"
-                    @clear-data="clearAllData"
+                    @toggleFreezePGNs="toggleFreezePGNs"
+                    @clearData="clearAllData"
             />
             <Dashboard
                     :autoUpdate="autoUpdate"
@@ -52,7 +53,7 @@
                     @selectDevice="selectDevice"
                     @filterPgn="filterPgn"
                     @blockPgn="blockPgn"
-                    @clear-history="clearHistory"
+                    @toggleFreezePGNs="toggleFreezePGNs"
                     @trackPgn="trackPgn"
             />
 
@@ -117,12 +118,14 @@ const autoUpdate = ref(false);
 const isConfigModalVisible = ref(false);
 const blockedPGNs = ref(new Set);
 const trackingPGNs = ref(loadFromLocalStorage('trackingPGNs', 'Set'));
+let freezePGNsArray = [];
 
 // Use WebSocket composable with config
 const {
           isConnected,
           isConnecting,
           connectionError,
+          freezePGNs,
           servers,
           devicesPGNs,
           lastPgn,
@@ -144,34 +147,47 @@ const themeClass = computed(() => {
 // Computed properties
 const devicesList = computed(() => {
     return Array.from(devicesPGNs.value.values())
-                .sort((a, b) => a.src < b.src)
-                .map(device => ({
-                    ...device,
-                    firstSeen: new Date(device.firstSeen),
-                    lastSeen:  new Date(device.lastSeen)
-                }))
+                .sort((a, b) => {
+                    return a.src.toString().localeCompare(b.src.toString(), undefined, {numeric: true, sensitivity: 'base'})
+                })
 })
 
 const serversList = computed(() => {
+    console.log('calcll serversList')
     return Array.from(servers.value.values())
 })
 
 const allPgns = computed(() => {
+    console.log("redoo all!")
+    // console.log("alll", freezePGNsArray)
+    if (freezePGNsArray.length) {
+        if (freezePGNs) {
+            return freezePGNsArray;
+        } else {
+            freezePGNsArray = [];
+        }
+    }
+
     const all = []
     for (const [src, device] of devicesPGNs.value.entries()) {
         for (const [pgnId, pgnData] of device.pgns.entries()) {
-            // Apply age filter from config
-            const age = Date.now() - new Date(pgnData.timestamp).getTime()
-            if (config.value.filters.maxAge > 0 && age > config.value.filters.maxAge) {
-                continue
-            }
-
-            all.push({
-                ...pgnData,
-                deviceSrc: src
-            })
+            all.push(pgnData)
         }
     }
+
+    all.sort((a, b) => {
+        // return false;
+        a.pgn.toString().localeCompare(b.pgn.toString(), undefined, {numeric: true, sensitivity: 'base'})
+    })
+
+    //GNS, RMB
+    if (freezePGNs.value) {
+        console.log(freezePGNs)
+        // alert(1111);
+        // freezePGNsArray = JSON.parse(JSON.stringify(all));
+    }
+
+
     return all
 })
 
@@ -185,7 +201,7 @@ const filteredPGNs = computed(() => {
     }
     if (serverFilter.value !== '' && serverFilter.value !== null) {
         filtered = filtered.filter(pgn =>
-            pgn.serverAddress.toString() === serverFilter.value.toString()
+            pgn.serverAddress.toString() === serverFilter.value.toString() || pgn.servers.includes(serverFilter.value.toString())
         )
     }
 
@@ -198,15 +214,17 @@ const filteredPGNs = computed(() => {
     if (searchQuery.value) {
         const query = searchQuery.value.toLowerCase()
         filtered = filtered.filter(pgn =>
-            (typeof pgn.description === 'string' && pgn.description.toLowerCase().includes(query)) ||
-            (typeof pgn.serverAddress === 'string' && pgn.serverAddress.toLowerCase().includes(query)) ||
-            pgn.pgn.toString().includes(query) ||
-            Object.keys(pgn.fields || {}).some(field =>
-                field.toLowerCase().includes(query)
-            ) ||
-            Object.values(pgn.fields || {}).some(value =>
-                String(value).toLowerCase().includes(query)
-            )
+                (typeof pgn.description === 'string' && pgn.description.toLowerCase().includes(query)) ||
+                (typeof pgn.serverAddress === 'string' && pgn.serverAddress.toLowerCase().includes(query)) ||
+                pgn.pgn.toString().includes(query) ||
+                Object.keys(pgn.fields || {}).some(field =>
+                    field.toLowerCase().includes(query)
+                )
+            //to check the value is very intensive for computation!!!!
+            // ||
+            // Object.values(pgn.fields || {}).some(value =>
+            //     String(value).toLowerCase().includes(query)
+            // )
         )
     }
 
@@ -292,11 +310,9 @@ function blockPgn(pgn, event)
     }
 }
 
-function clearHistory()
+function toggleFreezePGNs()
 {
-    if (confirm('Clear all history?')) {
-        history.value = []
-    }
+    freezePGNs.value = !freezePGNs.value;
 }
 
 function reconnect()

@@ -41,10 +41,6 @@ defineProps({
     autoUpdate:     Boolean,
 })
 
-const emit = defineEmits(['selectDevice', 'filterPgn', 'blockPgn', 'clearHistory', 'trackPgn'])
+const emit = defineEmits(['selectDevice', 'filterPgn', 'blockPgn', 'trackPgn'])
 
-function clearHistory()
-{
-    emit('clearHistory')
-}
 </script>

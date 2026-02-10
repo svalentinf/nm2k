@@ -4,8 +4,13 @@
             <i :class="autoUpdate ? 'fas fa-pause' : 'fas fa-play'"></i>
             {{ autoUpdate ? 'Pause Updates' : 'Resume Updates' }}
         </button>
-        <button class="btn btn-outline" @click="$emit('clear-history')">
-            <i class="fas fa-trash"></i> Clear History
+        <button class="btn btn-outline" @click="$emit('toggleFreezePGNs')">
+            <template v-if="!freezePGNs">
+                <i class="fas fa-play"></i> Pause display
+            </template>
+            <template v-else>
+                <i class="fas fa-pause"></i> Resume live update
+            </template>
         </button>
         <input
                 :value="searchQuery"
@@ -38,6 +43,7 @@
 
 <script setup>
 const props = defineProps({
+    freezePGNs:   Boolean,
     autoUpdate:   Boolean,
     searchQuery:  String,
     serverFilter: String,
@@ -52,7 +58,7 @@ const emit = defineEmits([
     'update:serverFilter',
     'update:pgnFilter',
     'toggle-auto-update',
-    'clear-history'
+    'toggleFreezePGNs'
 ])
 
 function toggleAutoUpdate()

@@ -6,12 +6,13 @@ export function useNmeaWebSocket(autoUpdate, config)
     const isConnected = ref(false)
     const connectionError = ref(null)
     const isConnecting = ref(false)
+    const freezePGNs = ref(false);
 
     // Data stores
     const devicesPGNs = ref(new Map())
     const servers = ref(new Set())
     let lastPgn = ref({})
-    const maxHistory = 100;
+    const maxHistory = 50;
 
     const connectionStatus = computed(() => {
         if (connectionError.value) return 'Error'
@@ -43,18 +44,22 @@ export function useNmeaWebSocket(autoUpdate, config)
 
 
                 console.log("ws", ws.value);
+                // let test = {
+                //     "t": "ws_init",
+                //     "c": {
+                //         "subscriptions": [{"name": "data", "enabled": "true"}, {
+                //             "name":    "repo_data",
+                //             "enabled": "true"
+                //         }]
+                //     }
+                // }
+                //
+                // ws.value.send(JSON.stringify(test));
 
-                let test = {
-                    "t": "ws_init",
-                    "c": {
-                        "subscriptions": [{"name": "data", "enabled": "true"}, {
-                            "name":    "repo_data",
-                            "enabled": "true"
-                        }]
-                    }
-                }
 
-                ws.value.send(JSON.stringify(test));
+                //we send the data!
+                ws?.value?.send(JSON.stringify(getDataServers()));
+
             }
 
 
@@ -111,12 +116,42 @@ export function useNmeaWebSocket(autoUpdate, config)
         setTimeout(() => connectWebSocket(), 100)
     }
 
+    function getDataServers()
+    {
+        let dataServers = {
+            'servers': {
+                UDP: [],
+                TCP: [],
+            }
+        };
+
+        config.value.dataServers.TCP.forEach(server => {
+            if (server.enable && server.host && server.port) {
+                dataServers.servers.TCP.push({
+                    'host': server.host,
+                    'port': server.port,
+                });
+            }
+        });
+        config.value.dataServers.UDP.forEach(server => {
+            if (server.enable && server.port) {
+                dataServers.servers.UDP.push(server.port);
+            }
+        });
+
+        return dataServers;
+    }
     // Watch for config changes
     watch(() => config.value.wsUrl, (newUrl, oldUrl) => {
         if (newUrl !== oldUrl && config.value.autoConnect) {
             reconnectWebSocket()
         }
     })
+
+    // Watch for servers changes
+    watch(() => config, (newServers, oldServers) => {
+        ws?.value?.send(JSON.stringify(getDataServers()));
+    }, {deep: true})
 
     // Watch for autoConnect changes
     watch(() => config.value.autoConnect, (newValue) => {
@@ -217,15 +252,18 @@ export function useNmeaWebSocket(autoUpdate, config)
 
         if (existingPgn) {
             if (newData.fields) {
-                Object.keys(newData.fields).forEach(field => {
-                    if (existingPgn.fields && JSON.stringify(existingPgn.fields[field]) !== JSON.stringify(newData.fields[field])) {
-                        updatedFields.push(field)
-                        existingPgn.fields[field] = newData.fields[field];
-                    }
-                })
-                existingPgn.updatedFields = updatedFields;
+                if (!freezePGNs.value) {
+                    Object.keys(newData.fields).forEach(field => {
+                        if (existingPgn.fields && JSON.stringify(existingPgn.fields[field]) !== JSON.stringify(newData.fields[field])) {
+                            updatedFields.push(field)
+                            existingPgn.fields[field] = newData.fields[field];
+                        }
+                    })
+                    existingPgn.updatedFields = updatedFields;
+                }
             }
-            //
+            existingPgn.raw = newData.raw;
+            //@todo make it configurable!!
             existingPgn.history.unshift({
                 historyId: `hist_${Date.now()}_${Math.random()}`,
                 ...newData,
@@ -233,9 +271,15 @@ export function useNmeaWebSocket(autoUpdate, config)
             if (existingPgn.history.length > maxHistory) {
                 existingPgn.history.length = maxHistory
             }
+            //@todo update the server only if is different!!! -> make it array!!
+            if (!existingPgn.servers.includes(newData.serverAddress)) {
+                existingPgn.servers.push(newData.serverAddress);
+            }
+            // existingPgn.serverAddress = newData.serverAddress;
         } else {
             newData.isNew = true;
             newData.history = [];
+            newData.servers = [newData.serverAddress];
             device.pgns.set(pgnId, newData);
         }
 
@@ -275,13 +319,16 @@ export function useNmeaWebSocket(autoUpdate, config)
 
     function clearAllData()
     {
-        devicesPGNs.value.clear()
+        devicesPGNs.value.clear();
+        servers.value.clear();
+
     }
 
     return {
         ws,
         isConnected,
         isConnecting,
+        freezePGNs,
         connectionError,
         servers,
         devicesPGNs,
