@@ -42,6 +42,8 @@
                     <h3><i class="fas fa-server"></i> Data servers</h3>
 
                     <table class="table" style="width: 100%;">
+                        <tbody>
+
                         <tr>
                             <th>UDP</th>
                             <th>TCP</th>
@@ -106,6 +108,7 @@
                                 </button>
                             </td>
                         </tr>
+                        </tbody>
                     </table>
                 </div>
                 <!-- Display Settings -->
