@@ -8538,7 +8538,7 @@ Expected function or array of functions, received type ${typeof value}.`
               }, "Device"),
               createTextVNode(" " + toDisplayString(`${__props.pgn.src} [${__props.pgn.src.toString(16).padStart(2, "0").toUpperCase()}]`), 1),
               _cache[6] || (_cache[6] = createBaseVNode("br", null, null, -1)),
-              createBaseVNode("span", null, toDisplayString(__props.pgn.servers.implode(", ")), 1)
+              createBaseVNode("span", null, toDisplayString(__props.pgn.servers), 1)
             ])
           ]),
           createBaseVNode("div", _hoisted_5$4, toDisplayString(__props.pgn.description), 1),
@@ -8976,94 +8976,96 @@ Expected function or array of functions, received type ${typeof value}.`
                   createTextVNode(" Data servers")
                 ], -1)),
                 createBaseVNode("table", _hoisted_8$2, [
-                  _cache[17] || (_cache[17] = createBaseVNode("tr", null, [
-                    createBaseVNode("th", null, "UDP"),
-                    createBaseVNode("th", null, "TCP")
-                  ], -1)),
-                  createBaseVNode("tr", null, [
-                    createBaseVNode("td", null, [
-                      (openBlock(true), createElementBlock(Fragment, null, renderList(localConfig.value.dataServers?.UDP, (udp, index) => {
-                        return openBlock(), createElementBlock("div", _hoisted_9$2, [
-                          createBaseVNode("label", _hoisted_10$2, [
-                            withDirectives(createBaseVNode("input", {
-                              "onUpdate:modelValue": ($event) => udp.enable = $event,
-                              type: "checkbox",
-                              class: "form-checkbox"
-                            }, null, 8, _hoisted_11$2), [
-                              [vModelCheckbox, udp.enable]
+                  createBaseVNode("tbody", null, [
+                    _cache[17] || (_cache[17] = createBaseVNode("tr", null, [
+                      createBaseVNode("th", null, "UDP"),
+                      createBaseVNode("th", null, "TCP")
+                    ], -1)),
+                    createBaseVNode("tr", null, [
+                      createBaseVNode("td", null, [
+                        (openBlock(true), createElementBlock(Fragment, null, renderList(localConfig.value.dataServers?.UDP, (udp, index) => {
+                          return openBlock(), createElementBlock("div", _hoisted_9$2, [
+                            createBaseVNode("label", _hoisted_10$2, [
+                              withDirectives(createBaseVNode("input", {
+                                "onUpdate:modelValue": ($event) => udp.enable = $event,
+                                type: "checkbox",
+                                class: "form-checkbox"
+                              }, null, 8, _hoisted_11$2), [
+                                [vModelCheckbox, udp.enable]
+                              ]),
+                              _cache[11] || (_cache[11] = createBaseVNode("span", null, null, -1))
                             ]),
-                            _cache[11] || (_cache[11] = createBaseVNode("span", null, null, -1))
-                          ]),
-                          withDirectives(createBaseVNode("input", {
-                            "onUpdate:modelValue": ($event) => udp.port = $event,
-                            type: "number",
-                            style: { "max-width": "100px" },
-                            class: "form-control"
-                          }, null, 8, _hoisted_12$2), [
-                            [vModelText, udp.port]
-                          ]),
-                          createBaseVNode("button", {
-                            class: "btn btn-sm btn-danger",
-                            onClick: ($event) => removeServer("UDP", index)
-                          }, [..._cache[12] || (_cache[12] = [
-                            createBaseVNode("i", { class: "fas fa-trash" }, null, -1)
-                          ])], 8, _hoisted_13$1)
-                        ]);
-                      }), 256)),
-                      createBaseVNode("button", {
-                        class: "btn btn-success",
-                        onClick: _cache[2] || (_cache[2] = ($event) => addServer("UDP")),
-                        style: { "margin": "auto" }
-                      }, [..._cache[13] || (_cache[13] = [
-                        createBaseVNode("i", { class: "fas fa-plus-circle" }, null, -1),
-                        createTextVNode(" Add Connection ", -1)
-                      ])])
-                    ]),
-                    createBaseVNode("td", null, [
-                      (openBlock(true), createElementBlock(Fragment, null, renderList(localConfig.value.dataServers?.TCP, (tcp, index) => {
-                        return openBlock(), createElementBlock("div", _hoisted_14$1, [
-                          createBaseVNode("label", _hoisted_15$1, [
                             withDirectives(createBaseVNode("input", {
-                              "onUpdate:modelValue": ($event) => tcp.enable = $event,
-                              type: "checkbox",
-                              class: "form-checkbox"
-                            }, null, 8, _hoisted_16$1), [
-                              [vModelCheckbox, tcp.enable]
+                              "onUpdate:modelValue": ($event) => udp.port = $event,
+                              type: "number",
+                              style: { "max-width": "100px" },
+                              class: "form-control"
+                            }, null, 8, _hoisted_12$2), [
+                              [vModelText, udp.port]
                             ]),
-                            _cache[14] || (_cache[14] = createBaseVNode("span", null, null, -1))
-                          ]),
-                          withDirectives(createBaseVNode("input", {
-                            "onUpdate:modelValue": ($event) => tcp.host = $event,
-                            placeholder: "host",
-                            class: "form-control"
-                          }, null, 8, _hoisted_17$1), [
-                            [vModelText, tcp.host]
-                          ]),
-                          withDirectives(createBaseVNode("input", {
-                            "onUpdate:modelValue": ($event) => tcp.port = $event,
-                            type: "number",
-                            style: { "max-width": "100px" },
-                            placeholder: "port",
-                            class: "form-control"
-                          }, null, 8, _hoisted_18$1), [
-                            [vModelText, tcp.port]
-                          ]),
-                          createBaseVNode("button", {
-                            class: "btn btn-sm btn-danger",
-                            onClick: ($event) => removeServer("TCP", index)
-                          }, [..._cache[15] || (_cache[15] = [
-                            createBaseVNode("i", { class: "fas fa-trash" }, null, -1)
-                          ])], 8, _hoisted_19$1)
-                        ]);
-                      }), 256)),
-                      createBaseVNode("button", {
-                        class: "btn btn-success",
-                        onClick: _cache[3] || (_cache[3] = ($event) => addServer("TCP")),
-                        style: { "margin": "auto" }
-                      }, [..._cache[16] || (_cache[16] = [
-                        createBaseVNode("i", { class: "fas fa-plus" }, null, -1),
-                        createTextVNode(" Add Connection ", -1)
-                      ])])
+                            createBaseVNode("button", {
+                              class: "btn btn-sm btn-danger",
+                              onClick: ($event) => removeServer("UDP", index)
+                            }, [..._cache[12] || (_cache[12] = [
+                              createBaseVNode("i", { class: "fas fa-trash" }, null, -1)
+                            ])], 8, _hoisted_13$1)
+                          ]);
+                        }), 256)),
+                        createBaseVNode("button", {
+                          class: "btn btn-success",
+                          onClick: _cache[2] || (_cache[2] = ($event) => addServer("UDP")),
+                          style: { "margin": "auto" }
+                        }, [..._cache[13] || (_cache[13] = [
+                          createBaseVNode("i", { class: "fas fa-plus-circle" }, null, -1),
+                          createTextVNode(" Add Connection ", -1)
+                        ])])
+                      ]),
+                      createBaseVNode("td", null, [
+                        (openBlock(true), createElementBlock(Fragment, null, renderList(localConfig.value.dataServers?.TCP, (tcp, index) => {
+                          return openBlock(), createElementBlock("div", _hoisted_14$1, [
+                            createBaseVNode("label", _hoisted_15$1, [
+                              withDirectives(createBaseVNode("input", {
+                                "onUpdate:modelValue": ($event) => tcp.enable = $event,
+                                type: "checkbox",
+                                class: "form-checkbox"
+                              }, null, 8, _hoisted_16$1), [
+                                [vModelCheckbox, tcp.enable]
+                              ]),
+                              _cache[14] || (_cache[14] = createBaseVNode("span", null, null, -1))
+                            ]),
+                            withDirectives(createBaseVNode("input", {
+                              "onUpdate:modelValue": ($event) => tcp.host = $event,
+                              placeholder: "host",
+                              class: "form-control"
+                            }, null, 8, _hoisted_17$1), [
+                              [vModelText, tcp.host]
+                            ]),
+                            withDirectives(createBaseVNode("input", {
+                              "onUpdate:modelValue": ($event) => tcp.port = $event,
+                              type: "number",
+                              style: { "max-width": "100px" },
+                              placeholder: "port",
+                              class: "form-control"
+                            }, null, 8, _hoisted_18$1), [
+                              [vModelText, tcp.port]
+                            ]),
+                            createBaseVNode("button", {
+                              class: "btn btn-sm btn-danger",
+                              onClick: ($event) => removeServer("TCP", index)
+                            }, [..._cache[15] || (_cache[15] = [
+                              createBaseVNode("i", { class: "fas fa-trash" }, null, -1)
+                            ])], 8, _hoisted_19$1)
+                          ]);
+                        }), 256)),
+                        createBaseVNode("button", {
+                          class: "btn btn-success",
+                          onClick: _cache[3] || (_cache[3] = ($event) => addServer("TCP")),
+                          style: { "margin": "auto" }
+                        }, [..._cache[16] || (_cache[16] = [
+                          createBaseVNode("i", { class: "fas fa-plus" }, null, -1),
+                          createTextVNode(" Add Connection ", -1)
+                        ])])
+                      ])
                     ])
                   ])
                 ])
@@ -9152,7 +9154,7 @@ Expected function or array of functions, received type ${typeof value}.`
       };
     }
   };
-  const ConfigModal = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-7f423937"]]);
+  const ConfigModal = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-56189805"]]);
   function useNmeaWebSocket(autoUpdate, config2) {
     const ws = ref(null);
     const isConnected = ref(false);
