@@ -17,7 +17,7 @@
             </span>
             <span style="color: var(--text-light); font-size: 0.9rem; text-align: right">
                 <span @click="$emit('selectDevice', pgn.src)" style="cursor: zoom-in;">Device</span> {{ `${pgn.src} [${pgn.src.toString(16).padStart(2, '0').toUpperCase()}]` }}<br>
-                <span>{{ pgn.servers.implode(', ')}}</span>
+                <span>{{ pgn.servers }}</span>
             </span>
         </div>
         <div class="pgn-description">{{ pgn.description }}</div>
