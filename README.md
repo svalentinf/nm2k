@@ -12,15 +12,23 @@ see every PGN, connected device, and historical data stream on your vessel's net
 - **⚡ Automatic Device Discovery**: Identifies and profiles devices as they appear on the network
 - **📍 Location map to track GPS locations and compare tracks in real itme
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
 ## Project Setup
+
+### 1. Install all required dependencies
 
 ```sh
 npm install
 ```
+
+### 2. Run the websocket server and nmea-analyzer
+
+```sh
+npm run server/listener.js
+```
+
+### 3. Open public/index.html
+
+## To modify the project:
 
 ### Compile and Hot-Reload for Development
 
@@ -34,17 +42,14 @@ npm run dev
 npm run build
 ```
 
-### Run the websocket server and nmea-analyzer
+## Windows installer.
+
+- Install nodejs from https://nodejs.org
+- Download start-nmea-server.cmd and run it!
 
 ```sh
-npm run server/listener.js
+cmd start-nmea-server.cmd
 ```
-
-You can also use the index.html file from the public folder. (You need to run the websocket server)
-
-### Windows installer. First install nodejs then you can run the script to install the app and start the server
-
-Download and run start-nmea-server.cmd
 
 ## Support the Project
 
