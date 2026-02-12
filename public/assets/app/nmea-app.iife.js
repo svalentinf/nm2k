@@ -8140,6 +8140,7 @@ Expected function or array of functions, received type ${typeof value}.`
     __name: "Header",
     props: {
       isConnected: Boolean,
+      isConnecting: Boolean,
       connectionStatus: String,
       totalDevices: Number,
       totalPgns: Number
@@ -8147,13 +8148,40 @@ Expected function or array of functions, received type ${typeof value}.`
     setup(__props) {
       return (_ctx, _cache) => {
         return openBlock(), createElementBlock("header", null, [
-          _cache[1] || (_cache[1] = createBaseVNode("h1", null, "NMEA live analysis", -1)),
+          _cache[7] || (_cache[7] = createBaseVNode("h1", null, "NMEA live analysis", -1)),
           createBaseVNode("div", {
-            class: normalizeClass(["status", { connected: __props.isConnected }])
+            class: normalizeClass([{ connected: __props.isConnected }, "status"])
           }, [
-            _cache[0] || (_cache[0] = createBaseVNode("div", { class: "status-dot" }, null, -1)),
+            _cache[6] || (_cache[6] = createBaseVNode("div", { class: "status-dot" }, null, -1)),
             createBaseVNode("span", null, toDisplayString(__props.connectionStatus), 1),
-            __props.isConnected ? (openBlock(), createElementBlock("span", _hoisted_1$b, "• " + toDisplayString(__props.totalDevices) + " devices • " + toDisplayString(__props.totalPgns) + " PGNs/sentences", 1)) : createCommentVNode("", true)
+            __props.isConnected ? (openBlock(), createElementBlock("span", _hoisted_1$b, "• " + toDisplayString(__props.totalDevices) + " devices • " + toDisplayString(__props.totalPgns) + " PGNs/sentences", 1)) : createCommentVNode("", true),
+            !__props.isConnected ? (openBlock(), createElementBlock("button", {
+              key: 1,
+              class: "btn btn-primary btn-sm",
+              onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("connectWebSocket"))
+            }, [
+              createBaseVNode("i", {
+                class: normalizeClass([__props.isConnecting ? "btn-fa-plug-circle-bolt" : "fa-plug", "fas fa-plug"])
+              }, null, 2),
+              _cache[3] || (_cache[3] = createTextVNode(" Connect ", -1))
+            ])) : __props.isConnecting ? (openBlock(), createElementBlock("button", {
+              key: 2,
+              class: "btn btn-primary btn-sm",
+              onClick: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("connectWebSocket"))
+            }, [
+              createBaseVNode("i", {
+                class: normalizeClass([__props.isConnecting ? "btn-fa-plug-circle-bolt" : "fa-plug", "fas fa-plug-circle-bolt"])
+              }, null, 2),
+              _cache[4] || (_cache[4] = createTextVNode(" Connecting ", -1))
+            ])) : createCommentVNode("", true),
+            __props.isConnected ? (openBlock(), createElementBlock("button", {
+              key: 3,
+              class: "btn btn-danger btn-sm",
+              onClick: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("disconnectWebSocket"))
+            }, [..._cache[5] || (_cache[5] = [
+              createBaseVNode("i", { class: "fas fa-plug-circle-minus" }, null, -1),
+              createTextVNode(" Disconnect ", -1)
+            ])])) : createCommentVNode("", true)
           ], 2)
         ]);
       };
@@ -8249,14 +8277,14 @@ Expected function or array of functions, received type ${typeof value}.`
           ]),
           createBaseVNode("input", {
             value: __props.searchQuery,
-            onInput: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("update:searchQuery", $event.target.value)),
+            class: "search",
             placeholder: "Search PGNs or fields...",
-            class: "search"
+            onInput: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("update:searchQuery", $event.target.value))
           }, null, 40, _hoisted_2$8),
           createBaseVNode("select", {
             value: __props.serverFilter,
-            onChange: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("update:serverFilter", $event.target.value)),
-            class: "search"
+            class: "search",
+            onChange: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("update:serverFilter", $event.target.value))
           }, [
             _cache[8] || (_cache[8] = createBaseVNode("option", { value: "" }, "All Servers", -1)),
             (openBlock(true), createElementBlock(Fragment, null, renderList(__props.serversList, (server) => {
@@ -8268,8 +8296,8 @@ Expected function or array of functions, received type ${typeof value}.`
           ], 40, _hoisted_3$7),
           createBaseVNode("select", {
             value: __props.pgnFilter,
-            onChange: _cache[3] || (_cache[3] = ($event) => _ctx.$emit("update:pgnFilter", $event.target.value)),
-            class: "search"
+            class: "search",
+            onChange: _cache[3] || (_cache[3] = ($event) => _ctx.$emit("update:pgnFilter", $event.target.value))
           }, [
             _cache[9] || (_cache[9] = createBaseVNode("option", { value: "" }, "All PGNs", -1)),
             (openBlock(true), createElementBlock(Fragment, null, renderList(__props.uniquePgns, (pgn) => {
@@ -8327,7 +8355,7 @@ Expected function or array of functions, received type ${typeof value}.`
       }
       return (_ctx, _cache) => {
         return openBlock(), createElementBlock("div", {
-          class: normalizeClass(["device-card", { active: __props.selected }]),
+          class: normalizeClass([{ active: __props.selected }, "device-card"]),
           onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("selectDevice", __props.device.src))
         }, [
           createBaseVNode("div", _hoisted_1$8, [
@@ -8366,8 +8394,8 @@ Expected function or array of functions, received type ${typeof value}.`
             _cache[6] || (_cache[6] = createTextVNode(" Servers: ", -1)),
             (openBlock(true), createElementBlock(Fragment, null, renderList(__props.device.servers, (server) => {
               return openBlock(), createElementBlock("span", {
-                class: normalizeClass({ "item": true, "active": server == __props.serverFilter }),
-                key: server
+                key: server,
+                class: normalizeClass({ "item": true, "active": server == __props.serverFilter })
               }, toDisplayString(server), 3);
             }), 128))
           ])
@@ -8412,12 +8440,12 @@ Expected function or array of functions, received type ${typeof value}.`
                 return openBlock(), createBlock(_sfc_main$8, {
                   key: device.src,
                   device,
-                  selected: __props.selectedDevice === device.src,
                   pgnFilter: __props.pgnFilter,
+                  selected: __props.selectedDevice === device.src,
                   serverFilter: __props.serverFilter,
-                  onSelectDevice: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("selectDevice", $event)),
-                  onFilterPgn: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("filterPgn", $event))
-                }, null, 8, ["device", "selected", "pgnFilter", "serverFilter"]);
+                  onFilterPgn: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("filterPgn", $event)),
+                  onSelectDevice: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("selectDevice", $event))
+                }, null, 8, ["device", "pgnFilter", "selected", "serverFilter"]);
               }), 128)),
               __props.devicesList.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_6$5, [..._cache[3] || (_cache[3] = [
                 createBaseVNode("i", { class: "fas fa-plug" }, null, -1),
@@ -8498,46 +8526,44 @@ Expected function or array of functions, received type ${typeof value}.`
       }
       return (_ctx, _cache) => {
         return openBlock(), createElementBlock("div", {
-          class: normalizeClass(["pgn-card", { updated: __props.pgn.isNew }])
+          class: normalizeClass([{ updated: __props.pgn.isNew }, "pgn-card"])
         }, [
           createBaseVNode("div", _hoisted_1$6, [
             createBaseVNode("span", _hoisted_2$5, [
               __props.pgn.fields && __props.pgn.fields.longitude ? (openBlock(), createElementBlock("span", {
                 key: 0,
                 class: normalizeClass({ "text-success": __props.trackingPGNs.has(`${__props.pgn.src}:${__props.pgn.pgn}`) }),
-                onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("trackPgn", `${__props.pgn.src}:${__props.pgn.pgn}`)),
-                style: { "cursor": "crosshair" }
+                style: { "cursor": "crosshair" },
+                onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("trackPgn", `${__props.pgn.src}:${__props.pgn.pgn}`))
               }, [..._cache[4] || (_cache[4] = [
                 createBaseVNode("i", { class: "fas fa-map-location" }, null, -1),
                 createTextVNode(" ", -1)
               ])], 2)) : createCommentVNode("", true),
               createBaseVNode("span", {
-                onClick: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("filterPgn", __props.pgn.pgn)),
-                style: { "cursor": "zoom-in" }
+                style: { "cursor": "zoom-in" },
+                onClick: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("filterPgn", __props.pgn.pgn))
               }, [..._cache[5] || (_cache[5] = [
                 createBaseVNode("i", { class: "fas fa-magnifying-glass" }, null, -1),
                 createTextVNode(" PGN ", -1)
               ])]),
               typeof __props.pgn.pgn === "number" ? (openBlock(), createElementBlock("span", {
                 key: 1,
-                onClick: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("blockPgn", computedPgn.value)),
                 class: normalizeClass({ "text-danger": __props.blockedPGNs.has(computedPgn.value) }),
-                style: { "cursor": "not-allowed" }
-              }, [
-                createBaseVNode("i", {
-                  class: normalizeClass(["fas", { "fa-ban": __props.blockedPGNs.has(computedPgn.value), "fa-plus-circle": !__props.blockedPGNs.has(computedPgn.value) }])
-                }, null, 2)
-              ], 2)) : createCommentVNode("", true),
+                style: { "cursor": "not-allowed" },
+                onClick: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("blockPgn", computedPgn.value))
+              }, [..._cache[6] || (_cache[6] = [
+                createBaseVNode("i", { class: "fas fa-ban" }, null, -1)
+              ])], 2)) : createCommentVNode("", true),
               createTextVNode(" " + toDisplayString(__props.pgn.pgn) + " ", 1),
               typeof __props.pgn.pgn === "number" ? (openBlock(), createElementBlock("span", _hoisted_3$4, "[" + toDisplayString(__props.pgn.pgn.toString(16).padStart(5, "0").toUpperCase()) + "]", 1)) : createCommentVNode("", true)
             ]),
             createBaseVNode("span", _hoisted_4$4, [
               createBaseVNode("span", {
-                onClick: _cache[3] || (_cache[3] = ($event) => _ctx.$emit("selectDevice", __props.pgn.src)),
-                style: { "cursor": "zoom-in" }
+                style: { "cursor": "zoom-in" },
+                onClick: _cache[3] || (_cache[3] = ($event) => _ctx.$emit("selectDevice", __props.pgn.src))
               }, "Device"),
               createTextVNode(" " + toDisplayString(`${__props.pgn.src} [${__props.pgn.src.toString(16).padStart(2, "0").toUpperCase()}]`), 1),
-              _cache[6] || (_cache[6] = createBaseVNode("br", null, null, -1)),
+              _cache[7] || (_cache[7] = createBaseVNode("br", null, null, -1)),
               createBaseVNode("span", null, toDisplayString(__props.pgn.servers), 1)
             ])
           ]),
@@ -8546,21 +8572,21 @@ Expected function or array of functions, received type ${typeof value}.`
             (openBlock(true), createElementBlock(Fragment, null, renderList(__props.pgn.fields, (value, field) => {
               return openBlock(), createElementBlock("div", {
                 key: field,
-                class: normalizeClass(["field-row", { updated: __props.pgn.updatedFields?.includes(field) }])
+                class: normalizeClass([{ updated: __props.pgn.updatedFields?.includes(field) }, "field-row"])
               }, [
                 createBaseVNode("span", _hoisted_7$4, toDisplayString(field), 1),
                 createBaseVNode("span", _hoisted_8$3, [
                   field === "latitude" ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
                     createTextVNode(toDisplayString(formatPosition(value, true)) + " ", 1),
-                    _cache[7] || (_cache[7] = createBaseVNode("br", null, null, -1)),
+                    _cache[8] || (_cache[8] = createBaseVNode("br", null, null, -1)),
                     createBaseVNode("span", _hoisted_9$3, toDisplayString(formatValue(value)), 1)
                   ], 64)) : field === "longitude" ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
                     createTextVNode(toDisplayString(formatPosition(value, false)) + " ", 1),
-                    _cache[8] || (_cache[8] = createBaseVNode("br", null, null, -1)),
+                    _cache[9] || (_cache[9] = createBaseVNode("br", null, null, -1)),
                     createBaseVNode("span", _hoisted_10$3, toDisplayString(formatValue(value)), 1)
                   ], 64)) : field === "heading" || field === "windAngle" || field === "courseOverGroundMagnetic" || field === "courseOverGroundTrue" || field === "headingMagnetic" || field === "headingCompass" || field === "headingTrue" || field === "angleApparent" || field === "angleTrueWater" ? (openBlock(), createElementBlock("span", _hoisted_11$3, [
                     createTextVNode(toDisplayString(formatAngle(value)) + " ", 1),
-                    _cache[9] || (_cache[9] = createBaseVNode("br", null, null, -1)),
+                    _cache[10] || (_cache[10] = createBaseVNode("br", null, null, -1)),
                     createBaseVNode("span", _hoisted_12$3, toDisplayString(formatValue(value)), 1)
                   ])) : (openBlock(), createElementBlock(Fragment, { key: 3 }, [
                     createTextVNode(toDisplayString(formatValue(value)), 1)
@@ -8578,7 +8604,7 @@ Expected function or array of functions, received type ${typeof value}.`
             createBaseVNode("table", null, [
               createBaseVNode("tbody", null, [
                 createBaseVNode("tr", null, [
-                  _cache[10] || (_cache[10] = createBaseVNode("th", null, "Timestamp", -1)),
+                  _cache[11] || (_cache[11] = createBaseVNode("th", null, "Timestamp", -1)),
                   (openBlock(true), createElementBlock(Fragment, null, renderList(__props.pgn.fields, (field, fieldName) => {
                     return openBlock(), createElementBlock("th", null, toDisplayString(fieldName), 1);
                   }), 256))
@@ -8588,7 +8614,7 @@ Expected function or array of functions, received type ${typeof value}.`
                     pgnHistory && pgnHistory.src === __props.pgn.src && pgnHistory.pgn === __props.pgn.pgn ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
                       createBaseVNode("td", _hoisted_17$2, [
                         createTextVNode(toDisplayString(formatTime(pgnHistory.timestamp)) + " ", 1),
-                        _cache[11] || (_cache[11] = createBaseVNode("br", null, null, -1)),
+                        _cache[12] || (_cache[12] = createBaseVNode("br", null, null, -1)),
                         createTextVNode(" " + toDisplayString(pgnHistory.serverAddress), 1)
                       ]),
                       (openBlock(true), createElementBlock(Fragment, null, renderList(__props.pgn.fields, (field, fieldName) => {
@@ -8646,16 +8672,16 @@ Expected function or array of functions, received type ${typeof value}.`
               (openBlock(true), createElementBlock(Fragment, null, renderList(__props.filteredPGNs, (pgn) => {
                 return openBlock(), createBlock(_sfc_main$6, {
                   key: pgn.id,
+                  autoUpdate: __props.autoUpdate,
+                  blockedPGNs: __props.blockedPGNs,
                   pgn,
                   pgnFilter: __props.pgnFilter,
-                  blockedPGNs: __props.blockedPGNs,
                   trackingPGNs: __props.trackingPGNs,
-                  autoUpdate: __props.autoUpdate,
-                  onSelectDevice: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("selectDevice", $event)),
-                  onTrackPgn: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("trackPgn", $event)),
-                  onFilterPgn: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("filterPgn", $event)),
-                  onBlockPgn: _cache[3] || (_cache[3] = ($event) => _ctx.$emit("blockPgn", $event))
-                }, null, 8, ["pgn", "pgnFilter", "blockedPGNs", "trackingPGNs", "autoUpdate"]);
+                  onBlockPgn: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("blockPgn", $event)),
+                  onFilterPgn: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("filterPgn", $event)),
+                  onSelectDevice: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("selectDevice", $event)),
+                  onTrackPgn: _cache[3] || (_cache[3] = ($event) => _ctx.$emit("trackPgn", $event))
+                }, null, 8, ["autoUpdate", "blockedPGNs", "pgn", "pgnFilter", "trackingPGNs"]);
               }), 128)),
               __props.filteredPGNs.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_7$3, [..._cache[5] || (_cache[5] = [
                 createBaseVNode("i", { class: "fas fa-search" }, null, -1),
@@ -8687,24 +8713,24 @@ Expected function or array of functions, received type ${typeof value}.`
         return openBlock(), createElementBlock("div", _hoisted_1$4, [
           createVNode(_sfc_main$7, {
             devicesList: __props.devicesList,
-            selectedDevice: __props.selectedDevice,
             pgnFilter: __props.pgnFilter,
+            selectedDevice: __props.selectedDevice,
             serverFilter: __props.serverFilter,
-            onSelectDevice: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("selectDevice", $event)),
-            onFilterPgn: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("filterPgn", $event))
-          }, null, 8, ["devicesList", "selectedDevice", "pgnFilter", "serverFilter"]),
+            onFilterPgn: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("filterPgn", $event)),
+            onSelectDevice: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("selectDevice", $event))
+          }, null, 8, ["devicesList", "pgnFilter", "selectedDevice", "serverFilter"]),
           createVNode(_sfc_main$5, {
             autoUpdate: __props.autoUpdate,
+            blockedPGNs: __props.blockedPGNs,
             filteredPGNs: __props.filteredPGNs,
             panelTitle: __props.panelTitle,
             pgnFilter: __props.pgnFilter,
-            blockedPGNs: __props.blockedPGNs,
             trackingPGNs: __props.trackingPGNs,
-            onSelectDevice: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("selectDevice", $event)),
+            onBlockPgn: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("blockPgn", $event)),
             onFilterPgn: _cache[3] || (_cache[3] = ($event) => _ctx.$emit("filterPgn", $event)),
-            onBlockPgn: _cache[4] || (_cache[4] = ($event) => _ctx.$emit("blockPgn", $event)),
+            onSelectDevice: _cache[4] || (_cache[4] = ($event) => _ctx.$emit("selectDevice", $event)),
             onTrackPgn: _cache[5] || (_cache[5] = ($event) => _ctx.$emit("trackPgn", $event))
-          }, null, 8, ["autoUpdate", "filteredPGNs", "panelTitle", "pgnFilter", "blockedPGNs", "trackingPGNs"])
+          }, null, 8, ["autoUpdate", "blockedPGNs", "filteredPGNs", "panelTitle", "pgnFilter", "trackingPGNs"])
         ]);
       };
     }
@@ -8714,6 +8740,7 @@ Expected function or array of functions, received type ${typeof value}.`
     wsUrl: "ws://localhost:8080",
     // wsUrl:       'ws://192.168.1.111/api/websocket',
     autoConnect: true,
+    autoTraceAfterRestart: true,
     showRawData: false,
     theme: "dark",
     dataServers: {
@@ -8810,8 +8837,11 @@ Expected function or array of functions, received type ${typeof value}.`
   const _hoisted_22$1 = { class: "checkbox-label" };
   const _hoisted_23$1 = { class: "form-group" };
   const _hoisted_24$1 = { class: "config-section" };
-  const _hoisted_25$1 = { class: "connection-test" };
-  const _hoisted_26$1 = ["disabled"];
+  const _hoisted_25$1 = { class: "form-group" };
+  const _hoisted_26$1 = { class: "checkbox-label" };
+  const _hoisted_27$1 = { class: "config-section" };
+  const _hoisted_28$1 = { class: "connection-test" };
+  const _hoisted_29$1 = ["disabled"];
   const _sfc_main$3 = {
     __name: "ConfigModal",
     props: {
@@ -8852,6 +8882,7 @@ Expected function or array of functions, received type ${typeof value}.`
       function saveConfig() {
         updateConfig(localConfig.value);
         emit2("config-change", localConfig.value);
+        emit2("close");
       }
       function resetToDefaults() {
         if (confirm("Reset all settings to defaults?")) {
@@ -8929,7 +8960,7 @@ Expected function or array of functions, received type ${typeof value}.`
         }, [
           createBaseVNode("div", _hoisted_1$3, [
             createBaseVNode("div", { class: "modal-header" }, [
-              _cache[6] || (_cache[6] = createBaseVNode("h2", null, [
+              _cache[7] || (_cache[7] = createBaseVNode("h2", null, [
                 createBaseVNode("i", { class: "fas fa-cog" }),
                 createTextVNode(" Configuration")
               ], -1)),
@@ -8940,44 +8971,44 @@ Expected function or array of functions, received type ${typeof value}.`
             ]),
             createBaseVNode("div", _hoisted_2$3, [
               createBaseVNode("div", _hoisted_3$2, [
-                _cache[10] || (_cache[10] = createBaseVNode("h3", null, [
+                _cache[11] || (_cache[11] = createBaseVNode("h3", null, [
                   createBaseVNode("i", { class: "fas fa-plug" }),
                   createTextVNode(" Connection Settings")
                 ], -1)),
                 createBaseVNode("div", _hoisted_4$2, [
-                  _cache[7] || (_cache[7] = createBaseVNode("label", { for: "wsUrl" }, "WebSocket URL", -1)),
+                  _cache[8] || (_cache[8] = createBaseVNode("label", { for: "wsUrl" }, "WebSocket URL", -1)),
                   withDirectives(createBaseVNode("input", {
                     id: "wsUrl",
                     "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => localConfig.value.wsUrl = $event),
-                    type: "text",
+                    class: "form-control",
                     placeholder: "ws://localhost:8080",
-                    class: "form-control"
+                    type: "text"
                   }, null, 512), [
                     [vModelText, localConfig.value.wsUrl]
                   ]),
-                  _cache[8] || (_cache[8] = createBaseVNode("div", { class: "form-help" }, " Enter the WebSocket URL for your NMEA 2000 data source ", -1))
+                  _cache[9] || (_cache[9] = createBaseVNode("div", { class: "form-help" }, " Enter the WebSocket URL for your NMEA 2000 data source ", -1))
                 ]),
                 createBaseVNode("div", _hoisted_5$2, [
                   createBaseVNode("label", _hoisted_6$2, [
                     withDirectives(createBaseVNode("input", {
                       "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => localConfig.value.autoConnect = $event),
-                      type: "checkbox",
-                      class: "form-checkbox"
+                      class: "form-checkbox",
+                      type: "checkbox"
                     }, null, 512), [
                       [vModelCheckbox, localConfig.value.autoConnect]
                     ]),
-                    _cache[9] || (_cache[9] = createBaseVNode("span", null, "Auto-connect on startup", -1))
+                    _cache[10] || (_cache[10] = createBaseVNode("span", null, "Auto-connect on startup", -1))
                   ])
                 ])
               ]),
               createBaseVNode("div", _hoisted_7$2, [
-                _cache[18] || (_cache[18] = createBaseVNode("h3", null, [
+                _cache[19] || (_cache[19] = createBaseVNode("h3", null, [
                   createBaseVNode("i", { class: "fas fa-server" }),
                   createTextVNode(" Data servers")
                 ], -1)),
                 createBaseVNode("table", _hoisted_8$2, [
                   createBaseVNode("tbody", null, [
-                    _cache[17] || (_cache[17] = createBaseVNode("tr", null, [
+                    _cache[18] || (_cache[18] = createBaseVNode("tr", null, [
                       createBaseVNode("th", null, "UDP"),
                       createBaseVNode("th", null, "TCP")
                     ], -1)),
@@ -8988,34 +9019,34 @@ Expected function or array of functions, received type ${typeof value}.`
                             createBaseVNode("label", _hoisted_10$2, [
                               withDirectives(createBaseVNode("input", {
                                 "onUpdate:modelValue": ($event) => udp.enable = $event,
-                                type: "checkbox",
-                                class: "form-checkbox"
+                                class: "form-checkbox",
+                                type: "checkbox"
                               }, null, 8, _hoisted_11$2), [
                                 [vModelCheckbox, udp.enable]
                               ]),
-                              _cache[11] || (_cache[11] = createBaseVNode("span", null, null, -1))
+                              _cache[12] || (_cache[12] = createBaseVNode("span", null, null, -1))
                             ]),
                             withDirectives(createBaseVNode("input", {
                               "onUpdate:modelValue": ($event) => udp.port = $event,
-                              type: "number",
+                              class: "form-control",
                               style: { "max-width": "100px" },
-                              class: "form-control"
+                              type: "number"
                             }, null, 8, _hoisted_12$2), [
                               [vModelText, udp.port]
                             ]),
                             createBaseVNode("button", {
                               class: "btn btn-sm btn-danger",
                               onClick: ($event) => removeServer("UDP", index)
-                            }, [..._cache[12] || (_cache[12] = [
+                            }, [..._cache[13] || (_cache[13] = [
                               createBaseVNode("i", { class: "fas fa-trash" }, null, -1)
                             ])], 8, _hoisted_13$1)
                           ]);
                         }), 256)),
                         createBaseVNode("button", {
                           class: "btn btn-success",
-                          onClick: _cache[2] || (_cache[2] = ($event) => addServer("UDP")),
-                          style: { "margin": "auto" }
-                        }, [..._cache[13] || (_cache[13] = [
+                          style: { "margin": "auto" },
+                          onClick: _cache[2] || (_cache[2] = ($event) => addServer("UDP"))
+                        }, [..._cache[14] || (_cache[14] = [
                           createBaseVNode("i", { class: "fas fa-plus-circle" }, null, -1),
                           createTextVNode(" Add Connection ", -1)
                         ])])
@@ -9026,42 +9057,42 @@ Expected function or array of functions, received type ${typeof value}.`
                             createBaseVNode("label", _hoisted_15$1, [
                               withDirectives(createBaseVNode("input", {
                                 "onUpdate:modelValue": ($event) => tcp.enable = $event,
-                                type: "checkbox",
-                                class: "form-checkbox"
+                                class: "form-checkbox",
+                                type: "checkbox"
                               }, null, 8, _hoisted_16$1), [
                                 [vModelCheckbox, tcp.enable]
                               ]),
-                              _cache[14] || (_cache[14] = createBaseVNode("span", null, null, -1))
+                              _cache[15] || (_cache[15] = createBaseVNode("span", null, null, -1))
                             ]),
                             withDirectives(createBaseVNode("input", {
                               "onUpdate:modelValue": ($event) => tcp.host = $event,
-                              placeholder: "host",
-                              class: "form-control"
+                              class: "form-control",
+                              placeholder: "host"
                             }, null, 8, _hoisted_17$1), [
                               [vModelText, tcp.host]
                             ]),
                             withDirectives(createBaseVNode("input", {
                               "onUpdate:modelValue": ($event) => tcp.port = $event,
-                              type: "number",
-                              style: { "max-width": "100px" },
+                              class: "form-control",
                               placeholder: "port",
-                              class: "form-control"
+                              style: { "max-width": "100px" },
+                              type: "number"
                             }, null, 8, _hoisted_18$1), [
                               [vModelText, tcp.port]
                             ]),
                             createBaseVNode("button", {
                               class: "btn btn-sm btn-danger",
                               onClick: ($event) => removeServer("TCP", index)
-                            }, [..._cache[15] || (_cache[15] = [
+                            }, [..._cache[16] || (_cache[16] = [
                               createBaseVNode("i", { class: "fas fa-trash" }, null, -1)
                             ])], 8, _hoisted_19$1)
                           ]);
                         }), 256)),
                         createBaseVNode("button", {
                           class: "btn btn-success",
-                          onClick: _cache[3] || (_cache[3] = ($event) => addServer("TCP")),
-                          style: { "margin": "auto" }
-                        }, [..._cache[16] || (_cache[16] = [
+                          style: { "margin": "auto" },
+                          onClick: _cache[3] || (_cache[3] = ($event) => addServer("TCP"))
+                        }, [..._cache[17] || (_cache[17] = [
                           createBaseVNode("i", { class: "fas fa-plus" }, null, -1),
                           createTextVNode(" Add Connection ", -1)
                         ])])
@@ -9071,7 +9102,7 @@ Expected function or array of functions, received type ${typeof value}.`
                 ])
               ]),
               createBaseVNode("div", _hoisted_20$1, [
-                _cache[22] || (_cache[22] = createBaseVNode("h3", null, [
+                _cache[23] || (_cache[23] = createBaseVNode("h3", null, [
                   createBaseVNode("i", { class: "fas fa-desktop" }),
                   createTextVNode(" Display Settings")
                 ], -1)),
@@ -9079,21 +9110,21 @@ Expected function or array of functions, received type ${typeof value}.`
                   createBaseVNode("label", _hoisted_22$1, [
                     withDirectives(createBaseVNode("input", {
                       "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => localConfig.value.showRawData = $event),
-                      type: "checkbox",
-                      class: "form-checkbox"
+                      class: "form-checkbox",
+                      type: "checkbox"
                     }, null, 512), [
                       [vModelCheckbox, localConfig.value.showRawData]
                     ]),
-                    _cache[19] || (_cache[19] = createBaseVNode("span", null, "Show raw data in PGN cards", -1))
+                    _cache[20] || (_cache[20] = createBaseVNode("span", null, "Show raw data in PGN cards", -1))
                   ])
                 ]),
                 createBaseVNode("div", _hoisted_23$1, [
-                  _cache[21] || (_cache[21] = createBaseVNode("label", { for: "theme" }, "Theme", -1)),
+                  _cache[22] || (_cache[22] = createBaseVNode("label", { for: "theme" }, "Theme", -1)),
                   withDirectives(createBaseVNode("select", {
                     id: "theme",
                     "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => localConfig.value.theme = $event),
                     class: "form-control"
-                  }, [..._cache[20] || (_cache[20] = [
+                  }, [..._cache[21] || (_cache[21] = [
                     createBaseVNode("option", { value: "dark" }, "Dark", -1),
                     createBaseVNode("option", { value: "light" }, "Light", -1),
                     createBaseVNode("option", { value: "auto" }, "Auto (System)", -1)
@@ -9103,13 +9134,31 @@ Expected function or array of functions, received type ${typeof value}.`
                 ])
               ]),
               createBaseVNode("div", _hoisted_24$1, [
-                _cache[24] || (_cache[24] = createBaseVNode("h3", null, [
+                _cache[25] || (_cache[25] = createBaseVNode("h3", null, [
+                  createBaseVNode("i", { class: "fas fa-map" }),
+                  createTextVNode(" Map tracing")
+                ], -1)),
+                createBaseVNode("div", _hoisted_25$1, [
+                  createBaseVNode("label", _hoisted_26$1, [
+                    withDirectives(createBaseVNode("input", {
+                      "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => localConfig.value.autoTraceAfterRestart = $event),
+                      class: "form-checkbox",
+                      type: "checkbox"
+                    }, null, 512), [
+                      [vModelCheckbox, localConfig.value.autoTraceAfterRestart]
+                    ]),
+                    _cache[24] || (_cache[24] = createBaseVNode("span", null, "Automatically start tracing on refresh", -1))
+                  ])
+                ])
+              ]),
+              createBaseVNode("div", _hoisted_27$1, [
+                _cache[27] || (_cache[27] = createBaseVNode("h3", null, [
                   createBaseVNode("i", { class: "fas fa-wifi" }),
                   createTextVNode(" Test Connection")
                 ], -1)),
-                createBaseVNode("div", _hoisted_25$1, [
+                createBaseVNode("div", _hoisted_28$1, [
                   createBaseVNode("div", {
-                    class: normalizeClass(["connection-status", testStatus.value])
+                    class: normalizeClass([testStatus.value, "connection-status"])
                   }, [
                     createBaseVNode("i", {
                       class: normalizeClass(testIcon.value)
@@ -9117,15 +9166,15 @@ Expected function or array of functions, received type ${typeof value}.`
                     createTextVNode(" " + toDisplayString(testMessage.value), 1)
                   ], 2),
                   createBaseVNode("button", {
+                    disabled: testing.value,
                     class: "btn btn-success",
-                    onClick: testConnection,
-                    disabled: testing.value
+                    onClick: testConnection
                   }, [
                     createBaseVNode("i", {
-                      class: normalizeClass(["fas fa-sync", { spinning: testing.value }])
+                      class: normalizeClass([{ spinning: testing.value }, "fas fa-sync"])
                     }, null, 2),
-                    _cache[23] || (_cache[23] = createTextVNode(" Test Connection ", -1))
-                  ], 8, _hoisted_26$1)
+                    _cache[26] || (_cache[26] = createTextVNode(" Test Connection ", -1))
+                  ], 8, _hoisted_29$1)
                 ])
               ])
             ]),
@@ -9133,28 +9182,28 @@ Expected function or array of functions, received type ${typeof value}.`
               createBaseVNode("button", {
                 class: "btn btn-outline",
                 onClick: resetToDefaults
-              }, [..._cache[25] || (_cache[25] = [
+              }, [..._cache[28] || (_cache[28] = [
                 createBaseVNode("i", { class: "fas fa-undo" }, null, -1),
                 createTextVNode(" Reset to Defaults ", -1)
               ])]),
               createBaseVNode("button", {
-                class: "btn btn-outline",
-                onClick: close
-              }, " Cancel "),
-              createBaseVNode("button", {
                 class: "btn btn-primary",
                 onClick: saveConfig
-              }, [..._cache[26] || (_cache[26] = [
+              }, [..._cache[29] || (_cache[29] = [
                 createBaseVNode("i", { class: "fas fa-save" }, null, -1),
-                createTextVNode(" Save & Apply ", -1)
-              ])])
+                createTextVNode(" Save & Close ", -1)
+              ])]),
+              createBaseVNode("button", {
+                class: "btn btn-outline",
+                onClick: close
+              }, " Close ")
             ])
           ])
         ])) : createCommentVNode("", true);
       };
     }
   };
-  const ConfigModal = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-56189805"]]);
+  const ConfigModal = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-bb25027d"]]);
   function useNmeaWebSocket(autoUpdate, config2) {
     const ws = ref(null);
     const isConnected = ref(false);
@@ -9945,8 +9994,8 @@ match(CAN1, ${filter.filter}, ${filter.mask})
       createBaseVNode("div", _hoisted_5$1, [
         createBaseVNode("label", null, [
           withDirectives(createBaseVNode("input", {
-            type: "checkbox",
-            "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $data.strictMode = $event)
+            "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $data.strictMode = $event),
+            type: "checkbox"
           }, null, 512), [
             [vModelCheckbox, $data.strictMode]
           ]),
@@ -9955,10 +10004,10 @@ match(CAN1, ${filter.filter}, ${filter.mask})
         createBaseVNode("label", null, [
           _cache[12] || (_cache[12] = createTextVNode(" Max Filters: ", -1)),
           withDirectives(createBaseVNode("input", {
-            type: "number",
             "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => $data.maxFilters = $event),
+            max: "16",
             min: "1",
-            max: "16"
+            type: "number"
           }, null, 512), [
             [
               vModelText,
@@ -9973,7 +10022,7 @@ match(CAN1, ${filter.filter}, ${filter.mask})
           withDirectives(createBaseVNode("select", {
             "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => $data.bitLength = $event)
           }, [..._cache[13] || (_cache[13] = [
-            createStaticVNode('<option value="0" data-v-c3a26798>Auto</option><option value="11" data-v-c3a26798>11-bit (CAN 2.0A)</option><option value="18" data-v-c3a26798>18-bit (PGN only)</option><option value="29" data-v-c3a26798>29-bit (J1939)</option><option value="32" data-v-c3a26798>32-bit</option>', 5)
+            createStaticVNode('<option value="0" data-v-7130d404>Auto</option><option value="11" data-v-7130d404>11-bit (CAN 2.0A)</option><option value="18" data-v-7130d404>18-bit (PGN only)</option><option value="29" data-v-7130d404>29-bit (J1939)</option><option value="32" data-v-7130d404>32-bit</option>', 5)
           ])], 512), [
             [
               vModelSelect,
@@ -10046,11 +10095,10 @@ match(CAN1, ${filter.filter}, ${filter.mask})
           onClick: _cache[8] || (_cache[8] = (...args) => $options.copyResults && $options.copyResults(...args))
         }, "Copy")
       ])) : createCommentVNode("", true),
-      $data.error ? (openBlock(), createElementBlock("div", _hoisted_12$1, toDisplayString($data.error), 1)) : createCommentVNode("", true),
-      createTextVNode(" " + toDisplayString($props.blockedPGNs), 1)
+      $data.error ? (openBlock(), createElementBlock("div", _hoisted_12$1, toDisplayString($data.error), 1)) : createCommentVNode("", true)
     ]);
   }
-  const PGNFilter = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__scopeId", "data-v-c3a26798"]]);
+  const PGNFilter = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__scopeId", "data-v-7130d404"]]);
   const _sfc_main$1 = {
     name: "GpsTracker",
     props: {
@@ -10873,7 +10921,7 @@ match(CAN1, ${filter.filter}, ${filter.mask})
   const _hoisted_20 = { key: 0 };
   const _hoisted_21 = { key: 1 };
   const _hoisted_22 = { key: 2 };
-  const _hoisted_23 = ["width", "height"];
+  const _hoisted_23 = ["height", "width"];
   const _hoisted_24 = {
     key: 0,
     class: "no-data-overlay"
@@ -10937,9 +10985,9 @@ match(CAN1, ${filter.filter}, ${filter.mask})
         createBaseVNode("div", _hoisted_3, [
           createBaseVNode("div", _hoisted_4, [
             createBaseVNode("button", {
-              onClick: _cache[0] || (_cache[0] = (...args) => $options.toggleTracking && $options.toggleTracking(...args)),
               class: normalizeClass(["track-btn", { active: $data.isTracking, paused: !$props.autoUpdate }]),
-              title: $data.isTracking ? "Stop tracking" : "Start tracking"
+              title: $data.isTracking ? "Stop tracking" : "Start tracking",
+              onClick: _cache[0] || (_cache[0] = (...args) => $options.toggleTracking && $options.toggleTracking(...args))
             }, [
               $data.isTracking && $props.autoUpdate ? (openBlock(), createElementBlock("span", _hoisted_6, "●")) : !$props.autoUpdate ? (openBlock(), createElementBlock("span", _hoisted_7, "❚❚")) : (openBlock(), createElementBlock("span", _hoisted_8, "▶")),
               createTextVNode(" " + toDisplayString($data.isTracking ? !$props.autoUpdate ? "Paused" : "Tracking" : "Start Track"), 1)
@@ -10954,14 +11002,14 @@ match(CAN1, ${filter.filter}, ${filter.mask})
               createTextVNode(" " + toDisplayString($props.autoUpdate ? "Pause Updates" : "Resume Updates"), 1)
             ]),
             createBaseVNode("button", {
-              onClick: _cache[2] || (_cache[2] = ($event) => $options.clearTrack(_ctx.tracked)),
               disabled: !$options.hasTrack,
-              class: "clear-btn"
+              class: "clear-btn",
+              onClick: _cache[2] || (_cache[2] = ($event) => $options.clearTrack(_ctx.tracked))
             }, " Clear This Track ", 8, _hoisted_9),
             createBaseVNode("button", {
-              onClick: _cache[3] || (_cache[3] = (...args) => $options.clearAllTracks && $options.clearAllTracks(...args)),
               disabled: $data.tracks.size === 0,
-              class: "clear-btn"
+              class: "clear-btn",
+              onClick: _cache[3] || (_cache[3] = (...args) => $options.clearAllTracks && $options.clearAllTracks(...args))
             }, " Clear All Tracks ", 8, _hoisted_10),
             withDirectives(createBaseVNode("select", {
               "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => $data.activeTrackId = $event),
@@ -10981,19 +11029,19 @@ match(CAN1, ${filter.filter}, ${filter.mask})
           createBaseVNode("div", _hoisted_12, [
             createBaseVNode("div", _hoisted_13, [
               createBaseVNode("button", {
-                onClick: _cache[5] || (_cache[5] = (...args) => $options.zoomOut && $options.zoomOut(...args)),
-                title: "Zoom out"
+                title: "Zoom out",
+                onClick: _cache[5] || (_cache[5] = (...args) => $options.zoomOut && $options.zoomOut(...args))
               }, "-"),
               createBaseVNode("span", null, toDisplayString($options.zoomLevel) + "x", 1),
               createBaseVNode("button", {
-                onClick: _cache[6] || (_cache[6] = (...args) => $options.zoomIn && $options.zoomIn(...args)),
-                title: "Zoom in"
+                title: "Zoom in",
+                onClick: _cache[6] || (_cache[6] = (...args) => $options.zoomIn && $options.zoomIn(...args))
               }, "+")
             ]),
             createBaseVNode("label", _hoisted_14, [
               withDirectives(createBaseVNode("input", {
-                type: "checkbox",
-                "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => $data.autoCenter = $event)
+                "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => $data.autoCenter = $event),
+                type: "checkbox"
               }, null, 512), [
                 [vModelCheckbox, $data.autoCenter]
               ]),
@@ -11001,8 +11049,8 @@ match(CAN1, ${filter.filter}, ${filter.mask})
             ]),
             createBaseVNode("label", _hoisted_15, [
               withDirectives(createBaseVNode("input", {
-                type: "checkbox",
-                "onUpdate:modelValue": _cache[8] || (_cache[8] = ($event) => $data.showGrid = $event)
+                "onUpdate:modelValue": _cache[8] || (_cache[8] = ($event) => $data.showGrid = $event),
+                type: "checkbox"
               }, null, 512), [
                 [vModelCheckbox, $data.showGrid]
               ]),
@@ -11010,8 +11058,8 @@ match(CAN1, ${filter.filter}, ${filter.mask})
             ]),
             createBaseVNode("label", _hoisted_16, [
               withDirectives(createBaseVNode("input", {
-                type: "checkbox",
-                "onUpdate:modelValue": _cache[9] || (_cache[9] = ($event) => $data.showAllTracks = $event)
+                "onUpdate:modelValue": _cache[9] || (_cache[9] = ($event) => $data.showAllTracks = $event),
+                type: "checkbox"
               }, null, 512), [
                 [vModelCheckbox, $data.showAllTracks]
               ]),
@@ -11019,8 +11067,8 @@ match(CAN1, ${filter.filter}, ${filter.mask})
             ]),
             createBaseVNode("label", _hoisted_17, [
               withDirectives(createBaseVNode("input", {
-                type: "checkbox",
-                "onUpdate:modelValue": _cache[10] || (_cache[10] = ($event) => $data.showTime = $event)
+                "onUpdate:modelValue": _cache[10] || (_cache[10] = ($event) => $data.showTime = $event),
+                type: "checkbox"
               }, null, 512), [
                 [vModelCheckbox, $data.showTime]
               ]),
@@ -11029,7 +11077,7 @@ match(CAN1, ${filter.filter}, ${filter.mask})
           ]),
           createBaseVNode("div", _hoisted_18, [
             createBaseVNode("div", {
-              class: normalizeClass(["status-indicator", $options.statusClass])
+              class: normalizeClass([$options.statusClass, "status-indicator"])
             }, toDisplayString($options.statusText), 3),
             createBaseVNode("div", _hoisted_19, [
               $options.activeTrack ? (openBlock(), createElementBlock("span", _hoisted_20, "Points: " + toDisplayString($options.activeTrack.points.length), 1)) : createCommentVNode("", true),
@@ -11040,16 +11088,16 @@ match(CAN1, ${filter.filter}, ${filter.mask})
           ])
         ]),
         createBaseVNode("div", {
-          class: normalizeClass(["canvas-container", { "cursor-grab": !$data.isDragging, "cursor-grabbing": $data.isDragging }]),
+          class: normalizeClass([{ "cursor-grab": !$data.isDragging, "cursor-grabbing": $data.isDragging }, "canvas-container"]),
           onMousedown: _cache[12] || (_cache[12] = (...args) => $options.startDrag && $options.startDrag(...args)),
-          onMousemove: _cache[13] || (_cache[13] = (...args) => $options.handleMouseMove && $options.handleMouseMove(...args)),
-          onMouseup: _cache[14] || (_cache[14] = (...args) => $options.endDrag && $options.endDrag(...args)),
-          onMouseleave: _cache[15] || (_cache[15] = (...args) => $options.endDrag && $options.endDrag(...args))
+          onMouseleave: _cache[13] || (_cache[13] = (...args) => $options.endDrag && $options.endDrag(...args)),
+          onMousemove: _cache[14] || (_cache[14] = (...args) => $options.handleMouseMove && $options.handleMouseMove(...args)),
+          onMouseup: _cache[15] || (_cache[15] = (...args) => $options.endDrag && $options.endDrag(...args))
         }, [
           createBaseVNode("canvas", {
             ref: "canvas",
-            width: $data.canvasWidth,
-            height: $data.canvasHeight
+            height: $data.canvasHeight,
+            width: $data.canvasWidth
           }, null, 8, _hoisted_23),
           !$options.hasTrack && $data.tracks.size === 0 ? (openBlock(), createElementBlock("div", _hoisted_24, [
             createBaseVNode("div", _hoisted_25, [
@@ -11057,15 +11105,15 @@ match(CAN1, ${filter.filter}, ${filter.mask})
               _cache[27] || (_cache[27] = createBaseVNode("h3", null, "No Track Data", -1)),
               !$data.isTracking ? (openBlock(), createElementBlock("p", _hoisted_26, 'Click "Start Track" to begin recording')) : (openBlock(), createElementBlock("p", _hoisted_27, "Waiting for GPS data...")),
               createBaseVNode("button", {
-                onClick: _cache[11] || (_cache[11] = (...args) => $options.simulateMultipleTracks && $options.simulateMultipleTracks(...args)),
-                class: "demo-btn"
+                class: "demo-btn",
+                onClick: _cache[11] || (_cache[11] = (...args) => $options.simulateMultipleTracks && $options.simulateMultipleTracks(...args))
               }, " Try Demo Tracks ")
             ])
           ])) : createCommentVNode("", true),
           $data.currentPosition && $data.isTracking && !$props.autoUpdate ? (openBlock(), createElementBlock("div", {
             key: 1,
-            class: "current-marker",
-            style: normalizeStyle($options.currentMarkerStyle)
+            style: normalizeStyle($options.currentMarkerStyle),
+            class: "current-marker"
           }, [..._cache[28] || (_cache[28] = [
             createBaseVNode("div", { class: "pulse" }, null, -1),
             createBaseVNode("div", { class: "center-dot" }, null, -1)
@@ -11085,8 +11133,8 @@ match(CAN1, ${filter.filter}, ${filter.mask})
                   onClick: ($event) => $options.setActiveTrack(trackId)
                 }, [
                   createBaseVNode("div", {
-                    class: "track-color",
-                    style: normalizeStyle({ backgroundColor: trackData.color })
+                    style: normalizeStyle({ backgroundColor: trackData.color }),
+                    class: "track-color"
                   }, null, 4),
                   createBaseVNode("div", _hoisted_34, [
                     createBaseVNode("div", _hoisted_35, toDisplayString(trackId), 1),
@@ -11098,9 +11146,9 @@ match(CAN1, ${filter.filter}, ${filter.mask})
                   ]),
                   createBaseVNode("div", _hoisted_38, [
                     createBaseVNode("button", {
-                      onClick: withModifiers(($event) => $options.removeTrack(trackId), ["stop"]),
                       class: "remove-btn",
-                      title: "Remove track"
+                      title: "Remove track",
+                      onClick: withModifiers(($event) => $options.removeTrack(trackId), ["stop"])
                     }, " × ", 8, _hoisted_39)
                   ])
                 ], 10, _hoisted_33);
@@ -11119,10 +11167,10 @@ match(CAN1, ${filter.filter}, ${filter.mask})
               createBaseVNode("div", _hoisted_45, [
                 _cache[31] || (_cache[31] = createBaseVNode("span", { class: "label" }, "Color:", -1)),
                 withDirectives(createBaseVNode("input", {
-                  type: "color",
                   "onUpdate:modelValue": _cache[16] || (_cache[16] = ($event) => $options.activeTrack.color = $event),
-                  onChange: _cache[17] || (_cache[17] = (...args) => $options.updateTrackColor && $options.updateTrackColor(...args)),
-                  class: "color-picker"
+                  class: "color-picker",
+                  type: "color",
+                  onChange: _cache[17] || (_cache[17] = (...args) => $options.updateTrackColor && $options.updateTrackColor(...args))
                 }, null, 544), [
                   [vModelText, $options.activeTrack.color]
                 ])
@@ -11162,16 +11210,16 @@ match(CAN1, ${filter.filter}, ${filter.mask})
             _cache[40] || (_cache[40] = createBaseVNode("h4", null, "Export", -1)),
             createBaseVNode("div", _hoisted_62, [
               createBaseVNode("button", {
-                onClick: _cache[18] || (_cache[18] = (...args) => $options.exportActiveTrack && $options.exportActiveTrack(...args)),
-                title: "Export active track"
+                title: "Export active track",
+                onClick: _cache[18] || (_cache[18] = (...args) => $options.exportActiveTrack && $options.exportActiveTrack(...args))
               }, "Export Active"),
               createBaseVNode("button", {
-                onClick: _cache[19] || (_cache[19] = (...args) => $options.exportAllTracks && $options.exportAllTracks(...args)),
-                title: "Export all tracks"
+                title: "Export all tracks",
+                onClick: _cache[19] || (_cache[19] = (...args) => $options.exportAllTracks && $options.exportAllTracks(...args))
               }, "Export All"),
               createBaseVNode("button", {
-                onClick: _cache[20] || (_cache[20] = (...args) => $options.copyActiveTrack && $options.copyActiveTrack(...args)),
-                title: "Copy to clipboard"
+                title: "Copy to clipboard",
+                onClick: _cache[20] || (_cache[20] = (...args) => $options.copyActiveTrack && $options.copyActiveTrack(...args))
               }, "📋")
             ])
           ])
@@ -11179,7 +11227,7 @@ match(CAN1, ${filter.filter}, ${filter.mask})
       ])
     ]);
   }
-  const GpsTracker = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__scopeId", "data-v-8b37c1ec"]]);
+  const GpsTracker = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__scopeId", "data-v-82f9ab4e"]]);
   const _hoisted_1 = { class: "app-container" };
   const _hoisted_2 = {
     key: 0,
@@ -11200,6 +11248,7 @@ match(CAN1, ${filter.filter}, ${filter.mask})
       let freezePGNsArray = [];
       const {
         isConnected,
+        isConnecting,
         connectionError,
         freezePGNs,
         servers,
@@ -11207,6 +11256,7 @@ match(CAN1, ${filter.filter}, ${filter.mask})
         lastPgn,
         connectionStatus,
         connectWebSocket,
+        disconnectWebSocket,
         reconnectWebSocket,
         clearAllData
       } = useNmeaWebSocket(autoUpdate, config2);
@@ -11401,11 +11451,14 @@ match(CAN1, ${filter.filter}, ${filter.mask})
           createBaseVNode("div", _hoisted_1, [
             createVNode(_sfc_main$b, {
               "is-connected": unref(isConnected),
+              isConnecting: unref(isConnecting),
               "connection-status": unref(connectionStatus),
               "total-devices": totalDevices.value,
               "total-pgns": totalPgns.value,
+              onConnectWebSocket: unref(connectWebSocket),
+              onDisconnectWebSocket: unref(disconnectWebSocket),
               onOpenSettings: _cache[0] || (_cache[0] = ($event) => isConfigModalVisible.value = true)
-            }, null, 8, ["is-connected", "connection-status", "total-devices", "total-pgns"]),
+            }, null, 8, ["is-connected", "isConnecting", "connection-status", "total-devices", "total-pgns", "onConnectWebSocket", "onDisconnectWebSocket"]),
             unref(connectionError) ? (openBlock(), createElementBlock("div", _hoisted_2, [
               _cache[10] || (_cache[10] = createBaseVNode("i", { class: "fas fa-exclamation-triangle" }, null, -1)),
               createTextVNode(" Connection Error: " + toDisplayString(unref(connectionError).message) + " ", 1),
@@ -11454,6 +11507,7 @@ match(CAN1, ${filter.filter}, ${filter.mask})
               onToggleFreezePGNs: toggleFreezePGNs,
               onTrackPgn: trackPgn
             }, null, 8, ["autoUpdate", "devicesList", "filteredPGNs", "selectedDevice", "serverFilter", "pgnFilter", "blockedPGNs", "panelTitle", "trackingPGNs"]),
+            createTextVNode(" " + toDisplayString(unref(config2).autoTraceAfterRestart) + " ", 1),
             createVNode(GpsTracker, {
               autoUpdate: autoUpdate.value,
               "onUpdate:autoUpdate": _cache[5] || (_cache[5] = ($event) => autoUpdate.value = $event),
@@ -11461,14 +11515,14 @@ match(CAN1, ${filter.filter}, ${filter.mask})
               trackingPGNs: trackingPGNs.value,
               onTrackPgn: trackPgn,
               pgn: unref(lastPgn),
-              autoStart: true,
+              autoStart: unref(config2).autoTraceAfterRestart,
               width: 2e3,
               height: 1200,
               "line-color": "#3F51B5",
               "point-color": "#FF9800",
               onPointAdded: _cache[6] || (_cache[6] = () => {
               })
-            }, null, 8, ["autoUpdate", "trackingPGNs", "pgn"]),
+            }, null, 8, ["autoUpdate", "trackingPGNs", "pgn", "autoStart"]),
             createVNode(PGNFilter, {
               selectedDevice: selectedDevice.value,
               filteredPGNs: filteredPGNs.value,
