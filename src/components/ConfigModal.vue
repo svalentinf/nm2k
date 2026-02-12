@@ -354,19 +354,21 @@ async function testConnection()
     max-width: 700px;
     max-height: 90vh;
     animation: slideUp 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 24px;
+    padding: 12px;
     border-bottom: 1px solid var(--border-color);
 }
 
 .modal-header h2 {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -394,13 +396,13 @@ async function testConnection()
 }
 
 .modal-body {
-    padding: 24px;
-    max-height: 70vh;
+    flex-grow: 1;
+    padding: 12px;
     overflow: auto;
 }
 
 .modal-footer {
-    padding: 20px 24px;
+    padding: 12px;
     border-top: 1px solid var(--border-color);
     display: flex;
     justify-content: flex-end;
