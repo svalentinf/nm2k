@@ -9209,7 +9209,7 @@ Expected function or array of functions, received type ${typeof value}.`
       };
     }
   };
-  const ConfigModal = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-488b2f41"]]);
+  const ConfigModal = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-e2989564"]]);
   function useNmeaWebSocket(autoUpdate, config2) {
     const ws = ref(null);
     const isConnected = ref(false);
