@@ -50,8 +50,6 @@ Download and run start-nmea-server.cmd
 
 If you find this app useful, please consider supporting its development:
 
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://paypal.me/valentinsonu)
-
 **Direct Donations:**
 
 - [PayPal](https://paypal.me/valentinsonu)
