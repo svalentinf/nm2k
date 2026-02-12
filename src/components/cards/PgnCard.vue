@@ -10,7 +10,7 @@
                     <i class="fas fa-magnifying-glass"></i>&nbsp;PGN
                 </span>
                 <span v-if="typeof pgn.pgn === 'number'" @click="$emit('blockPgn', computedPgn)" :class="{'text-danger':blockedPGNs.has(computedPgn)}" style="cursor: not-allowed">
-                    <i class="fas " :class="{'fa-ban':blockedPGNs.has(computedPgn), 'fa-plus-circle':!blockedPGNs.has(computedPgn)}"></i>
+                    <i class="fas fa-ban"></i>
                 </span>
                 {{ pgn.pgn }}
                 <span v-if="typeof pgn.pgn === 'number'">[{{ pgn.pgn.toString(16).padStart(5, '0').toUpperCase() }}]</span>
