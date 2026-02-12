@@ -8754,6 +8754,10 @@ Expected function or array of functions, received type ${typeof value}.`
           "enable": false,
           "port": "60002"
         },
+        {
+          "enable": false,
+          "port": "60003"
+        },
         //yden
         {
           "enable": false,
@@ -8767,7 +8771,7 @@ Expected function or array of functions, received type ${typeof value}.`
       "TCP": [
         //actisense
         {
-          "enable": true,
+          "enable": false,
           "host": "192.168.1.111",
           "port": "60003"
         },
@@ -8884,7 +8888,7 @@ Expected function or array of functions, received type ${typeof value}.`
         emit2("config-change", localConfig.value);
         setTimeout(() => {
           emit2("close");
-        }, 500);
+        }, 250);
       }
       function resetToDefaults() {
         if (confirm("Reset all settings to defaults?")) {
@@ -9205,7 +9209,7 @@ Expected function or array of functions, received type ${typeof value}.`
       };
     }
   };
-  const ConfigModal = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-47889089"]]);
+  const ConfigModal = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-488b2f41"]]);
   function useNmeaWebSocket(autoUpdate, config2) {
     const ws = ref(null);
     const isConnected = ref(false);

@@ -21,6 +21,10 @@ const defaultConfig = {
                 'enable': false,
                 'port':   '60002',
             },
+            {
+                'enable': false,
+                'port':   '60003',
+            },
             //yden
             {
                 'enable': false,
@@ -34,7 +38,7 @@ const defaultConfig = {
         'TCP': [
             //actisense
             {
-                'enable': true,
+                'enable': false,
                 'host':   '192.168.1.111',
                 'port':   '60003',
             },
