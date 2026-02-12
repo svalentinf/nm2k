@@ -139,6 +139,21 @@
                     </div>
                 </div>
 
+                <div class="config-section">
+                    <h3><i class="fas fa-map"></i> Map tracing</h3>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input
+                                    v-model="localConfig.autoTraceAfterRestart"
+                                    type="checkbox"
+                                    class="form-checkbox"
+                            >
+                            <span>Automatically start tracing on refresh</span>
+                        </label>
+                    </div>
+                </div>
+
+
                 <!-- Test Connection -->
                 <div class="config-section">
                     <h3><i class="fas fa-wifi"></i> Test Connection</h3>
@@ -163,11 +178,11 @@
                 <button class="btn btn-outline" @click="resetToDefaults">
                     <i class="fas fa-undo"></i> Reset to Defaults
                 </button>
-                <button class="btn btn-outline" @click="close">
-                    Cancel
-                </button>
                 <button class="btn btn-primary" @click="saveConfig">
-                    <i class="fas fa-save"></i> Save & Apply
+                    <i class="fas fa-save"></i> Save & Close
+                </button>
+                <button class="btn btn-outline" @click="close">
+                    Close
                 </button>
             </div>
         </div>
@@ -227,6 +242,7 @@ function saveConfig()
 {
     updateConfig(localConfig.value)
     emit('config-change', localConfig.value)
+    emit('close')
 }
 
 function resetToDefaults()
