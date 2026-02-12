@@ -87,7 +87,6 @@
         <div v-if="error" class="error-section">
             {{ error }}
         </div>
-        {{ blockedPGNs }}
     </div>
 </template>
 
