@@ -60,7 +60,6 @@
                     @trackPgn="trackPgn"
             />
 
-            {{ config.autoTraceAfterRestart }}
             <GpsTracker
                     :autoUpdate="autoUpdate"
                     @update:autoUpdate="autoUpdate = $event"
