@@ -45,3 +45,14 @@ You can also use the index.html file from the public folder. (You need to run th
 ### Windows installer. First install nodejs then you can run the script to install the app and start the server
 
 Download and run start-nmea-server.cmd
+
+## Support the Project
+
+If you find this app useful, please consider supporting its development:
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://paypal.me/valentinsonu)
+
+**Direct Donations:**
+
+- [PayPal](https://paypal.me/valentinsonu)
+- [Revolut](https://revolut.me/valentinsonu)
