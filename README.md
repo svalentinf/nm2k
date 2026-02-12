@@ -44,4 +44,4 @@ You can also use the index.html file from the public folder. (You need to run th
 
 ### Windows installer. First install nodejs then you can run the script to install the app and start the server
 
-Download and run instal.cmd
+Download and run start-nmea-server.cmd
