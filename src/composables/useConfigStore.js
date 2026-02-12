@@ -5,9 +5,10 @@ const STORAGE_KEY = 'nmea2000-config'
 const defaultConfig = {
     wsUrl: 'ws://localhost:8080',
     // wsUrl:       'ws://192.168.1.111/api/websocket',
-    autoConnect: true,
-    showRawData: false,
-    theme:       'dark',
+    autoConnect:           true,
+    autoTraceAfterRestart: true,
+    showRawData:           false,
+    theme:                 'dark',
 
     dataServers: {
         'UDP': [
