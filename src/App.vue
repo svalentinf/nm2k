@@ -3,9 +3,12 @@
         <div class="app-container">
             <Header
                     :is-connected="isConnected"
+                    :isConnecting="isConnecting"
                     :connection-status="connectionStatus"
                     :total-devices="totalDevices"
                     :total-pgns="totalPgns"
+                    @connectWebSocket="connectWebSocket"
+                    @disconnectWebSocket="disconnectWebSocket"
                     @open-settings="isConfigModalVisible = true"
             />
 
@@ -57,6 +60,7 @@
                     @trackPgn="trackPgn"
             />
 
+            {{ config.autoTraceAfterRestart }}
             <GpsTracker
                     :autoUpdate="autoUpdate"
                     @update:autoUpdate="autoUpdate = $event"
@@ -64,7 +68,7 @@
                     :trackingPGNs="trackingPGNs"
                     @trackPgn="trackPgn"
                     :pgn="lastPgn"
-                    :autoStart="true"
+                    :autoStart="config.autoTraceAfterRestart"
                     :width="2000"
                     :height="1200"
                     :line-color="'#3F51B5'"
