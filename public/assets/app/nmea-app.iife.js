@@ -8882,7 +8882,9 @@ Expected function or array of functions, received type ${typeof value}.`
       function saveConfig() {
         updateConfig(localConfig.value);
         emit2("config-change", localConfig.value);
-        emit2("close");
+        setTimeout(() => {
+          emit2("close");
+        }, 500);
       }
       function resetToDefaults() {
         if (confirm("Reset all settings to defaults?")) {
@@ -9203,7 +9205,7 @@ Expected function or array of functions, received type ${typeof value}.`
       };
     }
   };
-  const ConfigModal = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-bb25027d"]]);
+  const ConfigModal = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-47889089"]]);
   function useNmeaWebSocket(autoUpdate, config2) {
     const ws = ref(null);
     const isConnected = ref(false);
@@ -9234,8 +9236,8 @@ Expected function or array of functions, received type ${typeof value}.`
           isConnected.value = true;
           isConnecting.value = false;
           connectionError.value = null;
-          console.log("ws", ws.value);
           ws?.value?.send(JSON.stringify(getDataServers()));
+          console.log("WebSocket servers configuration was sent!");
         };
         ws.value.onmessage = (event) => {
           if (!autoUpdate.value) return;
@@ -9309,7 +9311,9 @@ Expected function or array of functions, received type ${typeof value}.`
       }
     });
     watch(() => config2, (newServers, oldServers) => {
-      ws?.value?.send(JSON.stringify(getDataServers()));
+      if (ws?.value?.readyState) {
+        ws?.value?.send(JSON.stringify(getDataServers()));
+      }
     }, { deep: true });
     watch(() => config2.value.autoConnect, (newValue) => {
       if (newValue && !isConnected.value && !isConnecting.value) {

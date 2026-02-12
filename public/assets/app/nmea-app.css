@@ -1,5 +1,5 @@
 
-.modal-overlay[data-v-bb25027d] {
+.modal-overlay[data-v-47889089] {
     position: fixed;
     top: 0;
     left: 0;
@@ -10,32 +10,32 @@
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    animation: fadeIn-bb25027d 0.2s ease-out;
+    animation: fadeIn-47889089 0.2s ease-out;
 }
-.modal-content[data-v-bb25027d] {
+.modal-content[data-v-47889089] {
     background: var(--bg-primary);
     border-radius: 12px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     width: 90%;
     max-width: 700px;
     max-height: 90vh;
-    animation: slideUp-bb25027d 0.3s ease-out;
+    animation: slideUp-47889089 0.3s ease-out;
 }
-.modal-header[data-v-bb25027d] {
+.modal-header[data-v-47889089] {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 20px 24px;
     border-bottom: 1px solid var(--border-color);
 }
-.modal-header h2[data-v-bb25027d] {
+.modal-header h2[data-v-47889089] {
     margin: 0;
     font-size: 1.5rem;
     display: flex;
     align-items: center;
     gap: 10px;
 }
-.modal-close[data-v-bb25027d] {
+.modal-close[data-v-47889089] {
     background: none;
     border: none;
     font-size: 28px;
@@ -50,29 +50,29 @@
     border-radius: 8px;
     transition: all 0.2s;
 }
-.modal-close[data-v-bb25027d]:hover {
+.modal-close[data-v-47889089]:hover {
     background: var(--bg-tertiary);
     color: var(--text-primary);
 }
-.modal-body[data-v-bb25027d] {
+.modal-body[data-v-47889089] {
     padding: 24px;
     max-height: 70vh;
     overflow: auto;
 }
-.modal-footer[data-v-bb25027d] {
+.modal-footer[data-v-47889089] {
     padding: 20px 24px;
     border-top: 1px solid var(--border-color);
     display: flex;
     justify-content: flex-end;
     gap: 12px;
 }
-.d-flex[data-v-bb25027d] {
+.d-flex[data-v-47889089] {
     display: flex;
 }
-.config-section[data-v-bb25027d] {
+.config-section[data-v-47889089] {
     margin-bottom: 32px;
 }
-.config-section h3[data-v-bb25027d] {
+.config-section h3[data-v-47889089] {
     margin: 0 0 20px 0;
     font-size: 1.2rem;
     color: var(--text-primary);
@@ -80,19 +80,19 @@
     align-items: center;
     gap: 10px;
 }
-.config-section table div[data-v-bb25027d] {
+.config-section table div[data-v-47889089] {
     margin-bottom: 4px;
 }
-.form-group[data-v-bb25027d] {
+.form-group[data-v-47889089] {
     margin-bottom: 20px;
 }
-.form-group label[data-v-bb25027d] {
+.form-group label[data-v-47889089] {
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
     color: var(--text-primary);
 }
-.form-control[data-v-bb25027d] {
+.form-control[data-v-47889089] {
     width: 100%;
     padding: 10px 12px;
     border: 2px solid var(--border-color);
@@ -102,28 +102,28 @@
     font-size: 14px;
     transition: all 0.2s;
 }
-.form-control[data-v-bb25027d]:focus {
+.form-control[data-v-47889089]:focus {
     outline: none;
     border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
 }
-.form-checkbox[data-v-bb25027d] {
+.form-checkbox[data-v-47889089] {
     margin-right: 10px;
     width: 18px;
     height: 18px;
 }
-.checkbox-label[data-v-bb25027d] {
+.checkbox-label[data-v-47889089] {
     display: flex;
     align-items: center;
     cursor: pointer;
     user-select: none;
 }
-.form-help[data-v-bb25027d] {
+.form-help[data-v-47889089] {
     margin-top: 6px;
     font-size: 0.85rem;
     color: var(--text-light);
 }
-.form-range[data-v-bb25027d] {
+.form-range[data-v-47889089] {
     width: 100%;
     height: 6px;
     border-radius: 3px;
@@ -131,7 +131,7 @@
     outline: none;
     -webkit-appearance: none;
 }
-.form-range[data-v-bb25027d]::-webkit-slider-thumb {
+.form-range[data-v-47889089]::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 20px;
     height: 20px;
@@ -139,13 +139,13 @@
     background: var(--primary);
     cursor: pointer;
 }
-.range-value[data-v-bb25027d] {
+.range-value[data-v-47889089] {
     text-align: center;
     margin-top: 8px;
     font-weight: bold;
     color: var(--primary);
 }
-.connection-test[data-v-bb25027d] {
+.connection-test[data-v-47889089] {
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -153,7 +153,7 @@
     background: var(--bg-secondary);
     border-radius: 8px;
 }
-.connection-status[data-v-bb25027d] {
+.connection-status[data-v-47889089] {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -161,29 +161,29 @@
     border-radius: 8px;
     font-weight: 500;
 }
-.connection-status.idle[data-v-bb25027d] {
+.connection-status.idle[data-v-47889089] {
     background: var(--bg-tertiary);
     color: var(--text-light);
 }
-.connection-status.testing[data-v-bb25027d] {
+.connection-status.testing[data-v-47889089] {
     background: rgba(255, 193, 7, 0.1);
     color: #ffc107;
 }
-.connection-status.success[data-v-bb25027d] {
+.connection-status.success[data-v-47889089] {
     background: rgba(40, 167, 69, 0.1);
     color: #28a745;
 }
-.connection-status.error[data-v-bb25027d] {
+.connection-status.error[data-v-47889089] {
     background: rgba(220, 53, 69, 0.1);
     color: #dc3545;
 }
-.btn-success[data-v-bb25027d] {
+.btn-success[data-v-47889089] {
     align-self: flex-start;
 }
-.spinning[data-v-bb25027d] {
-    animation: spin-bb25027d 1s linear infinite;
+.spinning[data-v-47889089] {
+    animation: spin-47889089 1s linear infinite;
 }
-@keyframes spin-bb25027d {
+@keyframes spin-47889089 {
 from {
         transform: rotate(0deg);
 }
@@ -191,7 +191,7 @@ to {
         transform: rotate(360deg);
 }
 }
-@keyframes fadeIn-bb25027d {
+@keyframes fadeIn-47889089 {
 from {
         opacity: 0;
 }
@@ -199,7 +199,7 @@ to {
         opacity: 1;
 }
 }
-@keyframes slideUp-bb25027d {
+@keyframes slideUp-47889089 {
 from {
         opacity: 0;
         transform: translateY(20px);
@@ -210,14 +210,14 @@ to {
 }
 }
 @media (max-width: 768px) {
-.modal-content[data-v-bb25027d] {
+.modal-content[data-v-47889089] {
         width: 95%;
         margin: 10px;
 }
-.modal-footer[data-v-bb25027d] {
+.modal-footer[data-v-47889089] {
         flex-direction: column;
 }
-.modal-footer .btn[data-v-bb25027d] {
+.modal-footer .btn[data-v-47889089] {
         width: 100%;
 }
 }

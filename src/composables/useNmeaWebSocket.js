@@ -1,4 +1,4 @@
-import {ref, computed, watch} from 'vue'
+import {computed, ref, watch} from 'vue'
 
 export function useNmeaWebSocket(autoUpdate, config)
 {
@@ -42,24 +42,9 @@ export function useNmeaWebSocket(autoUpdate, config)
                 isConnecting.value = false
                 connectionError.value = null
 
-
-                console.log("ws", ws.value);
-                // let test = {
-                //     "t": "ws_init",
-                //     "c": {
-                //         "subscriptions": [{"name": "data", "enabled": "true"}, {
-                //             "name":    "repo_data",
-                //             "enabled": "true"
-                //         }]
-                //     }
-                // }
-                //
-                // ws.value.send(JSON.stringify(test));
-
-
                 //we send the data!
                 ws?.value?.send(JSON.stringify(getDataServers()));
-
+                console.log('WebSocket servers configuration was sent!')
             }
 
 
@@ -141,6 +126,7 @@ export function useNmeaWebSocket(autoUpdate, config)
 
         return dataServers;
     }
+
     // Watch for config changes
     watch(() => config.value.wsUrl, (newUrl, oldUrl) => {
         if (newUrl !== oldUrl && config.value.autoConnect) {
@@ -150,7 +136,9 @@ export function useNmeaWebSocket(autoUpdate, config)
 
     // Watch for servers changes
     watch(() => config, (newServers, oldServers) => {
-        ws?.value?.send(JSON.stringify(getDataServers()));
+        if (ws?.value?.readyState) {
+            ws?.value?.send(JSON.stringify(getDataServers()));
+        }
     }, {deep: true})
 
     // Watch for autoConnect changes

@@ -242,7 +242,9 @@ function saveConfig()
 {
     updateConfig(localConfig.value)
     emit('config-change', localConfig.value)
-    emit('close')
+    setTimeout(() => {
+        emit('close')
+    }, 250)
 }
 
 function resetToDefaults()
