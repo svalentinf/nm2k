@@ -13,11 +13,11 @@
                         v-for="device in devicesList"
                         :key="device.src"
                         :device="device"
-                        :selected="selectedDevice === device.src"
                         :pgnFilter="pgnFilter"
+                        :selected="selectedDevice === device.src"
                         :serverFilter="serverFilter"
-                        @selectDevice="$emit('selectDevice', $event)"
                         @filterPgn="$emit('filterPgn', $event)"
+                        @selectDevice="$emit('selectDevice', $event)"
                 />
                 <div v-if="devicesList.length === 0" class="empty-state">
                     <i class="fas fa-plug"></i>

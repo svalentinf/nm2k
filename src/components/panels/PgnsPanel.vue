@@ -12,15 +12,15 @@
                 <PgnCard
                         v-for="pgn in filteredPGNs"
                         :key="pgn.id"
+                        :autoUpdate="autoUpdate"
+                        :blockedPGNs="blockedPGNs"
                         :pgn="pgn"
                         :pgnFilter="pgnFilter"
-                        :blockedPGNs="blockedPGNs"
                         :trackingPGNs="trackingPGNs"
-                        :autoUpdate="autoUpdate"
+                        @blockPgn="$emit('blockPgn', $event)"
+                        @filterPgn="$emit('filterPgn', $event)"
                         @selectDevice="$emit('selectDevice', $event)"
                         @trackPgn="$emit('trackPgn', $event)"
-                        @filterPgn="$emit('filterPgn', $event)"
-                        @blockPgn="$emit('blockPgn', $event)"
                 />
                 <div v-if="filteredPGNs.length === 0" class="empty-state">
                     <i class="fas fa-search"></i>

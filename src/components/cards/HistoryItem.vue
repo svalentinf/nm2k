@@ -12,7 +12,7 @@
         <div class="history-time">
             {{ formatTime(item.timestamp) }}
         </div>
-        <div class="fields-grid" v-if="item.fields">
+        <div v-if="item.fields" class="fields-grid">
             <div
                     v-for="(value, field) in item.fields"
                     :key="field"

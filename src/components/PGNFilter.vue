@@ -26,11 +26,11 @@
         <!-- Options -->
         <div class="options-section">
             <label>
-                <input type="checkbox" v-model="strictMode"> Strict Mode
+                <input v-model="strictMode" type="checkbox"> Strict Mode
             </label>
             <label>
                 Max Filters:
-                <input type="number" v-model.number="maxFilters" min="1" max="16">
+                <input v-model.number="maxFilters" max="16" min="1" type="number">
             </label>
             <label>
                 Bit Length:
@@ -92,7 +92,6 @@
 
 <script>
 import {PGNFilterAnalyzer} from '../plugins/pgn-filter-analyzer.js';
-import {watch} from "vue";
 
 export default {
     name:  'PGNFilter',

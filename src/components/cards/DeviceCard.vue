@@ -1,7 +1,7 @@
 <template>
     <div
-            class="device-card"
             :class="{ active: selected }"
+            class="device-card"
             @click="$emit('selectDevice', device.src)"
     >
         <div class="device-name">
@@ -41,8 +41,8 @@
             Servers:
             <span
                     v-for="server in device.servers"
-                    :class="{'item':true, 'active' : server==serverFilter}"
                     :key="server"
+                    :class="{'item':true, 'active' : server==serverFilter}"
             >
                 {{ server }}
             </span>

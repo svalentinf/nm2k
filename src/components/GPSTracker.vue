@@ -5,9 +5,9 @@
             <div class="panel-header">
                 <div class="left-controls">
                     <button
-                            @click="toggleTracking"
                             :class="['track-btn', { active: isTracking, paused: !autoUpdate }]"
                             :title="isTracking ? 'Stop tracking' : 'Start tracking'"
+                            @click="toggleTracking"
                     >
                         <span v-if="isTracking && autoUpdate">●</span>
                         <span v-else-if="!autoUpdate">❚❚</span>
@@ -19,17 +19,17 @@
                         {{ autoUpdate ? 'Pause Updates' : 'Resume Updates' }}
                     </button>
                     <button
-                            @click="clearTrack(tracked)"
                             :disabled="!hasTrack"
                             class="clear-btn"
+                            @click="clearTrack(tracked)"
                     >
                         Clear This Track
                     </button>
 
                     <button
-                            @click="clearAllTracks"
                             :disabled="tracks.size === 0"
                             class="clear-btn"
+                            @click="clearAllTracks"
                     >
                         Clear All Tracks
                     </button>
@@ -43,33 +43,33 @@
 
                 <div class="center-controls">
                     <div class="zoom-controls">
-                        <button @click="zoomOut" title="Zoom out">-</button>
+                        <button title="Zoom out" @click="zoomOut">-</button>
                         <span>{{ zoomLevel }}x</span>
-                        <button @click="zoomIn" title="Zoom in">+</button>
+                        <button title="Zoom in" @click="zoomIn">+</button>
                     </div>
 
                     <label class="toggle">
-                        <input type="checkbox" v-model="autoCenter">
+                        <input v-model="autoCenter" type="checkbox">
                         <span>Auto-center</span>
                     </label>
 
                     <label class="toggle">
-                        <input type="checkbox" v-model="showGrid">
+                        <input v-model="showGrid" type="checkbox">
                         <span>Grid</span>
                     </label>
 
                     <label class="toggle">
-                        <input type="checkbox" v-model="showAllTracks">
+                        <input v-model="showAllTracks" type="checkbox">
                         <span>Show All Tracks</span>
                     </label>
                     <label class="toggle">
-                        <input type="checkbox" v-model="showTime">
+                        <input v-model="showTime" type="checkbox">
                         <span>Show time</span>
                     </label>
                 </div>
 
                 <div class="right-controls">
-                    <div class="status-indicator" :class="statusClass">
+                    <div :class="statusClass" class="status-indicator">
                         {{ statusText }}
                     </div>
 
@@ -84,17 +84,17 @@
 
             <!-- Main Canvas -->
             <div
-                    class="canvas-container"
                     :class="{ 'cursor-grab': !isDragging, 'cursor-grabbing': isDragging }"
+                    class="canvas-container"
                     @mousedown="startDrag"
+                    @mouseleave="endDrag"
                     @mousemove="handleMouseMove"
                     @mouseup="endDrag"
-                    @mouseleave="endDrag"
             >
                 <canvas
                         ref="canvas"
-                        :width="canvasWidth"
                         :height="canvasHeight"
+                        :width="canvasWidth"
                 ></canvas>
 
                 <!-- No Data Overlay -->
@@ -104,7 +104,7 @@
                         <h3>No Track Data</h3>
                         <p v-if="!isTracking">Click "Start Track" to begin recording</p>
                         <p v-else>Waiting for GPS data...</p>
-                        <button @click="simulateMultipleTracks" class="demo-btn">
+                        <button class="demo-btn" @click="simulateMultipleTracks">
                             Try Demo Tracks
                         </button>
                     </div>
@@ -113,8 +113,8 @@
                 <!-- Current Position Marker -->
                 <div
                         v-if="currentPosition && isTracking && !autoUpdate"
-                        class="current-marker"
                         :style="currentMarkerStyle"
+                        class="current-marker"
                 >
                     <div class="pulse"></div>
                     <div class="center-dot"></div>
@@ -132,7 +132,7 @@
                 </div>
 
                 <!-- Tracks List Panel -->
-                <div class="tracks-list-panel" v-if="tracks.size > 0">
+                <div v-if="tracks.size > 0" class="tracks-list-panel">
                     <h4>All Tracks ({{ tracks.size }})</h4>
                     <div class="tracks-container">
                         <div
@@ -141,7 +141,7 @@
                                 :class="['track-item', { 'active': trackId === activeTrackId }]"
                                 @click="setActiveTrack(trackId)"
                         >
-                            <div class="track-color" :style="{ backgroundColor: trackData.color }"></div>
+                            <div :style="{ backgroundColor: trackData.color }" class="track-color"></div>
                             <div class="track-info">
                                 <div class="track-name">{{ trackId }}</div>
                                 <div class="track-details">
@@ -154,9 +154,9 @@
                             </div>
                             <div class="track-actions">
                                 <button
-                                        @click.stop="removeTrack(trackId)"
                                         class="remove-btn"
                                         title="Remove track"
+                                        @click.stop="removeTrack(trackId)"
                                 >
                                     ×
                                 </button>
@@ -180,17 +180,17 @@
                         <div class="coord">
                             <span class="label">Color:</span>
                             <input
-                                    type="color"
                                     v-model="activeTrack.color"
-                                    @change="updateTrackColor"
                                     class="color-picker"
+                                    type="color"
+                                    @change="updateTrackColor"
                             />
                         </div>
                         <div class="coord">
                             <span class="label">Points:</span>
                             <span class="value">{{ activeTrack.points.length }}</span>
                         </div>
-                        <div class="coord" v-if="currentPosition">
+                        <div v-if="currentPosition" class="coord">
                             <span class="label">Last Position:</span>
                             <span class="value">{{ formatTime(currentPosition.timestamp) }}</span>
                         </div>
@@ -225,9 +225,9 @@
                 <div class="info-section">
                     <h4>Export</h4>
                     <div class="export-buttons">
-                        <button @click="exportActiveTrack" title="Export active track">Export Active</button>
-                        <button @click="exportAllTracks" title="Export all tracks">Export All</button>
-                        <button @click="copyActiveTrack" title="Copy to clipboard">📋</button>
+                        <button title="Export active track" @click="exportActiveTrack">Export Active</button>
+                        <button title="Export all tracks" @click="exportAllTracks">Export All</button>
+                        <button title="Copy to clipboard" @click="copyActiveTrack">📋</button>
                     </div>
                 </div>
             </div>
@@ -299,7 +299,7 @@ export default {
             autoCenter:    true,
             showGrid:      true,
             showAllTracks: true,
-            showTime: true,
+            showTime:      true,
 
             // Mouse position
             mousePosition: null,
@@ -872,7 +872,7 @@ export default {
                 this.ctx.textAlign = 'left';
                 this.ctx.textBaseline = 'middle';
                 this.ctx.fillText(
-                    `${(index + 1).toString()} [${this.showTime?this.formatTimeWithSeconds(point.timestamp):''}]`, // Add 1 to start counting from 1 instead of 0
+                    `${(index + 1).toString()} [${this.showTime ? this.formatTimeWithSeconds(point.timestamp) : ''}]`, // Add 1 to start counting from 1 instead of 0
                     canvasPoint.x + 10, // Offset to the right of the point
                     canvasPoint.y // Same vertical position
                 );

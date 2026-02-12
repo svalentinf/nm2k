@@ -16,9 +16,9 @@
                         <input
                                 id="wsUrl"
                                 v-model="localConfig.wsUrl"
-                                type="text"
-                                placeholder="ws://localhost:8080"
                                 class="form-control"
+                                placeholder="ws://localhost:8080"
+                                type="text"
                         >
                         <div class="form-help">
                             Enter the WebSocket URL for your NMEA 2000 data source
@@ -29,8 +29,8 @@
                         <label class="checkbox-label">
                             <input
                                     v-model="localConfig.autoConnect"
-                                    type="checkbox"
                                     class="form-checkbox"
+                                    type="checkbox"
                             >
                             <span>Auto-connect on startup</span>
                         </label>
@@ -54,23 +54,23 @@
                                     <label class="checkbox-label">
                                         <input
                                                 v-model="udp.enable"
-                                                type="checkbox"
                                                 class="form-checkbox"
+                                                type="checkbox"
                                         >
                                         <span></span>
                                     </label>
                                     <input
                                             v-model="udp.port"
-                                            type="number"
-                                            style="max-width: 100px;"
                                             class="form-control"
+                                            style="max-width: 100px;"
+                                            type="number"
                                     >
                                     <button class="btn btn-sm btn-danger" @click="removeServer('UDP', index)">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
 
-                                <button class="btn btn-success" @click="addServer('UDP')" style="margin: auto">
+                                <button class="btn btn-success" style="margin: auto" @click="addServer('UDP')">
                                     <i class="fas fa-plus-circle"></i>
                                     Add Connection
                                 </button>
@@ -80,29 +80,29 @@
                                     <label class="checkbox-label">
                                         <input
                                                 v-model="tcp.enable"
-                                                type="checkbox"
                                                 class="form-checkbox"
+                                                type="checkbox"
                                         >
                                         <span></span>
                                     </label>
                                     <input
                                             v-model="tcp.host"
-                                            placeholder="host"
                                             class="form-control"
+                                            placeholder="host"
                                     >
                                     <input
                                             v-model="tcp.port"
-                                            type="number"
-                                            style="max-width: 100px;"
-                                            placeholder="port"
                                             class="form-control"
+                                            placeholder="port"
+                                            style="max-width: 100px;"
+                                            type="number"
                                     >
                                     <button class="btn btn-sm btn-danger" @click="removeServer('TCP', index)">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
 
-                                <button class="btn btn-success" @click="addServer('TCP')" style="margin: auto">
+                                <button class="btn btn-success" style="margin: auto" @click="addServer('TCP')">
                                     <i class="fas fa-plus"></i>
                                     Add Connection
                                 </button>
@@ -118,8 +118,8 @@
                         <label class="checkbox-label">
                             <input
                                     v-model="localConfig.showRawData"
-                                    type="checkbox"
                                     class="form-checkbox"
+                                    type="checkbox"
                             >
                             <span>Show raw data in PGN cards</span>
                         </label>
@@ -145,8 +145,8 @@
                         <label class="checkbox-label">
                             <input
                                     v-model="localConfig.autoTraceAfterRestart"
-                                    type="checkbox"
                                     class="form-checkbox"
+                                    type="checkbox"
                             >
                             <span>Automatically start tracing on refresh</span>
                         </label>
@@ -158,16 +158,16 @@
                 <div class="config-section">
                     <h3><i class="fas fa-wifi"></i> Test Connection</h3>
                     <div class="connection-test">
-                        <div class="connection-status" :class="testStatus">
+                        <div :class="testStatus" class="connection-status">
                             <i :class="testIcon"></i>
                             {{ testMessage }}
                         </div>
                         <button
+                                :disabled="testing"
                                 class="btn btn-success"
                                 @click="testConnection"
-                                :disabled="testing"
                         >
-                            <i class="fas fa-sync" :class="{ spinning: testing }"></i>
+                            <i :class="{ spinning: testing }" class="fas fa-sync"></i>
                             Test Connection
                         </button>
                     </div>
@@ -190,7 +190,7 @@
 </template>
 
 <script setup>
-import {ref, computed} from 'vue'
+import {computed, ref} from 'vue'
 import {useConfigStore} from '../composables/useConfigStore'
 
 const props = defineProps({

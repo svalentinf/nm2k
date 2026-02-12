@@ -2,23 +2,23 @@
     <div class="dashboard">
         <DevicesPanel
                 :devicesList="devicesList"
-                :selectedDevice="selectedDevice"
                 :pgnFilter="pgnFilter"
+                :selectedDevice="selectedDevice"
                 :serverFilter="serverFilter"
-                @selectDevice="$emit('selectDevice', $event)"
                 @filterPgn="$emit('filterPgn', $event)"
+                @selectDevice="$emit('selectDevice', $event)"
         />
 
         <PgnsPanel
                 :autoUpdate="autoUpdate"
+                :blockedPGNs="blockedPGNs"
                 :filteredPGNs="filteredPGNs"
                 :panelTitle="panelTitle"
                 :pgnFilter="pgnFilter"
-                :blockedPGNs="blockedPGNs"
                 :trackingPGNs="trackingPGNs"
-                @selectDevice="$emit('selectDevice', $event)"
-                @filterPgn="$emit('filterPgn', $event)"
                 @blockPgn="$emit('blockPgn', $event)"
+                @filterPgn="$emit('filterPgn', $event)"
+                @selectDevice="$emit('selectDevice', $event)"
                 @trackPgn="$emit('trackPgn', $event)"
         />
 

@@ -1,22 +1,20 @@
 <template>
-    <div class="pgn-card"
-         :class="{ updated: pgn.isNew }"
-    >
+    <div :class="{ updated: pgn.isNew }" class="pgn-card">
         <div class="pgn-header">
             <span class="pgn-id">
-                <span v-if="pgn.fields && pgn.fields.longitude" :class="{'text-success':trackingPGNs.has(`${pgn.src}:${pgn.pgn}`)}" @click="$emit('trackPgn', `${pgn.src}:${pgn.pgn}`)" style="cursor: crosshair;">
+                <span v-if="pgn.fields && pgn.fields.longitude" :class="{'text-success':trackingPGNs.has(`${pgn.src}:${pgn.pgn}`)}" style="cursor: crosshair;" @click="$emit('trackPgn', `${pgn.src}:${pgn.pgn}`)">
                     <i class="fas fa-map-location"></i>&nbsp;</span>
-                <span @click="$emit('filterPgn', pgn.pgn)" style="cursor: zoom-in;">
+                <span style="cursor: zoom-in;" @click="$emit('filterPgn', pgn.pgn)">
                     <i class="fas fa-magnifying-glass"></i>&nbsp;PGN
                 </span>
-                <span v-if="typeof pgn.pgn === 'number'" @click="$emit('blockPgn', computedPgn)" :class="{'text-danger':blockedPGNs.has(computedPgn)}" style="cursor: not-allowed">
+                <span v-if="typeof pgn.pgn === 'number'" :class="{'text-danger':blockedPGNs.has(computedPgn)}" style="cursor: not-allowed" @click="$emit('blockPgn', computedPgn)">
                     <i class="fas fa-ban"></i>
                 </span>
                 {{ pgn.pgn }}
                 <span v-if="typeof pgn.pgn === 'number'">[{{ pgn.pgn.toString(16).padStart(5, '0').toUpperCase() }}]</span>
             </span>
             <span style="color: var(--text-light); font-size: 0.9rem; text-align: right">
-                <span @click="$emit('selectDevice', pgn.src)" style="cursor: zoom-in;">Device</span> {{ `${pgn.src} [${pgn.src.toString(16).padStart(2, '0').toUpperCase()}]` }}<br>
+                <span style="cursor: zoom-in;" @click="$emit('selectDevice', pgn.src)">Device</span> {{ `${pgn.src} [${pgn.src.toString(16).padStart(2, '0').toUpperCase()}]` }}<br>
                 <span>{{ pgn.servers }}</span>
             </span>
         </div>
@@ -25,8 +23,8 @@
             <div
                     v-for="(value, field) in pgn.fields"
                     :key="field"
-                    class="field-row"
                     :class="{ updated: pgn.updatedFields?.includes(field) }"
+                    class="field-row"
             >
                 <span class="field-name">{{ field }}</span>
                 <span class="field-value">
@@ -70,7 +68,7 @@
             {{ pgn.raw }}
         </div>
 
-        <div class="pgn-history" v-if="!autoUpdate">
+        <div v-if="!autoUpdate" class="pgn-history">
             <table>
                 <tbody>
                 <tr>

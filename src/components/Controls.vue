@@ -14,14 +14,14 @@
         </button>
         <input
                 :value="searchQuery"
-                @input="$emit('update:searchQuery', $event.target.value)"
-                placeholder="Search PGNs or fields..."
                 class="search"
+                placeholder="Search PGNs or fields..."
+                @input="$emit('update:searchQuery', $event.target.value)"
         >
         <select
                 :value="serverFilter"
-                @change="$emit('update:serverFilter', $event.target.value)"
                 class="search"
+                @change="$emit('update:serverFilter', $event.target.value)"
         >
             <option value="">All Servers</option>
             <option v-for="server in serversList" :key="server" :value="server">
@@ -30,8 +30,8 @@
         </select>
         <select
                 :value="pgnFilter"
-                @change="$emit('update:pgnFilter', $event.target.value)"
                 class="search"
+                @change="$emit('update:pgnFilter', $event.target.value)"
         >
             <option value="">All PGNs</option>
             <option v-for="pgn in uniquePgns" :key="pgn" :value="pgn">
