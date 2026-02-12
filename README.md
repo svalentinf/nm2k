@@ -45,7 +45,7 @@ npm run build
 ## Windows installer.
 
 - Install nodejs from https://nodejs.org
-- Download start-nmea-server.cmd and run it!
+- Download [start-nmea-server.cmd](https://raw.githubusercontent.com/svalentinf/nm2k/refs/heads/main/start-nmea-server.cmd) and run it!
 
 ```sh
 cmd start-nmea-server.cmd
