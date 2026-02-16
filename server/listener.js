@@ -1,5 +1,5 @@
 import dgram from "dgram";
-import {FromPgn, VenusMQTT} from "@canboat/canboatjs";
+import {FromPgn} from "@canboat/canboatjs";
 import NMEA0183 from '@signalk/nmea0183-signalk';
 import {WebSocketServer} from "ws";
 import express from "express";
@@ -149,7 +149,7 @@ const wss = new WebSocketServer({server});
 // Minimal state for rate limiting only
 const lastPrint = new Map();
 const wsClients = new Set();
-const Pgns = new Map(); // Map<src, Map<pgnId, pgnData>>
+const PGNs = new Map(); // Map<src, Map<pgnId, pgnData>>
 
 function getKey(pgnObj)
 {
@@ -177,7 +177,7 @@ function broadcastPgn(pgn, line, serverAddress)
     // }
     let changed = false;
 
-    const oldPgn = Pgns.get(key);
+    const oldPgn = PGNs.get(key);
 
     if (pgn.src === 253) {
         //it's actually reserved and it's virtual for actisense should be 1, the configured one in device!!!!
@@ -186,7 +186,7 @@ function broadcastPgn(pgn, line, serverAddress)
     }
 
     if (!oldPgn || hasChanged(oldPgn, pgn)) {
-        Pgns.set(key, pgn);
+        PGNs.set(key, pgn);
         changed = true;
     }
 
@@ -334,6 +334,18 @@ wss.on('connection', (ws) => {
     ws.on('close', () => {
         console.log('WebSocket client disconnected');
         wsClients.delete(ws);
+
+        if (!wsClients.size) {
+            console.log("WebSocket no clients! Stop sending messages");
+            serversUDP.forEach((socket, key) => {
+                socket.close();
+                serversUDP.delete(key);
+            });
+            serversTCP.forEach((socket, key) => {
+                serversTCP.delete(key);
+                socket.destroy();
+            });
+        }
     });
 
     ws.on('error', (error) => {
@@ -375,8 +387,6 @@ wss.on('connection', (ws) => {
 });
 
 const WS_PORT = 8080;
-
-
 server.listen(WS_PORT, () => {
     console.log(`Server listening on port ${WS_PORT}`);
     console.info(`WebSocket: ws://localhost:${WS_PORT}`);
@@ -386,6 +396,6 @@ server.listen(WS_PORT, () => {
 setInterval(
     () => {
 
-        console.info(`stats: TCP: ${serversTCP.size}, UDP: ${serversUDP.size}`)
+        console.info(`stats: TCP: ${serversTCP.size}, UDP: ${serversUDP.size}, PGNs: ${PGNs.size}, clients: ${wsClients.size}`)
     }, 5000
 )
