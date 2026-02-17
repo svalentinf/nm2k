@@ -248,6 +248,7 @@ function parseMsg(msg, serverAddress)
                 if (sentences) {
                     // console.log('sentences', typeof sentences, sentences)
                     sentences.updates.forEach(sentanceInfo => {
+                        const date = new Date();
                         //we need the port!
                         let pgn = {
                             prio:        2,
@@ -258,7 +259,7 @@ function parseMsg(msg, serverAddress)
                             fields:      {},
                             description: sentanceInfo.source.sentence,
                             id:          sentanceInfo.source.talker + sentanceInfo.source.sentence,
-                            timestamp:   sentanceInfo.timestamp
+                            timestamp:   (typeof sentanceInfo.timestamp === "undefined") ? date.toISOString() : sentanceInfo.timestamp
                         }
 
                         sentanceInfo.values.forEach(data => {
@@ -297,6 +298,7 @@ function parseMsg(msg, serverAddress)
         //     console.log(line, pgn, err)
         // });
         try {
+            //how to parse multiple line pgns?
             parserPgn.parse(line, (err, pgn) => {
                 if (!err && pgn) {
                     broadcastPgn(pgn, line, serverAddress);//one time a second max!
@@ -326,6 +328,12 @@ function parseMsg(msg, serverAddress)
 
 }
 
+parserPgn.on('warning', (pgn, warning) => {
+    console.log(`--- CANBOAT WARNING ---`);
+    console.log('PGN:', pgn);
+    console.log('Warning:', warning);
+});
+
 // WebSocket connection handler
 wss.on('connection', (ws) => {
     console.log('New WebSocket client connected');
@@ -336,7 +344,7 @@ wss.on('connection', (ws) => {
         wsClients.delete(ws);
 
         if (!wsClients.size) {
-            console.log("WebSocket no clients! Stop sending messages");
+            console.log("WebSocket: no clients! Close connections");
             serversUDP.forEach((socket, key) => {
                 socket.close();
                 serversUDP.delete(key);
