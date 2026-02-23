@@ -8750,14 +8750,6 @@ Expected function or array of functions, received type ${typeof value}.`
           "enable": true,
           "port": "60001"
         },
-        {
-          "enable": false,
-          "port": "60002"
-        },
-        {
-          "enable": false,
-          "port": "60003"
-        },
         //yden
         {
           "enable": false,
@@ -8773,7 +8765,7 @@ Expected function or array of functions, received type ${typeof value}.`
         {
           "enable": false,
           "host": "192.168.1.111",
-          "port": "60003"
+          "port": "60002"
         },
         //yden
         {
@@ -8781,7 +8773,8 @@ Expected function or array of functions, received type ${typeof value}.`
           "host": "192.168.1.222",
           "port": "1457"
         }
-      ]
+      ],
+      "Telnet": []
     }
     //we need to send the port to the server
   };
@@ -8836,16 +8829,22 @@ Expected function or array of functions, received type ${typeof value}.`
   const _hoisted_17$1 = ["onUpdate:modelValue"];
   const _hoisted_18$1 = ["onUpdate:modelValue"];
   const _hoisted_19$1 = ["onClick"];
-  const _hoisted_20$1 = { class: "config-section" };
-  const _hoisted_21$1 = { class: "form-group" };
-  const _hoisted_22$1 = { class: "checkbox-label" };
-  const _hoisted_23$1 = { class: "form-group" };
-  const _hoisted_24$1 = { class: "config-section" };
-  const _hoisted_25$1 = { class: "form-group" };
-  const _hoisted_26$1 = { class: "checkbox-label" };
-  const _hoisted_27$1 = { class: "config-section" };
-  const _hoisted_28$1 = { class: "connection-test" };
-  const _hoisted_29$1 = ["disabled"];
+  const _hoisted_20$1 = { class: "d-flex" };
+  const _hoisted_21$1 = { class: "checkbox-label" };
+  const _hoisted_22$1 = ["onUpdate:modelValue"];
+  const _hoisted_23$1 = ["onUpdate:modelValue"];
+  const _hoisted_24$1 = ["onUpdate:modelValue"];
+  const _hoisted_25$1 = ["onClick"];
+  const _hoisted_26$1 = { class: "config-section" };
+  const _hoisted_27$1 = { class: "form-group" };
+  const _hoisted_28$1 = { class: "checkbox-label" };
+  const _hoisted_29$1 = { class: "form-group" };
+  const _hoisted_30$1 = { class: "config-section" };
+  const _hoisted_31$1 = { class: "form-group" };
+  const _hoisted_32$1 = { class: "checkbox-label" };
+  const _hoisted_33$1 = { class: "config-section" };
+  const _hoisted_34$1 = { class: "connection-test" };
+  const _hoisted_35$1 = ["disabled"];
   const _sfc_main$3 = {
     __name: "ConfigModal",
     props: {
@@ -8911,9 +8910,17 @@ Expected function or array of functions, received type ${typeof value}.`
               "port": ""
             });
             break;
+          case "Telnet":
+            localConfig.value.dataServers?.Telnet.push({
+              "enable": false,
+              "host": "",
+              "port": ""
+            });
+            break;
           default:
             console.error(`Type: "${type}" is not configured!`);
         }
+        console.log("aaa", localConfig.value.dataServers);
       }
       function removeServer(type, index) {
         switch (type) {
@@ -8922,6 +8929,9 @@ Expected function or array of functions, received type ${typeof value}.`
             break;
           case "UDP":
             localConfig.value.dataServers?.UDP.splice(index, 1);
+            break;
+          case "Telnet":
+            localConfig.value.dataServers?.Telnet.splice(index, 1);
             break;
           default:
             console.error(`Type: "${type}" is not configured!`);
@@ -8966,7 +8976,7 @@ Expected function or array of functions, received type ${typeof value}.`
         }, [
           createBaseVNode("div", _hoisted_1$3, [
             createBaseVNode("div", { class: "modal-header" }, [
-              _cache[7] || (_cache[7] = createBaseVNode("h2", null, [
+              _cache[8] || (_cache[8] = createBaseVNode("h2", null, [
                 createBaseVNode("i", { class: "fas fa-cog" }),
                 createTextVNode(" Configuration")
               ], -1)),
@@ -8977,12 +8987,12 @@ Expected function or array of functions, received type ${typeof value}.`
             ]),
             createBaseVNode("div", _hoisted_2$3, [
               createBaseVNode("div", _hoisted_3$2, [
-                _cache[11] || (_cache[11] = createBaseVNode("h3", null, [
+                _cache[12] || (_cache[12] = createBaseVNode("h3", null, [
                   createBaseVNode("i", { class: "fas fa-plug" }),
                   createTextVNode(" Connection Settings")
                 ], -1)),
                 createBaseVNode("div", _hoisted_4$2, [
-                  _cache[8] || (_cache[8] = createBaseVNode("label", { for: "wsUrl" }, "WebSocket URL", -1)),
+                  _cache[9] || (_cache[9] = createBaseVNode("label", { for: "wsUrl" }, "WebSocket URL", -1)),
                   withDirectives(createBaseVNode("input", {
                     id: "wsUrl",
                     "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => localConfig.value.wsUrl = $event),
@@ -8992,7 +9002,7 @@ Expected function or array of functions, received type ${typeof value}.`
                   }, null, 512), [
                     [vModelText, localConfig.value.wsUrl]
                   ]),
-                  _cache[9] || (_cache[9] = createBaseVNode("div", { class: "form-help" }, " Enter the WebSocket URL for your NMEA 2000 data source ", -1))
+                  _cache[10] || (_cache[10] = createBaseVNode("div", { class: "form-help" }, " Enter the WebSocket URL for your NMEA 2000 data source ", -1))
                 ]),
                 createBaseVNode("div", _hoisted_5$2, [
                   createBaseVNode("label", _hoisted_6$2, [
@@ -9003,20 +9013,21 @@ Expected function or array of functions, received type ${typeof value}.`
                     }, null, 512), [
                       [vModelCheckbox, localConfig.value.autoConnect]
                     ]),
-                    _cache[10] || (_cache[10] = createBaseVNode("span", null, "Auto-connect on startup", -1))
+                    _cache[11] || (_cache[11] = createBaseVNode("span", null, "Auto-connect on startup", -1))
                   ])
                 ])
               ]),
               createBaseVNode("div", _hoisted_7$2, [
-                _cache[19] || (_cache[19] = createBaseVNode("h3", null, [
+                _cache[23] || (_cache[23] = createBaseVNode("h3", null, [
                   createBaseVNode("i", { class: "fas fa-server" }),
                   createTextVNode(" Data servers")
                 ], -1)),
                 createBaseVNode("table", _hoisted_8$2, [
                   createBaseVNode("tbody", null, [
-                    _cache[18] || (_cache[18] = createBaseVNode("tr", null, [
+                    _cache[22] || (_cache[22] = createBaseVNode("tr", null, [
                       createBaseVNode("th", null, "UDP"),
-                      createBaseVNode("th", null, "TCP")
+                      createBaseVNode("th", null, "TCP"),
+                      createBaseVNode("th", null, "Telnet")
                     ], -1)),
                     createBaseVNode("tr", null, [
                       createBaseVNode("td", null, [
@@ -9030,7 +9041,7 @@ Expected function or array of functions, received type ${typeof value}.`
                               }, null, 8, _hoisted_11$2), [
                                 [vModelCheckbox, udp.enable]
                               ]),
-                              _cache[12] || (_cache[12] = createBaseVNode("span", null, null, -1))
+                              _cache[13] || (_cache[13] = createBaseVNode("span", null, null, -1))
                             ]),
                             withDirectives(createBaseVNode("input", {
                               "onUpdate:modelValue": ($event) => udp.port = $event,
@@ -9043,7 +9054,7 @@ Expected function or array of functions, received type ${typeof value}.`
                             createBaseVNode("button", {
                               class: "btn btn-sm btn-danger",
                               onClick: ($event) => removeServer("UDP", index)
-                            }, [..._cache[13] || (_cache[13] = [
+                            }, [..._cache[14] || (_cache[14] = [
                               createBaseVNode("i", { class: "fas fa-trash" }, null, -1)
                             ])], 8, _hoisted_13$1)
                           ]);
@@ -9052,7 +9063,7 @@ Expected function or array of functions, received type ${typeof value}.`
                           class: "btn btn-success",
                           style: { "margin": "auto" },
                           onClick: _cache[2] || (_cache[2] = ($event) => addServer("UDP"))
-                        }, [..._cache[14] || (_cache[14] = [
+                        }, [..._cache[15] || (_cache[15] = [
                           createBaseVNode("i", { class: "fas fa-plus-circle" }, null, -1),
                           createTextVNode(" Add Connection ", -1)
                         ])])
@@ -9068,7 +9079,7 @@ Expected function or array of functions, received type ${typeof value}.`
                               }, null, 8, _hoisted_16$1), [
                                 [vModelCheckbox, tcp.enable]
                               ]),
-                              _cache[15] || (_cache[15] = createBaseVNode("span", null, null, -1))
+                              _cache[16] || (_cache[16] = createBaseVNode("span", null, null, -1))
                             ]),
                             withDirectives(createBaseVNode("input", {
                               "onUpdate:modelValue": ($event) => tcp.host = $event,
@@ -9089,7 +9100,7 @@ Expected function or array of functions, received type ${typeof value}.`
                             createBaseVNode("button", {
                               class: "btn btn-sm btn-danger",
                               onClick: ($event) => removeServer("TCP", index)
-                            }, [..._cache[16] || (_cache[16] = [
+                            }, [..._cache[17] || (_cache[17] = [
                               createBaseVNode("i", { class: "fas fa-trash" }, null, -1)
                             ])], 8, _hoisted_19$1)
                           ]);
@@ -9098,7 +9109,53 @@ Expected function or array of functions, received type ${typeof value}.`
                           class: "btn btn-success",
                           style: { "margin": "auto" },
                           onClick: _cache[3] || (_cache[3] = ($event) => addServer("TCP"))
-                        }, [..._cache[17] || (_cache[17] = [
+                        }, [..._cache[18] || (_cache[18] = [
+                          createBaseVNode("i", { class: "fas fa-plus" }, null, -1),
+                          createTextVNode(" Add Connection ", -1)
+                        ])])
+                      ]),
+                      createBaseVNode("td", null, [
+                        (openBlock(true), createElementBlock(Fragment, null, renderList(localConfig.value.dataServers?.Telnet, (Telnet, index) => {
+                          return openBlock(), createElementBlock("div", _hoisted_20$1, [
+                            createBaseVNode("label", _hoisted_21$1, [
+                              withDirectives(createBaseVNode("input", {
+                                "onUpdate:modelValue": ($event) => Telnet.enable = $event,
+                                class: "form-checkbox",
+                                type: "checkbox"
+                              }, null, 8, _hoisted_22$1), [
+                                [vModelCheckbox, Telnet.enable]
+                              ]),
+                              _cache[19] || (_cache[19] = createBaseVNode("span", null, null, -1))
+                            ]),
+                            withDirectives(createBaseVNode("input", {
+                              "onUpdate:modelValue": ($event) => Telnet.host = $event,
+                              class: "form-control",
+                              placeholder: "host"
+                            }, null, 8, _hoisted_23$1), [
+                              [vModelText, Telnet.host]
+                            ]),
+                            withDirectives(createBaseVNode("input", {
+                              "onUpdate:modelValue": ($event) => Telnet.port = $event,
+                              class: "form-control",
+                              placeholder: "port 23",
+                              style: { "max-width": "100px" },
+                              type: "number"
+                            }, null, 8, _hoisted_24$1), [
+                              [vModelText, Telnet.port]
+                            ]),
+                            createBaseVNode("button", {
+                              class: "btn btn-sm btn-danger",
+                              onClick: ($event) => removeServer("Telnet", index)
+                            }, [..._cache[20] || (_cache[20] = [
+                              createBaseVNode("i", { class: "fas fa-trash" }, null, -1)
+                            ])], 8, _hoisted_25$1)
+                          ]);
+                        }), 256)),
+                        createBaseVNode("button", {
+                          class: "btn btn-success",
+                          style: { "margin": "auto" },
+                          onClick: _cache[4] || (_cache[4] = ($event) => addServer("Telnet"))
+                        }, [..._cache[21] || (_cache[21] = [
                           createBaseVNode("i", { class: "fas fa-plus" }, null, -1),
                           createTextVNode(" Add Connection ", -1)
                         ])])
@@ -9107,30 +9164,30 @@ Expected function or array of functions, received type ${typeof value}.`
                   ])
                 ])
               ]),
-              createBaseVNode("div", _hoisted_20$1, [
-                _cache[23] || (_cache[23] = createBaseVNode("h3", null, [
+              createBaseVNode("div", _hoisted_26$1, [
+                _cache[27] || (_cache[27] = createBaseVNode("h3", null, [
                   createBaseVNode("i", { class: "fas fa-desktop" }),
                   createTextVNode(" Display Settings")
                 ], -1)),
-                createBaseVNode("div", _hoisted_21$1, [
-                  createBaseVNode("label", _hoisted_22$1, [
+                createBaseVNode("div", _hoisted_27$1, [
+                  createBaseVNode("label", _hoisted_28$1, [
                     withDirectives(createBaseVNode("input", {
-                      "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => localConfig.value.showRawData = $event),
+                      "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => localConfig.value.showRawData = $event),
                       class: "form-checkbox",
                       type: "checkbox"
                     }, null, 512), [
                       [vModelCheckbox, localConfig.value.showRawData]
                     ]),
-                    _cache[20] || (_cache[20] = createBaseVNode("span", null, "Show raw data in PGN cards", -1))
+                    _cache[24] || (_cache[24] = createBaseVNode("span", null, "Show raw data in PGN cards", -1))
                   ])
                 ]),
-                createBaseVNode("div", _hoisted_23$1, [
-                  _cache[22] || (_cache[22] = createBaseVNode("label", { for: "theme" }, "Theme", -1)),
+                createBaseVNode("div", _hoisted_29$1, [
+                  _cache[26] || (_cache[26] = createBaseVNode("label", { for: "theme" }, "Theme", -1)),
                   withDirectives(createBaseVNode("select", {
                     id: "theme",
-                    "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => localConfig.value.theme = $event),
+                    "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => localConfig.value.theme = $event),
                     class: "form-control"
-                  }, [..._cache[21] || (_cache[21] = [
+                  }, [..._cache[25] || (_cache[25] = [
                     createBaseVNode("option", { value: "dark" }, "Dark", -1),
                     createBaseVNode("option", { value: "light" }, "Light", -1),
                     createBaseVNode("option", { value: "auto" }, "Auto (System)", -1)
@@ -9139,30 +9196,30 @@ Expected function or array of functions, received type ${typeof value}.`
                   ])
                 ])
               ]),
-              createBaseVNode("div", _hoisted_24$1, [
-                _cache[25] || (_cache[25] = createBaseVNode("h3", null, [
+              createBaseVNode("div", _hoisted_30$1, [
+                _cache[29] || (_cache[29] = createBaseVNode("h3", null, [
                   createBaseVNode("i", { class: "fas fa-map" }),
                   createTextVNode(" Map tracing")
                 ], -1)),
-                createBaseVNode("div", _hoisted_25$1, [
-                  createBaseVNode("label", _hoisted_26$1, [
+                createBaseVNode("div", _hoisted_31$1, [
+                  createBaseVNode("label", _hoisted_32$1, [
                     withDirectives(createBaseVNode("input", {
-                      "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => localConfig.value.autoTraceAfterRestart = $event),
+                      "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => localConfig.value.autoTraceAfterRestart = $event),
                       class: "form-checkbox",
                       type: "checkbox"
                     }, null, 512), [
                       [vModelCheckbox, localConfig.value.autoTraceAfterRestart]
                     ]),
-                    _cache[24] || (_cache[24] = createBaseVNode("span", null, "Automatically start tracing on refresh", -1))
+                    _cache[28] || (_cache[28] = createBaseVNode("span", null, "Automatically start tracing on refresh", -1))
                   ])
                 ])
               ]),
-              createBaseVNode("div", _hoisted_27$1, [
-                _cache[27] || (_cache[27] = createBaseVNode("h3", null, [
+              createBaseVNode("div", _hoisted_33$1, [
+                _cache[31] || (_cache[31] = createBaseVNode("h3", null, [
                   createBaseVNode("i", { class: "fas fa-wifi" }),
                   createTextVNode(" Test Connection")
                 ], -1)),
-                createBaseVNode("div", _hoisted_28$1, [
+                createBaseVNode("div", _hoisted_34$1, [
                   createBaseVNode("div", {
                     class: normalizeClass([testStatus.value, "connection-status"])
                   }, [
@@ -9179,8 +9236,8 @@ Expected function or array of functions, received type ${typeof value}.`
                     createBaseVNode("i", {
                       class: normalizeClass([{ spinning: testing.value }, "fas fa-sync"])
                     }, null, 2),
-                    _cache[26] || (_cache[26] = createTextVNode(" Test Connection ", -1))
-                  ], 8, _hoisted_29$1)
+                    _cache[30] || (_cache[30] = createTextVNode(" Test Connection ", -1))
+                  ], 8, _hoisted_35$1)
                 ])
               ])
             ]),
@@ -9188,14 +9245,14 @@ Expected function or array of functions, received type ${typeof value}.`
               createBaseVNode("button", {
                 class: "btn btn-outline",
                 onClick: resetToDefaults
-              }, [..._cache[28] || (_cache[28] = [
+              }, [..._cache[32] || (_cache[32] = [
                 createBaseVNode("i", { class: "fas fa-undo" }, null, -1),
                 createTextVNode(" Reset to Defaults ", -1)
               ])]),
               createBaseVNode("button", {
                 class: "btn btn-primary",
                 onClick: saveConfig
-              }, [..._cache[29] || (_cache[29] = [
+              }, [..._cache[33] || (_cache[33] = [
                 createBaseVNode("i", { class: "fas fa-save" }, null, -1),
                 createTextVNode(" Save & Close ", -1)
               ])]),
@@ -9209,7 +9266,7 @@ Expected function or array of functions, received type ${typeof value}.`
       };
     }
   };
-  const ConfigModal = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-e2989564"]]);
+  const ConfigModal = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-39a2dd5e"]]);
   function useNmeaWebSocket(autoUpdate, config2) {
     const ws = ref(null);
     const isConnected = ref(false);
@@ -9291,12 +9348,21 @@ Expected function or array of functions, received type ${typeof value}.`
       let dataServers = {
         "servers": {
           UDP: [],
-          TCP: []
+          TCP: [],
+          Telnet: []
         }
       };
       config2.value.dataServers.TCP.forEach((server) => {
         if (server.enable && server.host && server.port) {
           dataServers.servers.TCP.push({
+            "host": server.host,
+            "port": server.port
+          });
+        }
+      });
+      config2.value.dataServers.Telnet.forEach((server) => {
+        if (server.enable && server.host && server.port) {
+          dataServers.servers.Telnet.push({
             "host": server.host,
             "port": server.port
           });
@@ -11515,7 +11581,6 @@ match(CAN1, ${filter.filter}, ${filter.mask})
               onToggleFreezePGNs: toggleFreezePGNs,
               onTrackPgn: trackPgn
             }, null, 8, ["autoUpdate", "devicesList", "filteredPGNs", "selectedDevice", "serverFilter", "pgnFilter", "blockedPGNs", "panelTitle", "trackingPGNs"]),
-            createTextVNode(" " + toDisplayString(unref(config2).autoTraceAfterRestart) + " ", 1),
             createVNode(GpsTracker, {
               autoUpdate: autoUpdate.value,
               "onUpdate:autoUpdate": _cache[5] || (_cache[5] = ($event) => autoUpdate.value = $event),

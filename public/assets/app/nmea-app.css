@@ -1,5 +1,5 @@
 
-.modal-overlay[data-v-e2989564] {
+.modal-overlay[data-v-39a2dd5e] {
     position: fixed;
     top: 0;
     left: 0;
@@ -10,34 +10,34 @@
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    animation: fadeIn-e2989564 0.2s ease-out;
+    animation: fadeIn-39a2dd5e 0.2s ease-out;
 }
-.modal-content[data-v-e2989564] {
+.modal-content[data-v-39a2dd5e] {
     background: var(--bg-primary);
     border-radius: 12px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     width: 90%;
     max-width: 700px;
     max-height: 90vh;
-    animation: slideUp-e2989564 0.3s ease-out;
+    animation: slideUp-39a2dd5e 0.3s ease-out;
     display: flex;
     flex-direction: column;
 }
-.modal-header[data-v-e2989564] {
+.modal-header[data-v-39a2dd5e] {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 12px;
     border-bottom: 1px solid var(--border-color);
 }
-.modal-header h2[data-v-e2989564] {
+.modal-header h2[data-v-39a2dd5e] {
     margin: 0;
     font-size: 1.3rem;
     display: flex;
     align-items: center;
     gap: 10px;
 }
-.modal-close[data-v-e2989564] {
+.modal-close[data-v-39a2dd5e] {
     background: none;
     border: none;
     font-size: 28px;
@@ -52,29 +52,29 @@
     border-radius: 8px;
     transition: all 0.2s;
 }
-.modal-close[data-v-e2989564]:hover {
+.modal-close[data-v-39a2dd5e]:hover {
     background: var(--bg-tertiary);
     color: var(--text-primary);
 }
-.modal-body[data-v-e2989564] {
+.modal-body[data-v-39a2dd5e] {
     flex-grow: 1;
     padding: 12px;
     overflow: auto;
 }
-.modal-footer[data-v-e2989564] {
+.modal-footer[data-v-39a2dd5e] {
     padding: 12px;
     border-top: 1px solid var(--border-color);
     display: flex;
     justify-content: flex-end;
     gap: 12px;
 }
-.d-flex[data-v-e2989564] {
+.d-flex[data-v-39a2dd5e] {
     display: flex;
 }
-.config-section[data-v-e2989564] {
+.config-section[data-v-39a2dd5e] {
     margin-bottom: 32px;
 }
-.config-section h3[data-v-e2989564] {
+.config-section h3[data-v-39a2dd5e] {
     margin: 0 0 20px 0;
     font-size: 1.2rem;
     color: var(--text-primary);
@@ -82,19 +82,19 @@
     align-items: center;
     gap: 10px;
 }
-.config-section table div[data-v-e2989564] {
+.config-section table div[data-v-39a2dd5e] {
     margin-bottom: 4px;
 }
-.form-group[data-v-e2989564] {
+.form-group[data-v-39a2dd5e] {
     margin-bottom: 20px;
 }
-.form-group label[data-v-e2989564] {
+.form-group label[data-v-39a2dd5e] {
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
     color: var(--text-primary);
 }
-.form-control[data-v-e2989564] {
+.form-control[data-v-39a2dd5e] {
     width: 100%;
     padding: 10px 12px;
     border: 2px solid var(--border-color);
@@ -104,28 +104,28 @@
     font-size: 14px;
     transition: all 0.2s;
 }
-.form-control[data-v-e2989564]:focus {
+.form-control[data-v-39a2dd5e]:focus {
     outline: none;
     border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
 }
-.form-checkbox[data-v-e2989564] {
+.form-checkbox[data-v-39a2dd5e] {
     margin-right: 10px;
     width: 18px;
     height: 18px;
 }
-.checkbox-label[data-v-e2989564] {
+.checkbox-label[data-v-39a2dd5e] {
     display: flex;
     align-items: center;
     cursor: pointer;
     user-select: none;
 }
-.form-help[data-v-e2989564] {
+.form-help[data-v-39a2dd5e] {
     margin-top: 6px;
     font-size: 0.85rem;
     color: var(--text-light);
 }
-.form-range[data-v-e2989564] {
+.form-range[data-v-39a2dd5e] {
     width: 100%;
     height: 6px;
     border-radius: 3px;
@@ -133,7 +133,7 @@
     outline: none;
     -webkit-appearance: none;
 }
-.form-range[data-v-e2989564]::-webkit-slider-thumb {
+.form-range[data-v-39a2dd5e]::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 20px;
     height: 20px;
@@ -141,13 +141,13 @@
     background: var(--primary);
     cursor: pointer;
 }
-.range-value[data-v-e2989564] {
+.range-value[data-v-39a2dd5e] {
     text-align: center;
     margin-top: 8px;
     font-weight: bold;
     color: var(--primary);
 }
-.connection-test[data-v-e2989564] {
+.connection-test[data-v-39a2dd5e] {
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -155,7 +155,7 @@
     background: var(--bg-secondary);
     border-radius: 8px;
 }
-.connection-status[data-v-e2989564] {
+.connection-status[data-v-39a2dd5e] {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -163,29 +163,29 @@
     border-radius: 8px;
     font-weight: 500;
 }
-.connection-status.idle[data-v-e2989564] {
+.connection-status.idle[data-v-39a2dd5e] {
     background: var(--bg-tertiary);
     color: var(--text-light);
 }
-.connection-status.testing[data-v-e2989564] {
+.connection-status.testing[data-v-39a2dd5e] {
     background: rgba(255, 193, 7, 0.1);
     color: #ffc107;
 }
-.connection-status.success[data-v-e2989564] {
+.connection-status.success[data-v-39a2dd5e] {
     background: rgba(40, 167, 69, 0.1);
     color: #28a745;
 }
-.connection-status.error[data-v-e2989564] {
+.connection-status.error[data-v-39a2dd5e] {
     background: rgba(220, 53, 69, 0.1);
     color: #dc3545;
 }
-.btn-success[data-v-e2989564] {
+.btn-success[data-v-39a2dd5e] {
     align-self: flex-start;
 }
-.spinning[data-v-e2989564] {
-    animation: spin-e2989564 1s linear infinite;
+.spinning[data-v-39a2dd5e] {
+    animation: spin-39a2dd5e 1s linear infinite;
 }
-@keyframes spin-e2989564 {
+@keyframes spin-39a2dd5e {
 from {
         transform: rotate(0deg);
 }
@@ -193,7 +193,7 @@ to {
         transform: rotate(360deg);
 }
 }
-@keyframes fadeIn-e2989564 {
+@keyframes fadeIn-39a2dd5e {
 from {
         opacity: 0;
 }
@@ -201,7 +201,7 @@ to {
         opacity: 1;
 }
 }
-@keyframes slideUp-e2989564 {
+@keyframes slideUp-39a2dd5e {
 from {
         opacity: 0;
         transform: translateY(20px);
@@ -212,14 +212,14 @@ to {
 }
 }
 @media (max-width: 768px) {
-.modal-content[data-v-e2989564] {
+.modal-content[data-v-39a2dd5e] {
         width: 95%;
         margin: 10px;
 }
-.modal-footer[data-v-e2989564] {
+.modal-footer[data-v-39a2dd5e] {
         flex-direction: column;
 }
-.modal-footer .btn[data-v-e2989564] {
+.modal-footer .btn[data-v-39a2dd5e] {
         width: 100%;
 }
 }
