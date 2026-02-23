@@ -42,8 +42,24 @@ let TCP_PORTS = [
     // },
 ];
 
+let TELNET_PORTS = [
+    // {
+    //     'host': '192.168.1.222',
+    //     'port': '1457'
+    // },
+    // {
+    //     'host': '192.168.1.111',
+    //     'port': '60002'
+    // },
+    // {
+    //     'host': '192.168.1.111',
+    //     'port': '60003'
+    // },
+];
+
 const serversUDP = new Map();
 const serversTCP = new Map();
+const serversTelnet = new Map();
 
 //@todo update address to GPS 2 because 1 it;s used by actisense!!!!
 
@@ -136,6 +152,167 @@ function connectTCP(tcpInfo)
 }
 
 TCP_PORTS.forEach(connectTCP);
+
+function connectTelnet(telnetInfo)
+{
+    console.log(`Telnet: Connecting to ${telnetInfo.host}:${telnetInfo.port}`);
+
+    const IAC = 255;
+    const DONT = 254;
+    const DO = 253;
+    const WONT = 252;
+    const WILL = 251;
+    const SB = 250;
+    const SE = 240;
+
+
+    const client = net.createConnection(
+        {host: telnetInfo.host, port: telnetInfo.port, timeout: 5000},
+        () => {
+            console.log(`Telnet: ${telnetInfo.host}:${telnetInfo.port} Connected`);
+
+            client.write('\n'); // include newline if needed
+            client.write('nmea start\n'); // include newline if needed
+            console.log(`Telnet write ${telnetInfo.host}:${telnetInfo.port}: nmea start`);
+
+        }
+    );
+
+    client.setKeepAlive(true, 5000);
+
+    let textBuffer = '';               // accumulated user data after stripping Telnet commands
+    let lastDataAt = Date.now();
+
+    // Telnet state machine variables
+    let telnetState = 0;                // 0: normal, 1: IAC received, 2: command+option, 3: subnegotiation
+    let subState = 0;                   // 0: normal in subneg, 1: IAC in subneg
+    let currentCmd = null;              // stores DO/DONT/WILL/WONT when in state 2
+
+    client.on('data', (data) => {
+        lastDataAt = Date.now();
+        for (let i = 0; i < data.length; i++) {
+            const byte = data[i];
+
+            if (telnetState === 0) { // normal text
+                if (byte === IAC) {
+                    telnetState = 1;
+                } else {
+                    textBuffer += String.fromCharCode(byte);
+                }
+            } else
+                if (telnetState === 1) { // IAC received, awaiting next byte
+                    if (byte === IAC) {
+                        // escaped IAC -> treat as data
+                        textBuffer += String.fromCharCode(IAC);
+                        telnetState = 0;
+                    } else
+                        if (byte === SB) {
+                            // start subnegotiation
+                            telnetState = 3;
+                            subState = 0; // initialize subState
+                        } else
+                            if (byte === DO || byte === DONT || byte === WILL || byte === WONT) {
+                                // command expecting an option byte
+                                currentCmd = byte;
+                                telnetState = 2;
+                            } else {
+                                // unknown command, ignore and go back to normal
+                                telnetState = 0;
+                            }
+                } else
+                    if (telnetState === 2) { // command (DO/DONT/WILL/WONT) + option
+                        const cmd = currentCmd;
+                        const opt = byte;
+
+                        // Refuse all options
+                        if (cmd === DO) {
+                            client.write(Buffer.from([IAC, WONT, opt]));
+                        } else
+                            if (cmd === WILL) {
+                                client.write(Buffer.from([IAC, DONT, opt]));
+                            }
+                        // For DONT/WONT, no response needed
+
+                        telnetState = 0;
+                        currentCmd = null;
+                    } else
+                        if (telnetState === 3) { // subnegotiation
+                            if (subState === 0) {
+                                if (byte === IAC) {
+                                    subState = 1;
+                                }
+                                // else ignore data
+                            } else { // subState === 1, previous byte was IAC inside subneg
+                                if (byte === SE) {
+                                    // end subnegotiation
+                                    telnetState = 0;
+                                    subState = 0;
+                                } else
+                                    if (byte === IAC) {
+                                        // escaped IAC inside subneg -> ignore both IACs (we've already seen first, now second)
+                                        subState = 0; // stay in subneg, but treat this IAC as data (discarded)
+                                    } else {
+                                        // unexpected byte after IAC inside subneg; treat as end of subneg (error recovery)
+                                        telnetState = 0;
+                                        subState = 0;
+                                    }
+                            }
+                        }
+        }
+
+        // Split the accumulated text buffer into lines
+        let index;
+        while ((index = textBuffer.indexOf('\n')) !== -1) {
+            const message = textBuffer.slice(0, index).trim();
+            textBuffer = textBuffer.slice(index + 1);
+
+            if (message) {
+                const nmeaPattern = /^\d{2}:\d{2}:\d{2}\.\d{3}/i;
+
+                // Replace this with the actual YDEN pattern
+
+                if (nmeaPattern.test(message)) {
+                    parseMsg(message, `${telnetInfo.host}:${telnetInfo.port}`);
+                    console.info("NMEA msg:", message)
+                } else {
+                    console.info("Telnet msg:", message)
+                }
+            }
+        }
+    });
+
+    client.on('error', (err) => {
+        console.error(`Telnet error ${telnetInfo.host}:${telnetInfo.port}`, err.message);
+    });
+
+    const watchdog = setInterval(() => {
+        if (Date.now() - lastDataAt > 15000) {
+            console.error(`Telnet stalled ${telnetInfo.host}:${telnetInfo.port}`);
+            client.destroy();
+        }
+    }, 5000);
+
+    client.on('close', () => {
+        const key = `${telnetInfo.host}:${telnetInfo.port}`;
+        if (serversTelnet.has(key)) {
+            console.log(`Telnet closed ${key}, retrying in 3s`);
+            setTimeout(() => {
+                if (serversTelnet.has(key)) {
+                    connectTelnet(telnetInfo);
+                } else {
+                    console.log(`Telnet connection ${key} was removed!!!`);
+                }
+            }, 3000);
+        } else {
+            console.log(`Telnet connection ${key} was removed!`);
+        }
+        clearInterval(watchdog);
+    });
+
+    serversTelnet.set(`${telnetInfo.host}:${telnetInfo.port}`, client);
+}
+
+TELNET_PORTS.forEach(connectTelnet);
 
 
 //limit
@@ -254,8 +431,9 @@ function parseMsg(msg, serverAddress)
                             prio:        2,
                             pgn:         sentanceInfo.source.talker + ":" + sentanceInfo.source.sentence,
                             dst:         255,
-                            src:         "NM183",
-                            time:        '000000',
+                            src:         "NM183",//add the port?
+                            time:        '000001',
+                            direction:   'R',
                             fields:      {},
                             description: sentanceInfo.source.sentence,
                             id:          sentanceInfo.source.talker + sentanceInfo.source.sentence,
@@ -328,10 +506,15 @@ function parseMsg(msg, serverAddress)
 
 }
 
-parserPgn.on('warning', (pgn, warning) => {
-    console.log(`--- CANBOAT WARNING ---`);
+// parserPgn.on('warning', (pgn, warning) => {
+//     console.log(`--- CANBOAT WARNING ---`);
+//     console.log('PGN:', pgn);
+//     console.log('Warning:', warning);
+// });
+parserPgn.on('error', (pgn, error) => {
+    console.log(`--- CANBOAT ERROR ---`);
     console.log('PGN:', pgn);
-    console.log('Warning:', warning);
+    console.log('Error:', error);
 });
 
 // WebSocket connection handler
@@ -350,6 +533,13 @@ wss.on('connection', (ws) => {
                 serversUDP.delete(key);
             });
             serversTCP.forEach((socket, key) => {
+                serversTCP.delete(key);
+                socket.destroy();
+            });
+            serversTelnet.forEach((socket, key) => {
+                socket.write('nmea stop\n'); // include newline if needed
+                console.log(`Telnet write ${key}: nmea stop`);
+
                 serversTCP.delete(key);
                 socket.destroy();
             });
@@ -376,6 +566,10 @@ wss.on('connection', (ws) => {
                     serversTCP.delete(key);
                     socket.destroy();
                 });
+                serversTelnet.forEach((socket, key) => {
+                    serversTelnet.delete(key);
+                    socket.destroy();
+                });
 
                 if (message.servers?.UDP) {
                     message.servers?.UDP.forEach(connectUDP);
@@ -383,6 +577,9 @@ wss.on('connection', (ws) => {
 
                 if (message.servers?.TCP) {
                     message.servers?.TCP.forEach(connectTCP);
+                }
+                if (message.servers?.Telnet) {
+                    message.servers?.Telnet.forEach(connectTelnet);
                 }
             }
             //when server changes we need to update them!!!
@@ -404,6 +601,6 @@ server.listen(WS_PORT, () => {
 setInterval(
     () => {
 
-        console.info(`stats: TCP: ${serversTCP.size}, UDP: ${serversUDP.size}, PGNs: ${PGNs.size}, clients: ${wsClients.size}`)
+        console.info(`stats: TCP: ${serversTCP.size}, UDP: ${serversUDP.size},Telnet: ${serversTelnet.size}, PGNs: ${PGNs.size}, clients: ${wsClients.size}`)
     }, 5000
 )

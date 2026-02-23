@@ -105,14 +105,23 @@ export function useNmeaWebSocket(autoUpdate, config)
     {
         let dataServers = {
             'servers': {
-                UDP: [],
-                TCP: [],
+                UDP:    [],
+                TCP:    [],
+                Telnet: [],
             }
         };
 
         config.value.dataServers.TCP.forEach(server => {
             if (server.enable && server.host && server.port) {
                 dataServers.servers.TCP.push({
+                    'host': server.host,
+                    'port': server.port,
+                });
+            }
+        });
+        config.value.dataServers.Telnet.forEach(server => {
+            if (server.enable && server.host && server.port) {
+                dataServers.servers.Telnet.push({
                     'host': server.host,
                     'port': server.port,
                 });

@@ -47,6 +47,7 @@
                         <tr>
                             <th>UDP</th>
                             <th>TCP</th>
+                            <th>Telnet</th>
                         </tr>
                         <tr>
                             <td>
@@ -103,6 +104,38 @@
                                 </div>
 
                                 <button class="btn btn-success" style="margin: auto" @click="addServer('TCP')">
+                                    <i class="fas fa-plus"></i>
+                                    Add Connection
+                                </button>
+                            </td>
+                            <td>
+                                <div v-for="(Telnet, index) in localConfig.dataServers?.Telnet" class="d-flex">
+                                    <label class="checkbox-label">
+                                        <input
+                                                v-model="Telnet.enable"
+                                                class="form-checkbox"
+                                                type="checkbox"
+                                        >
+                                        <span></span>
+                                    </label>
+                                    <input
+                                            v-model="Telnet.host"
+                                            class="form-control"
+                                            placeholder="host"
+                                    >
+                                    <input
+                                            v-model="Telnet.port"
+                                            class="form-control"
+                                            placeholder="port 23"
+                                            style="max-width: 100px;"
+                                            type="number"
+                                    >
+                                    <button class="btn btn-sm btn-danger" @click="removeServer('Telnet', index)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+
+                                <button class="btn btn-success" style="margin: auto" @click="addServer('Telnet')">
                                     <i class="fas fa-plus"></i>
                                     Add Connection
                                 </button>
@@ -272,9 +305,18 @@ function addServer(type)
                 'port':   '',
             });
             break;
+        case 'Telnet':
+            localConfig.value.dataServers?.Telnet.push({
+                'enable': false,
+                'host':   '',
+                'port':   '',
+            });
+            break;
         default:
             console.error(`Type: "${type}" is not configured!`)
     }
+
+    console.log('aaa', localConfig.value.dataServers)
 }
 
 function removeServer(type, index)
@@ -285,6 +327,9 @@ function removeServer(type, index)
             break;
         case 'UDP':
             localConfig.value.dataServers?.UDP.splice(index, 1);
+            break;
+        case 'Telnet':
+            localConfig.value.dataServers?.Telnet.splice(index, 1);
             break;
         default:
             console.error(`Type: "${type}" is not configured!`)

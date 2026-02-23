@@ -11,19 +11,11 @@ const defaultConfig = {
     theme:                 'dark',
 
     dataServers: {
-        'UDP': [
+        'UDP':    [
             //actisense
             {
                 'enable': true,
                 'port':   '60001',
-            },
-            {
-                'enable': false,
-                'port':   '60002',
-            },
-            {
-                'enable': false,
-                'port':   '60003',
             },
             //yden
             {
@@ -35,12 +27,12 @@ const defaultConfig = {
                 'port':   '1456',
             },
         ],
-        'TCP': [
+        'TCP':    [
             //actisense
             {
                 'enable': false,
                 'host':   '192.168.1.111',
-                'port':   '60003',
+                'port':   '60002',
             },
             //yden
             {
@@ -49,6 +41,7 @@ const defaultConfig = {
                 'port':   '1457',
             },
         ],
+        'Telnet': []
     }
     //we need to send the port to the server
 }
