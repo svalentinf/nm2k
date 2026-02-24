@@ -43,17 +43,10 @@ let TCP_PORTS = [
 ];
 
 let TELNET_PORTS = [
-    // {
-    //     'host': '192.168.1.222',
-    //     'port': '1457'
-    // },
+
     // {
     //     'host': '192.168.1.111',
-    //     'port': '60002'
-    // },
-    // {
-    //     'host': '192.168.1.111',
-    //     'port': '60003'
+    //     'port': '23'
     // },
 ];
 
@@ -295,14 +288,14 @@ function connectTelnet(telnetInfo)
     client.on('close', () => {
         const key = `${telnetInfo.host}:${telnetInfo.port}`;
         if (serversTelnet.has(key)) {
-            console.log(`Telnet closed ${key}, retrying in 3s`);
+            console.log(`Telnet closed ${key}, retrying in 15s`);
             setTimeout(() => {
                 if (serversTelnet.has(key)) {
                     connectTelnet(telnetInfo);
                 } else {
                     console.log(`Telnet connection ${key} was removed!!!`);
                 }
-            }, 3000);
+            }, 15000);
         } else {
             console.log(`Telnet connection ${key} was removed!`);
         }
