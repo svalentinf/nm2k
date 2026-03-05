@@ -8459,26 +8459,25 @@ Expected function or array of functions, received type ${typeof value}.`
   };
   const _hoisted_1$6 = { class: "pgn-header" };
   const _hoisted_2$5 = { class: "pgn-id" };
-  const _hoisted_3$4 = { key: 2 };
-  const _hoisted_4$4 = { style: { "color": "var(--text-light)", "font-size": "0.9rem", "text-align": "right" } };
-  const _hoisted_5$4 = { class: "pgn-description" };
-  const _hoisted_6$4 = { class: "fields-grid" };
-  const _hoisted_7$4 = { class: "field-name" };
-  const _hoisted_8$3 = { class: "field-value" };
+  const _hoisted_3$4 = { style: { "color": "var(--text-light)", "font-size": "0.7rem", "text-align": "right" } };
+  const _hoisted_4$4 = { class: "pgn-description" };
+  const _hoisted_5$4 = { class: "fields-grid" };
+  const _hoisted_6$4 = { class: "field-name" };
+  const _hoisted_7$4 = { class: "field-value" };
+  const _hoisted_8$3 = { class: "small" };
   const _hoisted_9$3 = { class: "small" };
-  const _hoisted_10$3 = { class: "small" };
-  const _hoisted_11$3 = { key: 2 };
-  const _hoisted_12$3 = { class: "small" };
-  const _hoisted_13$2 = { class: "pgn-footer" };
-  const _hoisted_14$2 = { style: { "color": "var(--text-light)" } };
-  const _hoisted_15$2 = { class: "pgn-raw" };
-  const _hoisted_16$2 = {
+  const _hoisted_10$3 = { key: 2 };
+  const _hoisted_11$3 = { class: "small" };
+  const _hoisted_12$3 = { class: "pgn-footer" };
+  const _hoisted_13$2 = { style: { "color": "var(--text-light)" } };
+  const _hoisted_14$2 = { class: "pgn-raw" };
+  const _hoisted_15$2 = {
     key: 0,
     class: "pgn-history"
   };
-  const _hoisted_17$2 = { class: "small" };
-  const _hoisted_18$2 = { key: 0 };
-  const _hoisted_19$2 = { class: "small" };
+  const _hoisted_16$2 = { class: "small" };
+  const _hoisted_17$2 = { key: 0 };
+  const _hoisted_18$2 = { class: "small" };
   const _sfc_main$6 = {
     __name: "PgnCard",
     props: {
@@ -8537,27 +8536,29 @@ Expected function or array of functions, received type ${typeof value}.`
                 onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("trackPgn", `${__props.pgn.src}:${__props.pgn.pgn}`))
               }, [..._cache[4] || (_cache[4] = [
                 createBaseVNode("i", { class: "fas fa-map-location" }, null, -1),
-                createTextVNode(" ", -1)
+                createTextVNode("  ", -1)
               ])], 2)) : createCommentVNode("", true),
               createBaseVNode("span", {
-                style: { "cursor": "zoom-in" },
-                onClick: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("filterPgn", __props.pgn.pgn))
+                onClick: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("filterPgn", __props.pgn.pgn)),
+                class: normalizeClass({ "text-primary": __props.pgnFilter == __props.pgn.pgn }),
+                style: normalizeStyle(__props.pgnFilter == __props.pgn.pgn ? "cursor: zoom-out;" : "cursor: zoom-in;")
               }, [..._cache[5] || (_cache[5] = [
-                createBaseVNode("i", { class: "fas fa-magnifying-glass" }, null, -1),
-                createTextVNode(" PGN ", -1)
-              ])]),
+                createBaseVNode("i", { class: "fas fa-magnifying-glass" }, null, -1)
+              ])], 6),
+              createTextVNode(" PGN " + toDisplayString(__props.pgn.pgn) + " ", 1),
+              typeof __props.pgn.pgn === "number" ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
+                createTextVNode("[" + toDisplayString(__props.pgn.pgn.toString(16).padStart(5, "0").toUpperCase()) + "]", 1)
+              ], 64)) : createCommentVNode("", true),
               typeof __props.pgn.pgn === "number" ? (openBlock(), createElementBlock("span", {
-                key: 1,
+                key: 2,
                 class: normalizeClass({ "text-danger": __props.blockedPGNs.has(computedPgn.value) }),
                 style: { "cursor": "not-allowed" },
                 onClick: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("blockPgn", computedPgn.value))
               }, [..._cache[6] || (_cache[6] = [
                 createBaseVNode("i", { class: "fas fa-ban" }, null, -1)
-              ])], 2)) : createCommentVNode("", true),
-              createTextVNode(" " + toDisplayString(__props.pgn.pgn) + " ", 1),
-              typeof __props.pgn.pgn === "number" ? (openBlock(), createElementBlock("span", _hoisted_3$4, "[" + toDisplayString(__props.pgn.pgn.toString(16).padStart(5, "0").toUpperCase()) + "]", 1)) : createCommentVNode("", true)
+              ])], 2)) : createCommentVNode("", true)
             ]),
-            createBaseVNode("span", _hoisted_4$4, [
+            createBaseVNode("span", _hoisted_3$4, [
               createBaseVNode("span", {
                 style: { "cursor": "zoom-in" },
                 onClick: _cache[3] || (_cache[3] = ($event) => _ctx.$emit("selectDevice", __props.pgn.src))
@@ -8567,27 +8568,27 @@ Expected function or array of functions, received type ${typeof value}.`
               createBaseVNode("span", null, toDisplayString(__props.pgn.servers), 1)
             ])
           ]),
-          createBaseVNode("div", _hoisted_5$4, toDisplayString(__props.pgn.description), 1),
-          createBaseVNode("div", _hoisted_6$4, [
+          createBaseVNode("div", _hoisted_4$4, toDisplayString(__props.pgn.description), 1),
+          createBaseVNode("div", _hoisted_5$4, [
             (openBlock(true), createElementBlock(Fragment, null, renderList(__props.pgn.fields, (value, field) => {
               return openBlock(), createElementBlock("div", {
                 key: field,
                 class: normalizeClass([{ updated: __props.pgn.updatedFields?.includes(field) }, "field-row"])
               }, [
-                createBaseVNode("span", _hoisted_7$4, toDisplayString(field), 1),
-                createBaseVNode("span", _hoisted_8$3, [
+                createBaseVNode("span", _hoisted_6$4, toDisplayString(field), 1),
+                createBaseVNode("span", _hoisted_7$4, [
                   field === "latitude" ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
                     createTextVNode(toDisplayString(formatPosition(value, true)) + " ", 1),
                     _cache[8] || (_cache[8] = createBaseVNode("br", null, null, -1)),
-                    createBaseVNode("span", _hoisted_9$3, toDisplayString(formatValue(value)), 1)
+                    createBaseVNode("span", _hoisted_8$3, toDisplayString(formatValue(value)), 1)
                   ], 64)) : field === "longitude" ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
                     createTextVNode(toDisplayString(formatPosition(value, false)) + " ", 1),
                     _cache[9] || (_cache[9] = createBaseVNode("br", null, null, -1)),
-                    createBaseVNode("span", _hoisted_10$3, toDisplayString(formatValue(value)), 1)
-                  ], 64)) : field === "heading" || field === "windAngle" || field === "courseOverGroundMagnetic" || field === "courseOverGroundTrue" || field === "headingMagnetic" || field === "headingCompass" || field === "headingTrue" || field === "angleApparent" || field === "angleTrueWater" ? (openBlock(), createElementBlock("span", _hoisted_11$3, [
+                    createBaseVNode("span", _hoisted_9$3, toDisplayString(formatValue(value)), 1)
+                  ], 64)) : field === "heading" || field === "windAngle" || field === "courseOverGroundMagnetic" || field === "courseOverGroundTrue" || field === "headingMagnetic" || field === "headingCompass" || field === "headingTrue" || field === "angleApparent" || field === "angleTrueWater" ? (openBlock(), createElementBlock("span", _hoisted_10$3, [
                     createTextVNode(toDisplayString(formatAngle(value)) + " ", 1),
                     _cache[10] || (_cache[10] = createBaseVNode("br", null, null, -1)),
-                    createBaseVNode("span", _hoisted_12$3, toDisplayString(formatValue(value)), 1)
+                    createBaseVNode("span", _hoisted_11$3, toDisplayString(formatValue(value)), 1)
                   ])) : (openBlock(), createElementBlock(Fragment, { key: 3 }, [
                     createTextVNode(toDisplayString(formatValue(value)), 1)
                   ], 64))
@@ -8595,12 +8596,12 @@ Expected function or array of functions, received type ${typeof value}.`
               ], 2);
             }), 128))
           ]),
-          createBaseVNode("div", _hoisted_13$2, [
+          createBaseVNode("div", _hoisted_12$3, [
             createBaseVNode("span", null, toDisplayString(formatTime(__props.pgn.timestamp)), 1),
-            createBaseVNode("span", _hoisted_14$2, toDisplayString(__props.pgn.direction || "Unknown"), 1)
+            createBaseVNode("span", _hoisted_13$2, toDisplayString(__props.pgn.direction || "Unknown"), 1)
           ]),
-          createBaseVNode("div", _hoisted_15$2, toDisplayString(__props.pgn.raw), 1),
-          !__props.autoUpdate ? (openBlock(), createElementBlock("div", _hoisted_16$2, [
+          createBaseVNode("div", _hoisted_14$2, toDisplayString(__props.pgn.raw), 1),
+          !__props.autoUpdate ? (openBlock(), createElementBlock("div", _hoisted_15$2, [
             createBaseVNode("table", null, [
               createBaseVNode("tbody", null, [
                 createBaseVNode("tr", null, [
@@ -8612,15 +8613,15 @@ Expected function or array of functions, received type ${typeof value}.`
                 (openBlock(true), createElementBlock(Fragment, null, renderList(__props.pgn.history, (pgnHistory) => {
                   return openBlock(), createElementBlock("tr", null, [
                     pgnHistory && pgnHistory.src === __props.pgn.src && pgnHistory.pgn === __props.pgn.pgn ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
-                      createBaseVNode("td", _hoisted_17$2, [
+                      createBaseVNode("td", _hoisted_16$2, [
                         createTextVNode(toDisplayString(formatTime(pgnHistory.timestamp)) + " ", 1),
                         _cache[12] || (_cache[12] = createBaseVNode("br", null, null, -1)),
                         createTextVNode(" " + toDisplayString(pgnHistory.serverAddress), 1)
                       ]),
                       (openBlock(true), createElementBlock(Fragment, null, renderList(__props.pgn.fields, (field, fieldName) => {
                         return openBlock(), createElementBlock("td", null, [
-                          typeof pgnHistory["fields"] !== "undefined" && typeof pgnHistory["fields"][fieldName] === "number" ? (openBlock(), createElementBlock("div", _hoisted_18$2, toDisplayString(sub(__props.pgn.fields[fieldName] ?? "", pgnHistory.fields[fieldName] ?? "")), 1)) : createCommentVNode("", true),
-                          createBaseVNode("div", _hoisted_19$2, toDisplayString(typeof pgnHistory["fields"] !== "undefined" && typeof pgnHistory["fields"][fieldName] !== "undefined" ? pgnHistory["fields"][fieldName] : "-"), 1)
+                          typeof pgnHistory["fields"] !== "undefined" && typeof pgnHistory["fields"][fieldName] === "number" ? (openBlock(), createElementBlock("div", _hoisted_17$2, toDisplayString(sub(__props.pgn.fields[fieldName] ?? "", pgnHistory.fields[fieldName] ?? "")), 1)) : createCommentVNode("", true),
+                          createBaseVNode("div", _hoisted_18$2, toDisplayString(typeof pgnHistory["fields"] !== "undefined" && typeof pgnHistory["fields"][fieldName] !== "undefined" ? pgnHistory["fields"][fieldName] : "-"), 1)
                         ]);
                       }), 256))
                     ], 64)) : createCommentVNode("", true)
@@ -9266,7 +9267,7 @@ Expected function or array of functions, received type ${typeof value}.`
       };
     }
   };
-  const ConfigModal = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-39a2dd5e"]]);
+  const ConfigModal = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-ccb64e2a"]]);
   function useNmeaWebSocket(autoUpdate, config2) {
     const ws = ref(null);
     const isConnected = ref(false);
@@ -9370,7 +9371,9 @@ Expected function or array of functions, received type ${typeof value}.`
       });
       config2.value.dataServers.UDP.forEach((server) => {
         if (server.enable && server.port) {
-          dataServers.servers.UDP.push(server.port);
+          dataServers.servers.UDP.push({
+            "port": server.port
+          });
         }
       });
       return dataServers;

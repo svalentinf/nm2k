@@ -125,6 +125,10 @@
     color: var(--danger);
 }
 
+.text-primary {
+    color: var(--primary);
+}
+
 body {
     font-family: 'Segoe UI', system-ui, sans-serif;
     background: var(--dark-bg);
