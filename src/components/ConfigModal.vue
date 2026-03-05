@@ -396,7 +396,7 @@ async function testConnection()
     border-radius: 12px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     width: 90%;
-    max-width: 700px;
+    max-width: 900px;
     max-height: 90vh;
     animation: slideUp 0.3s ease-out;
     display: flex;
@@ -469,6 +469,10 @@ async function testConnection()
     display: flex;
     align-items: center;
     gap: 10px;
+}
+
+.config-section table td {
+    padding: 5px;
 }
 
 .config-section table div {

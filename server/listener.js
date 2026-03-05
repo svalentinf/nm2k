@@ -17,15 +17,15 @@ const parserPgn = new FromPgn();
 // const UDP_PORTS = 1456;
 //udp ports
 let UDP_PORTS = [
-    // 60001,
-    // 60002,
-    // 60003,//can direct!?
+    {'port': 60001},
+    {'port': 60002},
+    {'port': 60003},
 
-    // 10110,
-    // 1456,
+    {'port': 10110},
+    {'port': 1456},
 
-    // 20110,
-    // 2456,
+    {'port': 20110},
+    {'port': 2456},
 ];
 let TCP_PORTS = [
     // {
@@ -58,48 +58,78 @@ const serversTelnet = new Map();
 
 //@todo add filters to send only some PGN's
 
-function connectUDP(udpPort)
+function connectUDP(connectionInfo)
 {
     // Start servers
-    console.log(`UDP: listening on port ${udpPort}`);
+    console.log(`UDP: listening on port ${connectionInfo.port}`);
     // UDP message handler
     const udpSocket = dgram.createSocket("udp4");
 
+    if (!connectionInfo?.firstConnectAt) {
+        connectionInfo.firstConnectAt = new Date();
+    }
+
     udpSocket.on('listening', () => {
         const addr = udpSocket.address();
+        connectionInfo.lastDataAt = new Date();
+
         console.log(`Listening for NMEA on ${addr.address}:${addr.port}`);
     });
-    udpSocket.bind(udpPort, () => {
-        console.info(`UDP server bind listening for NMEA on port ${udpPort}`);
+    udpSocket.bind(connectionInfo, () => {
+        console.info(`UDP server bind listening for NMEA on port ${connectionInfo.port}`);
     });
     udpSocket.on("message", msg => {
         //we need the socket too
+
+        if (!connectionInfo?.firstDataAt) {
+            connectionInfo.firstDataAt = new Date();
+        }
+        connectionInfo.lastDataAt = new Date();
         const addr = udpSocket.address();
         parseMsg(msg, `${addr.address}:${addr.port}`);
     });
 
-    serversUDP.set(udpPort, udpSocket);
+    serversUDP.set(connectionInfo.port, udpSocket);
 }
 
 UDP_PORTS.forEach(connectUDP);
 
-function connectTCP(tcpInfo)
+function connectTCP(connectionInfo)
 {
 
-    console.log(`TCP: Connecting to ${tcpInfo.host}:${tcpInfo.port}`);
+    console.log(`TCP: Connecting to ${connectionInfo.host}:${connectionInfo.port}`, connectionInfo);
 
+    if (!connectionInfo?.lastConnect) {
+        connectionInfo.lastConnect = new Date();
+    } else {
+        console.log("bum")
+    }
     const clientTCP = net.createConnection(
-        {host: tcpInfo.host, port: tcpInfo.port, timeout: 5000},
+        {host: connectionInfo.host, port: connectionInfo.port, timeout: 5000},
         () => {
-            console.log(`TCP: ${tcpInfo.host}:${tcpInfo.port} Connected`);
+            console.log(`TCP: ${connectionInfo.host}:${connectionInfo.port} Connected`);
+            if (!connectionInfo?.firstConnectAt) {
+                connectionInfo.firstConnectAt = new Date();
+            }
         }
     );
+
+    if (!connectionInfo?.counter) {
+        connectionInfo.counter = 1;
+    } else {
+        connectionInfo.counter++;
+    }
 
     clientTCP.setKeepAlive(true, 5000);
 
     let buffer = '';
     let lastDataAt = Date.now();
     clientTCP.on('data', (data) => {
+        if (!connectionInfo?.firstDataAt) {
+            connectionInfo.firstDataAt = new Date();
+        }
+        connectionInfo.lastDataAt = new Date();
+
         lastDataAt = Date.now();
         buffer += data.toString('ascii');
         let index;
@@ -107,48 +137,48 @@ function connectTCP(tcpInfo)
             const message = buffer.slice(0, index).trim();
             buffer = buffer.slice(index + 1);
             if (message) {
-                parseMsg(message, `${tcpInfo.host}:${tcpInfo.port}`);
+                parseMsg(message, `${connectionInfo.host}:${connectionInfo.port}`);
             }
         }
     });
 
     clientTCP.on('error', (err) => {
-        console.error(`TCP error ${tcpInfo.host}:${tcpInfo.port}`, err.message);
+        console.error(`TCP error ${connectionInfo.host}:${connectionInfo.port}`, err.message);
     });
 
     const watchdog = setInterval(() => {
         if (Date.now() - lastDataAt > 15000) {
-            console.error(`TCP stalled ${tcpInfo.host}:${tcpInfo.port}`);
+            console.error(`TCP stalled ${connectionInfo.host}:${connectionInfo.port}`);
             clientTCP.destroy();
         }
     }, 5000);
 
     clientTCP.on('close', () => {
-        if (serversTCP.has(`${tcpInfo.host}:${tcpInfo.port}`)) {
+        if (serversTCP.has(`${connectionInfo.host}:${connectionInfo.port}`)) {
             console.log(serversTCP);
-            console.log(`TCP closed ${tcpInfo.host}:${tcpInfo.port}, retrying in 3s`);
+            console.log(`TCP closed ${connectionInfo.host}:${connectionInfo.port}, retrying in 3s`);
             setTimeout(() => {
-                if (serversTCP.has(`${tcpInfo.host}:${tcpInfo.port}`)) {
-                    connectTCP(tcpInfo)
+                if (serversTCP.has(`${connectionInfo.host}:${connectionInfo.port}`)) {
+                    connectTCP(connectionInfo)
                 } else {
-                    console.log(`TCP connection ${tcpInfo.host}:${tcpInfo.port} was removed!!!`);
+                    console.log(`TCP connection ${connectionInfo.host}:${connectionInfo.port} was removed!!!`);
                 }
             }, 3000);
         } else {
-            console.log(`TCP connection ${tcpInfo.host}:${tcpInfo.port} was removed!`);
+            console.log(`TCP connection ${connectionInfo.host}:${connectionInfo.port} was removed!`);
         }
 
         clearInterval(watchdog)
     });
 
-    serversTCP.set(`${tcpInfo.host}:${tcpInfo.port}`, clientTCP);
+    serversTCP.set(`${connectionInfo.host}:${connectionInfo.port}`, clientTCP);
 }
 
 TCP_PORTS.forEach(connectTCP);
 
-function connectTelnet(telnetInfo)
+function connectTelnet(connectionInfo)
 {
-    console.log(`Telnet: Connecting to ${telnetInfo.host}:${telnetInfo.port}`);
+    console.log(`Telnet: Connecting to ${connectionInfo.host}:${connectionInfo.port}`);
 
     const IAC = 255;
     const DONT = 254;
@@ -160,13 +190,13 @@ function connectTelnet(telnetInfo)
 
 
     const client = net.createConnection(
-        {host: telnetInfo.host, port: telnetInfo.port, timeout: 5000},
+        {host: connectionInfo.host, port: connectionInfo.port, timeout: 5000},
         () => {
-            console.log(`Telnet: ${telnetInfo.host}:${telnetInfo.port} Connected`);
+            console.log(`Telnet: ${connectionInfo.host}:${connectionInfo.port} Connected`);
 
             client.write('\n'); // include newline if needed
             client.write('nmea start\n'); // include newline if needed
-            console.log(`Telnet write ${telnetInfo.host}:${telnetInfo.port}: nmea start`);
+            console.log(`Telnet write ${connectionInfo.host}:${connectionInfo.port}: nmea start`);
 
         }
     );
@@ -182,6 +212,10 @@ function connectTelnet(telnetInfo)
     let currentCmd = null;              // stores DO/DONT/WILL/WONT when in state 2
 
     client.on('data', (data) => {
+        if (!connectionInfo?.firstDataAt) {
+            connectionInfo.firstDataAt = new Date();
+        }
+        connectionInfo.lastDataAt = new Date();
         lastDataAt = Date.now();
         for (let i = 0; i < data.length; i++) {
             const byte = data[i];
@@ -265,7 +299,7 @@ function connectTelnet(telnetInfo)
                 // Replace this with the actual YDEN pattern
 
                 if (nmeaPattern.test(message)) {
-                    parseMsg(message, `${telnetInfo.host}:${telnetInfo.port}`);
+                    parseMsg(message, `${connectionInfo.host}:${connectionInfo.port}`);
                     console.info("NMEA msg:", message)
                 } else {
                     console.info("Telnet msg:", message)
@@ -275,23 +309,23 @@ function connectTelnet(telnetInfo)
     });
 
     client.on('error', (err) => {
-        console.error(`Telnet error ${telnetInfo.host}:${telnetInfo.port}`, err.message);
+        console.error(`Telnet error ${connectionInfo.host}:${connectionInfo.port}`, err.message);
     });
 
     const watchdog = setInterval(() => {
         if (Date.now() - lastDataAt > 15000) {
-            console.error(`Telnet stalled ${telnetInfo.host}:${telnetInfo.port}`);
+            console.error(`Telnet stalled ${connectionInfo.host}:${connectionInfo.port}`);
             client.destroy();
         }
     }, 5000);
 
     client.on('close', () => {
-        const key = `${telnetInfo.host}:${telnetInfo.port}`;
+        const key = `${connectionInfo.host}:${connectionInfo.port}`;
         if (serversTelnet.has(key)) {
             console.log(`Telnet closed ${key}, retrying in 15s`);
             setTimeout(() => {
                 if (serversTelnet.has(key)) {
-                    connectTelnet(telnetInfo);
+                    connectTelnet(connectionInfo);
                 } else {
                     console.log(`Telnet connection ${key} was removed!!!`);
                 }
@@ -302,7 +336,7 @@ function connectTelnet(telnetInfo)
         clearInterval(watchdog);
     });
 
-    serversTelnet.set(`${telnetInfo.host}:${telnetInfo.port}`, client);
+    serversTelnet.set(`${connectionInfo.host}:${connectionInfo.port}`, client);
 }
 
 TELNET_PORTS.forEach(connectTelnet);
@@ -594,6 +628,7 @@ server.listen(WS_PORT, () => {
 setInterval(
     () => {
 
+        //@todo add more info about it, like last online for each server and number of pgn's with last online!
         console.info(`stats: TCP: ${serversTCP.size}, UDP: ${serversUDP.size},Telnet: ${serversTelnet.size}, PGNs: ${PGNs.size}, clients: ${wsClients.size}`)
     }, 5000
 )

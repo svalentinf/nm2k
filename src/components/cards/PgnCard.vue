@@ -3,17 +3,21 @@
         <div class="pgn-header">
             <span class="pgn-id">
                 <span v-if="pgn.fields && pgn.fields.longitude" :class="{'text-success':trackingPGNs.has(`${pgn.src}:${pgn.pgn}`)}" style="cursor: crosshair;" @click="$emit('trackPgn', `${pgn.src}:${pgn.pgn}`)">
-                    <i class="fas fa-map-location"></i>&nbsp;</span>
-                <span style="cursor: zoom-in;" @click="$emit('filterPgn', pgn.pgn)">
-                    <i class="fas fa-magnifying-glass"></i>&nbsp;PGN
+                    <i class="fas fa-map-location"></i>&nbsp;
                 </span>
+                <span @click="$emit('filterPgn', pgn.pgn)"
+                      :class="{'text-primary':pgnFilter == pgn.pgn}"
+                      :style="(pgnFilter == pgn.pgn)?'cursor: zoom-out;':'cursor: zoom-in;'">
+                    <i class="fas fa-magnifying-glass"></i>
+                </span>
+                PGN
+                {{ pgn.pgn }}
+                <template v-if="typeof pgn.pgn === 'number'">[{{ pgn.pgn.toString(16).padStart(5, '0').toUpperCase() }}]</template>
                 <span v-if="typeof pgn.pgn === 'number'" :class="{'text-danger':blockedPGNs.has(computedPgn)}" style="cursor: not-allowed" @click="$emit('blockPgn', computedPgn)">
                     <i class="fas fa-ban"></i>
                 </span>
-                {{ pgn.pgn }}
-                <span v-if="typeof pgn.pgn === 'number'">[{{ pgn.pgn.toString(16).padStart(5, '0').toUpperCase() }}]</span>
             </span>
-            <span style="color: var(--text-light); font-size: 0.9rem; text-align: right">
+            <span style="color: var(--text-light); font-size: 0.7rem; text-align: right">
                 <span style="cursor: zoom-in;" @click="$emit('selectDevice', pgn.src)">Device</span> {{ `${pgn.src} [${pgn.src.toString(16).padStart(2, '0').toUpperCase()}]` }}<br>
                 <span>{{ pgn.servers }}</span>
             </span>

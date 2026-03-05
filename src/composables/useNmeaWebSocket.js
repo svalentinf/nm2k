@@ -129,7 +129,9 @@ export function useNmeaWebSocket(autoUpdate, config)
         });
         config.value.dataServers.UDP.forEach(server => {
             if (server.enable && server.port) {
-                dataServers.servers.UDP.push(server.port);
+                dataServers.servers.UDP.push({
+                    'port': server.port
+                });
             }
         });
 
